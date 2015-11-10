@@ -1,0 +1,22 @@
+{
+  "author": "Fuzzy Logic",
+  "name": "travis-ci.testRepo",
+  "description": "just a test",
+  "version": "0.0.0",
+  "homepage": "https://travis-ci.org/psu-capstone/testRepo",
+  "main": "./",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/psu-capstone/testRepo.git"
+  },
+  "scripts": {
+    "test": "vows --spec"
+  },
+  "engines": {
+    "node": ">= 0.4"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "vows": "0.6.x"
+  }
+}
