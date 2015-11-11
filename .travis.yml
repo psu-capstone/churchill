@@ -5,6 +5,10 @@ before_script:
   - npm install gulp
 script:
   gulp
+branches:
+  only:
+    - master
+    - develop
 notifications:
   email:
   - mds6@pdx.edu
