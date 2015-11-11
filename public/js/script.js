@@ -5,7 +5,7 @@
 // Change this to go to next data collecting page when ready
 function check(form) {
     if(form.user.value == "admin" && form.pass.value == "admin") {
-        alert("Good Login, this will then go to the next page.... :]");
+        window.location.href = "http://www.google.com";
     } else {
         alert("Error Password or Username");
     }
