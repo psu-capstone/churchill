@@ -1,21 +1,30 @@
 {
   "author": "Fuzzy Logic",
-  "name": "travis-ci.testRepo",
-  "description": "just a test",
+  "name": "travis-ci.churchill",
+  "description": "Capstone",
   "version": "0.0.0",
-  "homepage": "https://travis-ci.org/psu-capstone/testRepo",
+  "homepage": "https://travis-ci.org/psu-capstone/churchill",
   "main": "./",
   "repository": {
     "type": "git",
-    "url": "https://github.com/psu-capstone/testRepo.git"
+    "url": "https://github.com/psu-capstone/churchill.git"
   },
   "scripts": {
+    "start": "node ./bin/www",
     "test": "vows --spec"
   },
   "engines": {
     "node": ">= 0.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "body-parser": "~1.13.2",
+    "cookie-parser": "~1.3.5",
+    "d3": "3",
+    "express": "~4.13.1",
+    "jade": "~1.11.0",
+    "morgan": "~1.6.1",
+    "serve-favicon": "^2.3.0"
+  },
   "devDependencies": {
     "vows": "0.6.x"
   }
