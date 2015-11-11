@@ -5,7 +5,7 @@
 // Change this to go to next data collecting page when ready
 function check(form) {
     if(form.user.value == "admin" && form.pass.value == "admin") {
-        window.location.href = "http://www.google.com";
+        window.location.href = "./views/graph.jade";
     } else {
         alert("Error Password or Username");
     }
