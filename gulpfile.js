@@ -6,6 +6,14 @@ var jshint = require('gulp-jshint');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
+var image = require('gulp-image');
+
+// Image Task
+gulp.task('image', function () {
+    gulp.src('public/images/*')
+        .pipe(image())
+        .pipe(gulp.dest('build'));
+});
 
 // Lint Task
 gulp.task('lint', function() {
@@ -25,4 +33,4 @@ gulp.task('scripts', function() {
 });
 
 // Default Task
-gulp.task('default', ['lint', 'scripts']);
+gulp.task('default', ['lint', 'scripts', 'image']);
