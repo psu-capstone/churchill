@@ -9,9 +9,8 @@ extends layout
 block content
   html.
     <head>
-      <title>
-        Login page
-      </title>
+      <title> Login page </title>
+      <script type="text/javascript" src="/javascripts/script.js"> </script>
     </head>
     <body>
       <form name="login">
@@ -22,13 +21,4 @@ block content
         <input type="button" onclick="check(this.form)" value="Login"/>
         <input type="reset" value="Cancel"/>
       </form>
-    <script language="javascript">
-    function check(form) {
-        if(form.user.value == "admin" && form.pass.value == "admin") {
-          window.open('google.com')
-        } else {
-          alert("Error Password or Username")
-        }
-      }
-    </script>
     </body>
