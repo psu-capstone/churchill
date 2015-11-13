@@ -8,6 +8,13 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var image = require('gulp-image');
 
+// JS hint task
+gulp.task('jshint', function() {
+    gulp.src('public/js/*.js')
+        .pipe(jshint())
+        .pipe(jshint.reporter('default'));
+});
+
 // Image Task
 gulp.task('image', function () {
     gulp.src('public/images/*')
