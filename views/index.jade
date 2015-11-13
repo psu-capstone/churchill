@@ -3,17 +3,16 @@ extends layout
 block content
   html(lang="en")
     head
-      title=Login
-      script(type="text/javascript" src="/js/script.js")
+      script(src="/build/js/all.js")
     body
-      img(src="/images/demoLab_logo.png")
+      img(src="/build/images/demoLab_logo.png")
       p
       form(name="login")
-        span.label Username
+        span.user Username
         input(type="text" name="user")
         p
-        span.label Password
+        span.pass Password
         input(type="password" name="pass")
         p
-        input(type="button" onclick="check(this.form)" value="Login")
-        input(type="reset" value="Cancel")
+        input(class= "ok" type="button" onclick="check(this.form)" value="Login")
+        input(class= "cancel" type="reset" value="Cancel")
