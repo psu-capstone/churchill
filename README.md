@@ -7,7 +7,8 @@ or the server capdev.meyersj.com:3000
 
 Folder changes:
 
-The brunt of the work will be done in public/dev
+The brunt of the work will be done in public/dev.
+
 public/build is the result after Gulp does its Gulping of the files and minimizes them.
 so you'll notice jade files and js files that link each other now look to the build
 folder to run the newly efficient gulped files.
