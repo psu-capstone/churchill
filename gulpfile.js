@@ -8,12 +8,15 @@ var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var image = require('gulp-image');
 var minifyCss = require('gulp-minify-css');
+var imageop = require('gulp-image-optimization');
 
 // Image Task
-gulp.task('image', function () {
-    gulp.src('public/dev/images/*')
-        .pipe(image())
-        .pipe(gulp.dest('public/build/images'));
+gulp.task('image', function() {
+    gulp.src(['public/**/*.png','public/**/*.jpg','public/**/*.gif','public/**/*.jpeg']).pipe(imageop({
+        optimizationLevel: 5,
+        progressive: true,
+        interlaced: true
+    })).pipe(gulp.dest('public/build/images'));
 });
 
 // CSS Task
@@ -45,4 +48,4 @@ gulp.task('scripts', function() {
 });
 
 // Default Task
-gulp.task('default', ['image', 'css', 'lint', 'jshint', 'scripts']);
+gulp.task('default', ['css', 'image', 'lint', 'jshint', 'scripts']);
