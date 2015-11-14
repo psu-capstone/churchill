@@ -12,7 +12,8 @@ var imageop = require('gulp-image-optimization');
 
 // Image Task
 gulp.task('image', function() {
-    gulp.src(['public/**/*.png','public/**/*.jpg','public/**/*.gif','public/**/*.jpeg']).pipe(imageop({
+    gulp.src(['public/dev/images/*.png','public/dev/images*.jpg','public/dev/images*.gif',
+        'public/dev/images/*.jpeg']).pipe(imageop({
         optimizationLevel: 5,
         progressive: true,
         interlaced: true
