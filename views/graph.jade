@@ -9,6 +9,7 @@ html(lang="en")
         script(type = "text/javascript" src="node_modules/d3.js")
         link(rel="stylesheet" type="text/css" href="mystyle.css")
     body
+        script(
         var w = 500;
         var h = 250;
         var barPadding = 1;
@@ -29,4 +30,5 @@ html(lang="en")
                     var barHeight = d * 5;
                     return barHeight + "px";
             });
+            )
 
