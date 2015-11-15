@@ -1,29 +1,11 @@
 extends layout
 
 block content
-
-html(lang="en")
-    head
-        meta charset="utf-8"
-        title = D3 Test
-        script(type = "text/javascript" src="node_modules/d3.js")
-        link(rel="stylesheet" type="text/css" href="stylesheets/mystyle.css")
-    body
-        script
-            var dataset = [ ];
-            for (var i = 0; i < 25; i++) {
-                var newNumber = Math.round(Math.random() * 20) + 5;
-                dataset.push(newNumber);
-            }
-            
-            
-            d3.select("body").selectAll("div")
-                .data(dataset)
-                .enter()
-                .append("div")
-                .attr("class", "bar")
-                .style("height", function(d) {
-                    var barHeight = d * 5;
-                    return barHeight + "px";
-            });
-
+    html(lang="en")
+        head
+            meta charset="utf-8"
+            title = D3 Test
+            script(type = "text/javascript" src="node_modules/d3.js")
+            script(src="build/js/d3stuff.js")
+            link(rel="stylesheet" type="text/css" href="stylesheets/mystyle.css")
+        body
