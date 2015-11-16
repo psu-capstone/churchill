@@ -13,4 +13,9 @@ router.get('/', function(req, res) {
   res.render('index', { title: 'Login' });
 });
 
+router.get('/graph', function(req, res) {
+ res.render('graph', {title: 'D3 Sample'});
+});
+
 module.exports = router;
+
