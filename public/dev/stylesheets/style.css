@@ -1,21 +1,21 @@
-body {
-    font: 14px Helvetica Neue;
-    text-rendering: optimizeLegibility;
-    margin-top: 1em;
-    overflow-y: scroll;
+.chart {
+    background: #eee;
+    padding: 3px;
 }
-.label {
-    font-size: .65em;
+
+.chart div {
+    width: 0;
+    transition: all 1s ease-out;
+    -moz-transition: all 1s ease-out;
+    -webkit-transition: all 1s ease-out;
 }
-body {
-    width: 960px;
-    margin: auto;
-}
-h1 {
-    font-size: 36px;
-    font-weight: 300;
-    margin-bottom: .3em;
-}
-.error {
-    color: red;
+
+.chart div {
+    font: 10px sans-serif;
+    background-color: steelblue;
+    text-align: right;
+    padding: 3px;
+    margin: 5px;
+    color: white;
+    box-shadow: 2px 2px 2px #666;
 }
