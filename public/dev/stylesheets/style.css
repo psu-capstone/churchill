@@ -1,39 +1,21 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+.chart {
+    background: #eee;
+    padding: 3px;
 }
 
-a {
-  color: #00B7FF;
+.chart div {
+    width: 0;
+    transition: all 1s ease-out;
+    -moz-transition: all 1s ease-out;
+    -webkit-transition: all 1s ease-out;
 }
 
-span.user {
-  padding-right: 10px;
-}
-
-span.pass {
-  padding-right: 14px;
-}
-
-input.ok {
-  margin-right: 20px;
-}
-
-div.bar {
-            display: inline-block;
-            width: 20px;
-            height: 75px;
-            margin-right: 2px;
-            background-color: teal;}
-
-.axis path,
-.axis line {
-    fill: none;
-    stroke: black;
-    shape-rendering: crispEdges;
-}
-
-.axis text {
-    font-family: sans-serif;
-    font-size: 11px;
+.chart div {
+    font: 10px sans-serif;
+    background-color: steelblue;
+    text-align: right;
+    padding: 3px;
+    margin: 5px;
+    color: white;
+    box-shadow: 2px 2px 2px #666;
 }
