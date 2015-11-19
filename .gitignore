@@ -1,0 +1,9 @@
+# Ignore IntelliJ directory
+.idea/
+
+# More ignoring for IDE stuff
+*.iml
+
+#
+
+
