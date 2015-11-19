@@ -2,6 +2,6 @@
 <project version="4">
   <component name="JavaScriptLibraryMappings">
     <file url="file://$PROJECT_DIR$" libraries="{churchill node_modules}" />
-    <file url="PROJECT" libraries="{angular, angular-route, d3.v3, html5shiv, respond, ui-bootstrap-0.14.3}" />
+    <file url="PROJECT" libraries="{angular, angular-route, d3, d3.v3, html5shiv, respond, ui-bootstrap-0.14.3}" />
   </component>
 </project>

@@ -12,5 +12,6 @@
     <orderEntry type="library" name="angular-route" level="application" />
     <orderEntry type="library" name="angular" level="application" />
     <orderEntry type="library" name="d3.v3" level="application" />
+    <orderEntry type="library" name="d3" level="application" />
   </component>
 </module>
