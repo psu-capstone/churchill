@@ -65,7 +65,7 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     // Add whatever browser you want, Chrome, Opera, etc.  Using Firefox now to appease Travis
-    browsers: ['Firefox'],
+    browsers: ['Chrome'],
 
 
     // Continuous Integration mode
