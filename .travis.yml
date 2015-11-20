@@ -7,7 +7,7 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 script:
    - gulp
-   - './node_modules/.bin/karma start --browsers Firefox --single-run'
+   - './node_modules/.bin/karma start karma.conf.js --single-run'
 branches:
   only:
     - master
