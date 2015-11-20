@@ -4,8 +4,8 @@ node_js:
 before_script:
   - npm install gulp
 script:
-  gulp
-  karma start
+  - gulp
+  - karma start
 branches:
   only:
     - master
