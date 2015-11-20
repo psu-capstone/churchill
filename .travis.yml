@@ -4,8 +4,8 @@ node_js:
 before_script:
   - npm install gulp
 script:
-  - gulp
-  - karma start
+   - gulp
+   - './node_modules/.bin/karma start --single-run --browsers Chrome'
 branches:
   only:
     - master
