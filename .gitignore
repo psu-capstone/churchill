@@ -4,6 +4,12 @@
 # More ignoring for IDE stuff
 *.iml
 
-#
+# Ignore gulp build folder
+public/build
+
+# Ignore Karma test results
+test/results.html
+
+
 
 
