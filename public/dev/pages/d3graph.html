@@ -1,9 +1,11 @@
-<div class="row">
-    <div class=col-sm-12>
-        <h2>{{ title }}</h2>
-        <p></p>
-    </div>
-</div>
-<div>
+<div ng-controller="explore-controller as exp">
+  <div class="row">
+      <div class=col-sm-12>
+          <h2>{{ exp.title }}</h2>
+          <p></p>
+      </div>
+  </div>
+  <div>
     <bars data="40,4,55,15,16,33,52,20"></bars>
+  </div>
 </div>
