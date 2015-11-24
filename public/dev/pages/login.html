@@ -1,49 +1,51 @@
-<div class="row">  
-  <div class=col-sm-12>
-      <h2>{{ title }}</h2>
-    <p>
+<div ng-controller="login-controller as login">
+  <div class="row">
+    <div class=col-sm-12>
+      <h2>{{ login.title }}</h2>
+      <p>
 
-   </p>
+      </p>
+    </div>
+  </div>
+  <div class="row">
+    <div class=col-sm-4>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" ng-model="username" class="form-control">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="text" ng-model="password" class="form-control">
+      </div>
+      <div class="btn-group">
+        <button type="button" ng-click="authenticate()" class="btn btn-primary">
+          Login
+        </button>
+      </div>
+      <div class="btn-group">
+        <button type="button" ng-click="authenticate()" class="btn btn-primary">
+          Create Account
+        </button>
+      </div>
+      <br><br>
+      <pre>{{ login.username + " " + login.password }}</pre>
+    </div>
+    <div class=col-sm-8>
+      <h4>Side Content</h4>
+      <p>
+
+      </p>
+      <div ng-show="authorized">
+        <h4>Secret Content</h4>
+        <p>
+          Login successful
+        </p>
+        <a href="#issue">
+          <button type="button" class="btn btn-primary">
+            Frame Issue
+          </button>
+        </a>
+      </div>
+    </div>
   </div>
 </div>
-<div class="row">  
-  <div class=col-sm-4>
-    <div class="form-group">
-      <label>Username</label>
-      <input type="text" ng-model="username" class="form-control">     
-    </div>
-    <div class="form-group">
-      <label>Password</label>
-      <input type="text" ng-model="password" class="form-control">     
-    </div>        
-    <div class="btn-group">
-      <button type="button" ng-click="authenticate()" class="btn btn-primary">
-        Login
-      </button>  
-    </div>
-    <div class="btn-group">
-      <button type="button" ng-click="authenticate()" class="btn btn-primary">
-        Create Account
-      </button>  
-    </div>
-    <br><br>
-    <pre>{{ username + " " + password }}</pre>
-  </div>        
-  <div class=col-sm-8>
-    <h4>Side Content</h4>
-    <p>
-
-    </p>
-   <div ng-show="authorized"> 
-     <h4>Secret Content</h4>
-     <p>
-        Login successful
-     </p>
-    <a href="#issue">
-      <button type="button" class="btn btn-primary">
-        Frame Issue
-      </button>
-    </a>
-  </div>
-</div>
-

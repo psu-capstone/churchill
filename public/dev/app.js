@@ -15,7 +15,7 @@ app.config(function($routeProvider) {
             controller  : 'login-controller'
         })
         .when('/issue', {
-            templateUrl : 'pages/default.html',
+            templateUrl : 'pages/issue.html',
             controller  : 'issue-controller'
         })
         .when('/explore', {
@@ -25,34 +25,38 @@ app.config(function($routeProvider) {
         });
 });
 
-app.controller("main-controller", function($scope) {
-    $scope.title = "Home";
-});
+app.controller("main-controller", [function() {
+    var self = this;
+    self.title = "Home";
+}]);
 
-app.controller("login-controller", function($scope) {
-    $scope.title = "Login or Create Account";
-    $scope.authorized = false;
-    $scope.username= "admin";
-    $scope.password= "1234";
-    $scope.authenticate = function() {
-        console.log($scope.username + " " + $scope.password);
-        if ($scope.username == "admin") {
-            $scope.authorized = true;
+app.controller("login-controller", [function() {
+    var self = this;
+    self.title = "Login or Create Account";
+    self.authorized = false;
+    self.username= "admin";
+    self.password= "1234";
+    self.authenticate = function() {
+        console.log(self.username + " " + self.password);
+        if (self.username == "admin") {
+            self.authorized = true;
         }
     };
-    $scope.go = function(path) {
+    self.go = function(path) {
         console.log("frame issue");
         $location.path(path);
     };
-});
+}]);
 
-app.controller("issue-controller", function($scope) {
-    $scope.title = "Weigh in on an issue";
-});
+app.controller("issue-controller", [function() {
+    var self = this;
+    self.title = "Weigh in on an issue";
+}]);
 
-app.controller("explore-controller", function($scope) {
-    $scope.title = "Explore the issues";
-});
+app.controller("explore-controller", [function() {
+    var self = this;
+    self.title = "Explore the issues";
+}]);
 
 app.directive('bars', function ($parse) {
     return {
