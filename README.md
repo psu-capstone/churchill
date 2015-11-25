@@ -19,4 +19,5 @@ Alternatively, there is always the Vagrant server :)
 
 <b>To run tests</b>:
 Located in the test folder is some very basic Karma-Jasmine tests.  Run tests with ```karma start``` in the commandline
+(or ```./node_modules/.bin/karma start``` if you don't have karma locally)
 this will produce a ```results.html``` file you can open up to view the results of the test in more detail.
