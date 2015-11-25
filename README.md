@@ -18,5 +18,5 @@ This is still runnable on your localhost:3000 if you set this project up as a No
 Alternatively, there is always the Vagrant server :)
 
 To run tests:
-Located in the test folder is some very basic Karma-Jasmine tests.  Run tests with "karma start" in the commandline
-this will produce a results.html file you can open up to view the results of the test in more detail.
+Located in the test folder is some very basic Karma-Jasmine tests.  Run tests with ```karma start``` in the commandline
+this will produce a ```results.html``` file you can open up to view the results of the test in more detail.
