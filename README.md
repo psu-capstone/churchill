@@ -1,23 +1,50 @@
-# churchill
+# **Churchill**
 
-Version 0.1
+## **Version 0.2**
 
-New Folder structure with Angular integration:
+___
 
-<b>public/build</b> : Is still the result of the gulp, after you've worked in public/dev you can run gulp in the
-terminal to gulp the files and build a new build folder. 
+**Folder Structure:**
 
-<b>public/dev</b>   : Development folders, do normal work here
+___
 
-<b>test</b> : Now set up with Karma and Jasmine to run more future tests
+**public/build:**<br/> 
+Result after running gulp, the newly gulped files will be placed here.
+```./node_modules/.bin/gulp```
 
-<b>server.js</b> : is what bin/www used to be.  If you gulp your files, make sure you change line 10 to look to 
-public/build instead of public/dev
+**public/dev:**<br/> 
+Development folders, do normal work here
 
-This is still runnable on your localhost:3000 if you set this project up as a NodeJS application.
-Alternatively, there is always the Vagrant server :)
+**test:**<br/> 
+Set up with Karma and Jasmine to run the test suite
 
-<b>To run tests</b>:
-Located in the test folder is some very basic Karma-Jasmine tests.  Run tests with ```karma start``` in the commandline
-(or ```./node_modules/.bin/karma start``` if you don't have karma locally)
-this will produce a ```results.html``` file you can open up to view the results of the test in more detail.
+**Miscellanous Files:**
+
+___
+
+**server.js** <br/>
+If you gulp your files, make sure you change line 10 to look to 
+public/build instead of public/dev. 
+Feel free to also change what port the localhost is listening to.
+
+**gulpfile.js** <br/>
+Probably doesn't need to be modified but if you find something else cool gulp can do to make the code more
+efficient feel free to edit and try it out, just make sure all gulped files are routed to public/build
+
+**karma.conf.js** <br/>
+The only notable thing you may need to change is the files block in lines 17-24.  If you are using a library that
+needs to be included in the test make sure karma knows what to load before the tests are run.
+
+**Notes**
+
+___
+
+**Testing:** <br/>
+Located in the test folder is some very basic Karma-Jasmine tests.  Run tests with ```./node_modules/.bin/karma start``` 
+in the commandline this will produce a results.html file you can open up to view the results of the test in more detail.
+
+**Deploy:** <br/>
+If you're running this from IDEA or Webstorm you can run it locally by setting up your 
+[run configuration like so](http://i.imgur.com/V4ik3yo.png) <br/>
+This will run the web application locally on localhost:3000. <br/>
+Alternatively, check the server repo to set up the application on a vagrant server

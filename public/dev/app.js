@@ -3,16 +3,12 @@ var app = angular.module("democracy-lab-app", ['ngRoute', 'ui.bootstrap']);
 app.config(function($routeProvider) {
     $routeProvider
         .when('/', {
-            templateUrl : 'pages/default.html',
+            templateUrl : 'pages/login.html',
             controller  : 'main-controller'
         })
         .when('/home', {
-            templateUrl : 'pages/default.html',
-            controller  : 'main-controller'
-        })
-        .when('/login', {
             templateUrl : 'pages/login.html',
-            controller  : 'login-controller'
+            controller  : 'main-controller'
         })
         .when('/issue', {
             templateUrl : 'pages/issue.html',
@@ -25,26 +21,27 @@ app.config(function($routeProvider) {
         });
 });
 
-app.controller("main-controller", [function() {
+/**
+ * Main login controller, display a login form and send valid credentials to DB
+ */
+app.controller("main-controller", ['$location', function($location) {
     var self = this;
-    self.title = "Home";
-}]);
-
-app.controller("login-controller", [function() {
-    var self = this;
+    self.image = "/images/demoLab_logo.png";
     self.title = "Login or Create Account";
     self.authorized = false;
-    self.username= "admin";
-    self.password= "1234";
+    self.username= "";
+    self.password= "";
     self.authenticate = function() {
         console.log(self.username + " " + self.password);
-        if (self.username == "admin") {
+        // Check for validity later (stretch goal)
+        if (self.username == "admin" && self.password == "1234") {
             self.authorized = true;
+            console.log("Login success");
+            $location.path('/issue');
+        } else {
+            self.authorized = false;
+            console.log("Login unsuccessful");
         }
-    };
-    self.go = function(path) {
-        console.log("frame issue");
-        $location.path(path);
     };
 }]);
 
@@ -58,7 +55,7 @@ app.controller("explore-controller", [function() {
     self.title = "Explore the issues";
 }]);
 
-app.directive('bars', function ($parse) {
+app.directive("bars", function () {
     return {
         restrict: 'E',
         replace: true,
