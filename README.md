@@ -8,14 +8,14 @@ ___
 
 ___
 
-**public/build:**<br/> 
+**public/build:** <br/> 
 Result after running gulp, the newly gulped files will be placed here.
-```./node_modules/.bin/gulp```
+./node_modules/.bin/gulp
 
-**public/dev:**<br/> 
+**public/dev:** <br/> 
 Development folders, do normal work here
 
-**test:**<br/> 
+**test:** <br/> 
 Set up with Karma and Jasmine to run the test suite
 
 **Miscellanous Files:**
