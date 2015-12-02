@@ -9,8 +9,7 @@ ___
 ___
 
 **public/build:** <br/> 
-Result after running gulp, the newly gulped files will be placed here.
-./node_modules/.bin/gulp
+Result after running gulp, the newly gulped files will be placed here. You can run gulp with ```./node_modules/.bin/gulp```
 
 **public/dev:** <br/> 
 Development folders, do normal work here
