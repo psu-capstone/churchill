@@ -43,7 +43,6 @@ Located in the test folder is some very basic Karma-Jasmine tests.  Run tests wi
 in the commandline this will produce a results.html file you can open up to view the results of the test in more detail.
 
 **Deploy:** <br/>
-If you're running this from IDEA or Webstorm you can run it locally by setting up your 
-[run configuration like so](http://i.imgur.com/V4ik3yo.png) <br/>
+If you're running this from IDEA or Webstorm you can run it locally by setting up your run configuration as a NodeJS project<br/>
 This will run the web application locally on localhost:3000. <br/>
 Alternatively, check the server repo to set up the application on a vagrant server
