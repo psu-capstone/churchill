@@ -12,15 +12,15 @@ describe('Unit: Routing', function () {
 
             expect($route.routes['/'].controller).toBe('main-controller');
             expect($route.routes['/'].templateUrl).
-                toEqual('pages/default.html');
+                toEqual('pages/login.html');
 
             expect($route.routes['/home'].controller).toBe('main-controller');
             expect($route.routes['/home'].templateUrl).
-                toEqual('pages/default.html');
-
-            expect($route.routes['/login'].controller).toBe('login-controller');
-            expect($route.routes['/login'].templateUrl).
                 toEqual('pages/login.html');
+
+            expect($route.routes['/issue'].controller).toBe('issue-controller');
+            expect($route.routes['/issue'].templateUrl).
+                toEqual('pages/issue.html');
 
             expect($route.routes['/explore'].controller).toBe('explore-controller');
             expect($route.routes['/explore'].templateUrl).
@@ -41,37 +41,27 @@ describe('Unit: main-controller', function() {
         // Create the controller
         ctrl = $controller('main-controller');
     }));
-    it('should verify title is "Home"',
-        function() {
-            expect(ctrl.title).toEqual("Home");
-    });
-});
-
-describe('Unit: login-controller', function() {
-    // Load the module with MainController
-    beforeEach(module('democracy-lab-app'));
-
-    var ctrl;
-    // inject the $controller and $rootScope services
-    // in the beforeEach block
-    beforeEach(inject(function($controller) {
-        // Create the controller
-        ctrl = $controller('login-controller');
-    }));
-
     it('Should verify title is "Login or Create Account"', function() {
         expect(ctrl.title).toEqual("Login or Create Account");
-        });
+    });
 
     it('Verify initialized false', function() {
         expect(ctrl.authorized).toEqual(false)
-        });
+    });
 
     it('Verify correct login', function () {
         ctrl.username = "admin";
+        ctrl.password = "1234";
         ctrl.authenticate();
         expect(ctrl.authorized).toEqual(true);
-        });
+    });
+
+    it('Verify incorrect login', function () {
+        ctrl.username = "test";
+        ctrl.password = "9876";
+        ctrl.authenticate();
+        expect(ctrl.authorized).toEqual(false);
+    });
 });
 
 describe('Unit: issue-controller', function() {
