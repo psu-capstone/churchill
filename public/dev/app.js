@@ -22,7 +22,7 @@ app.config(function($routeProvider) {
                         $location.path('/issue');
                     }else{
                         $location.path('/home');    //redirect user to home.
-                        alert("You don't have access here");
+                        alert("Please Login");
                     }
                 }
             }
@@ -37,7 +37,7 @@ app.config(function($routeProvider) {
                         $location.path('/explore');
                     }else{
                         $location.path('/home');    //redirect user to home.
-                        alert("You don't have access here");
+                        alert("Please Login");
                     }
                 }
             }
@@ -45,8 +45,7 @@ app.config(function($routeProvider) {
 });
 
 /**
- * Factory settings for the login, flesh this out later to talk to REST API, as it is now,
- * it can basically be hacked through the chrome browser ;)
+ * Factory settings for the login, flesh this out later to talk to REST API
  */
 app.factory('accessFac',function(){
     var obj = {};
@@ -71,6 +70,7 @@ app.controller("main-controller", function($location, accessFac) {
     var self = this;
     self.image = "./images/demoLab_logo.png";
     self.title = "Login or Create Account";
+    self.unsuccessful = "Username or Password is incorrect";
     self.username = "";
     self.password = "";
     self.authorized = false;
@@ -85,9 +85,10 @@ app.controller("main-controller", function($location, accessFac) {
         } else {
             accessFac.rejectPermission();
             self.authorized = false;
+            self.reject = true;
             console.log("Login unsuccessful");
         }
-    }
+    };
 });
 
 /**
