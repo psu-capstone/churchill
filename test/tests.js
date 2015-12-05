@@ -41,26 +41,20 @@ describe('Unit: main-controller', function() {
         // Create the controller
         ctrl = $controller('main-controller');
     }));
+
     it('Should verify title is "Login or Create Account"', function() {
         expect(ctrl.title).toEqual("Login or Create Account");
     });
-
-    it('Verify initialized false', function() {
-        expect(ctrl.authorized).toEqual(false)
+    //TODO fix these up, not properly checking the Factory
+    it('Verify incorrect login', function() {
+        ctrl.getAccess();
+        expect(ctrl.authorized).toEqual(false);
     });
-
-    it('Verify correct login', function () {
+    it('Verify incorrect login', function() {
         ctrl.username = "admin";
         ctrl.password = "1234";
-        ctrl.authenticate();
+        ctrl.getAccess();
         expect(ctrl.authorized).toEqual(true);
-    });
-
-    it('Verify incorrect login', function () {
-        ctrl.username = "test";
-        ctrl.password = "9876";
-        ctrl.authenticate();
-        expect(ctrl.authorized).toEqual(false);
     });
 });
 
