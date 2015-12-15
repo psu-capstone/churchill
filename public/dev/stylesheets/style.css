@@ -19,3 +19,19 @@
     color: white;
     box-shadow: 2px 2px 2px #666;
 }
+
+.btn.btn-primary.btn-block {
+    font: 25px bold sans-serif;
+    box-shadow: 3px 3px 3px #666;
+    border-color: black;
+}
+
+.issue.row {
+    margin-top: 20px;
+}
+
+.issue.row.add {
+    padding: 10px;
+    float: left;
+    width: 350px;
+}

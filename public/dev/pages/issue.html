@@ -1,10 +1,51 @@
-<div ng-controller="issue-controller as issue">
-  <div class="row">
+< ng-controller="issue-controller as issue">
+    <div class="row">
       <div class=col-sm-12>
           <h2>{{ issue.title }}</h2>
-          <p>
-              Project your opinions into the æther!
-          </p>
+          <p></p>
+          <br>
       </div>
-  </div>
+    </div>
+
+    <div class="issue row">
+        <div class="issue">
+            <button type="button" class="btn btn-primary btn-block">Oregon Tax System</button>
+        </div>
+        <h5>Let us know what you think of Oregon's taxes!</h5>
+    </div>
+
+    <div class="issue row">
+        <div class="issue">
+            <button type="button" class="btn btn-primary btn-block">
+                Abortion
+            </button>
+        </div>
+        <h5>Share your views about abortion and see if common ground can be found on this polarizing issue! </h5>
+    </div>
+
+    <div class="issue row">
+        <div class="issue">
+            <button type="button" class="btn btn-primary btn-block">Oregon K-12 Classrooms</button>
+        </div>
+        <h5>Help make Oregon's schools stronger!</h5>
+    </div>
+
+    <div id="space-for-issues"></div>
+
+    <div class="issue row add">
+        <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
+        <p></p>
+        <div class="formwrapper" ng-init = "issue.showform = false" ng-show="issue.showform">
+            <div class="form-group">
+                <label style="font-size: 12px">Title</label>
+                <input type="text" ng-model="issue.new_title" class="form-control">
+            </div>
+            <div class="form-group">
+                <label style="font-size: 12px">Description</label>
+                <input type="text" ng-model="issue.new_description" class="form-control">
+            </div>
+            <issuenew></issuenew>
+        </div>
+    </div>
+
 </div>

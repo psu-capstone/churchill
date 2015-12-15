@@ -16,7 +16,9 @@ app.config(function($routeProvider) {
         .when('/issue', {
             templateUrl : 'pages/issue.html',
             controller  : 'issue-controller',
-            resolve:{
+            directive   : 'issuenew'
+            // Commented out for testing/developing
+            /*resolve:{
                 "check":function(accessFac, $location){
                     if(accessFac.checkPermission()){
                         $location.path('/issue');
@@ -25,13 +27,14 @@ app.config(function($routeProvider) {
                         alert("Please Login");
                     }
                 }
-            }
+            }*/
         })
         .when('/explore', {
             templateUrl : 'pages/d3graph.html',
             controller  : 'explore-controller',
-            directive   : 'bars',
-            resolve:{
+            directive   : 'bars'
+            // Commented out for testing/developing
+            /*resolve:{
                 "check":function(accessFac, $location){
                     if(accessFac.checkPermission()){
                         $location.path('/explore');
@@ -40,7 +43,7 @@ app.config(function($routeProvider) {
                         alert("Please Login");
                     }
                 }
-            }
+            }*/
         });
 });
 
@@ -89,6 +92,9 @@ app.controller("main-controller", function($location, accessFac) {
             console.log("Login unsuccessful");
         }
     };
+    self.createAccount = function() {
+
+    };
 });
 
 /**
@@ -97,7 +103,43 @@ app.controller("main-controller", function($location, accessFac) {
 app.controller("issue-controller", [function() {
     var self = this;
     self.title = "Weigh in on an issue";
+    self.var = {
+        showform : false,
+        new_title : "",
+        new_description : ""
+    };
 }]);
+
+/**
+ * Directive for handling new buttons added
+ * TODO 1.) support to backend and saving
+ * TODO 2.) Fix refreshing issue
+ * 2.) can be fixed when we tie this to the backend since we will look for issues added by
+ * the community and look to the database to populate the frontend issues
+ */
+app.directive("issuenew", function($compile) {
+    var count = 0;  //in case we want to limit the amount of issues that can be added
+    var link = function (scope) {
+        scope.populateissue = function () {
+            if (count >= 3) {
+                console.log("limit reached");
+            } else {
+                angular.element(document.getElementById('space-for-issues'))
+                    .append($compile("<div class='issue row'><div class='issue'>" +
+                        "<button class='btn btn-primary btn-block'>{{issue.new_title}}</button>" +
+                        "</div><h5>{{issue.new_description}}</h5></div>")(scope));
+                count++;
+            }
+
+        };
+    };
+
+    return {
+        restrict: "E",
+        link: link,
+        template: "<button ng-click='populateissue()' type='button' class='btn btn-success'>Add New Issue</button>"
+    }
+});
 
 /**
  * Displaying the data is done on this controller
