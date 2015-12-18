@@ -1,0 +1,7 @@
+nose
+uwsgi==2.0.11.2
+flask==0.10.1
+webargs==1.1.1
+requests==2.8.1
+py2neo==2.0.8
+
