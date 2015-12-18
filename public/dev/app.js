@@ -69,7 +69,7 @@ app.factory('accessFac',function(){
  * Main login controller, display a login form and save valid credentials,
  * for now, the only valid credential for testing is admin 1234
  */
-app.controller("main-controller", function($location, accessFac) {
+app.controller("main-controller", function($http, $location, accessFac) {
     var self = this;
     self.image = "./images/demoLab_logo.png";
     self.title = "Login or Create Account";
@@ -78,6 +78,19 @@ app.controller("main-controller", function($location, accessFac) {
     self.password = "";
     self.authorized = false;
     self.getAccess = function(){
+
+        // Testing API here
+        var user_arg = JSON.stringify({
+            username: "rta",
+            name:"Ryan",
+            city:"Portland"
+        });
+
+        // Send the data
+        $http.post("http://localhost:9000/api/user", user_arg).success(function(data, status) {
+            console.log(data);
+        });
+
         console.log(self.username + " " + self.password);
         if (self.username == "admin" && self.password == "1234") {
             //call the method in accessFac to allow the user permission.
