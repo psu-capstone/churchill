@@ -173,13 +173,15 @@ app.directive("bars", function () {
         link: function (scope, element, attrs) {
             var margin = {top: 50, right: 20, bottom: 10, left: 65},
                 width = 800 - margin.left - margin.right,
-                height = 600 - margin.top - margin.bottom;
+                height = 600 - margin.top - margin.bottom,
+                border= 1,
+                bordercolor='black';
             var y = d3.scale.ordinal()
                 .rangeRoundBands([0, height], .3);
             var x = d3.scale.linear()
                 .rangeRound([0, width]);
             var color = d3.scale.ordinal()
-                .range(["#c7001e", "#f6a580", "#cccccc", "#92c6db", "#086fad"]);
+                .range(["#ff0000", "#ffb3b3", "#ffffff", "#b3ffb3", "#66ff66"]);
             var xAxis = d3.svg.axis()
                 .scale(x)
                 .orient("top");
@@ -231,7 +233,9 @@ app.directive("bars", function () {
                     .attr("height", y.rangeBand())
                     .attr("x", function(d) { return x(d.x0); })
                     .attr("width", function(d) { return x(d.x1) - x(d.x0); })
-                    .style("fill", function(d) { return color(d.name); });
+                    .style("fill", function(d) { return color(d.name); })
+                    .style("stroke", bordercolor)
+                    .style("stroke-width", border);
                 bars.append("text")
                     .attr("x", function(d) { return x(d.x0); })
                     .attr("y", y.rangeBand()/2)
@@ -265,7 +269,9 @@ app.directive("bars", function () {
                     .attr("x", 0)
                     .attr("width", 18)
                     .attr("height", 18)
-                    .style("fill", color);
+                    .style("fill", color)
+                    .style("stroke", bordercolor)
+                    .style("stroke-width", border);
                 legend.append("text")
                     .attr("x", 22)
                     .attr("y", 9)

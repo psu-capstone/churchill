@@ -1,7 +1,3 @@
-body {
-    font: 10px sans-serif;
-}
-
 .btn.btn-primary.btn-block {
     font: 25px bold sans-serif;
     box-shadow: 3px 3px 3px #666;
@@ -17,7 +13,9 @@ body {
     float: left;
     width: 350px;
 }
-
+.axis text {
+    font: 10px sans-serif;
+}
 .axis path,
 .axis line {
     fill: none;
