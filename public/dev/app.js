@@ -171,7 +171,7 @@ app.directive("bars", function () {
         replace: true,
         template: '<div id="figure" style="margin-bottom: 50px;"></div>',
         link: function (scope, element, attrs) {
-            var margin = {top: 50, right: 20, bottom: 10, left: 65},
+            var margin = JSON.parse(attrs.margin),
                 width = 800 - margin.left - margin.right,
                 height = 600 - margin.top - margin.bottom,
                 border= 1,
@@ -195,7 +195,7 @@ app.directive("bars", function () {
                 .append("g")
                 .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
             color.domain(["Strongly disagree", "Disagree", "Neither agree nor disagree", "Agree", "Strongly agree"]);
-            d3.csv("raw_data.csv", function(error, data) {
+            d3.csv(attrs.source, function(error, data) {
                 data.forEach(function(d) {
                     // calc percentages
                     d["Strongly disagree"] = +d[1]*100/d.N;
