@@ -283,10 +283,6 @@ app.directive("bars", function () {
                     .style("shape-rendering", "crispEdges")
                 var movesize = width/2 - startp.node().getBBox().width/2;
                 d3.selectAll(".legendbox").attr("transform", "translate(" + movesize  + ",0)");
-                // print the svg in a canvas
-                var element = document.getElementById('d3-plot');
-                var svgAsString = new XMLSerializer().serializeToString(element);
-                canvg(document.getElementById('mycanvas'), svgAsString );
             });
         }
     };
