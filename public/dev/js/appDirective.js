@@ -50,31 +50,31 @@ app.directive("bars", function () {
                         dot: 'scatter'
                     },
                     groups: [
-                        ['data1', 'data2']
+                        ['data1', 'data2', 'data3', 'dot']
                     ]
                 },
+                axis: {
+                    rotated: true
+                },
                 grid: {
-                    y: {
-                        lines: [{value:0}]
-                    },
-                    y2: {
+                    x2: {
                         show: true
                     }
                 }
             });
-            setTimeout(function () {
-                chart.groups([['data1', 'data2', 'data3']])
-            }, 1000);
-
-            setTimeout(function () {
-                chart.load({
-                    columns: [['data4', 100, -50, 150, 200, -300, -100]]
-                });
-            }, 1500);
-
-            setTimeout(function () {
-                chart.groups([['data1', 'data2', 'data3', 'data4']])
-            }, 2000);
+            //setTimeout(function () {
+            //    chart.groups([['data1', 'data2', 'data3']])
+            //}, 1000);
+            //
+            //setTimeout(function () {
+            //    chart.load({
+            //        columns: [['data4', 100, -50, 150, 200, -300, -100]]
+            //    });
+            //}, 1500);
+            //
+            //setTimeout(function () {
+            //    chart.groups([['data1', 'data2', 'data3', 'data4']])
+            //}, 2000);
         }
     };
 });
