@@ -42,9 +42,13 @@ app.directive("bars", function () {
                     columns: [
                         ['data1', -30, 200, 200, 400, -150, 250],
                         ['data2', 130, 100, -100, 200, -150, 50],
-                        ['data3', -230, 200, 200, -300, 250, 250]
+                        ['data3', -230, 200, 200, -300, 250, 250],
+                        ['dot', 50, 20, 400, -30, 600, 50]
                     ],
                     type: 'bar',
+                    types: {
+                        dot: 'scatter'
+                    },
                     groups: [
                         ['data1', 'data2']
                     ]
@@ -52,6 +56,9 @@ app.directive("bars", function () {
                 grid: {
                     y: {
                         lines: [{value:0}]
+                    },
+                    y2: {
+                        show: true
                     }
                 }
             });
