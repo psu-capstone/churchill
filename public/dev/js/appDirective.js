@@ -40,21 +40,38 @@ app.directive("bars", function () {
             var chart = c3.generate({
                 data: {
                     columns: [
-                        ['data1', -30, 200, 200, 400, -150, 250],
-                        ['data2', 130, 100, -100, 200, -150, 50],
-                        ['data3', -230, 200, 200, -300, 250, 250],
-                        ['dot', 50, 20, 400, -30, 600, 50]
+                        ['strongly disagree', 30, 200, 200, 400, 150, 250],
+                        ['disagree', 130, 100, 100, 200, 150, 50],
+                        ['no opinion', 230, 200, 200, 300, 250, 250],
+                        ['agree', 75, 100, 450, 0, 300, 200],
+                        ['strongly agree', 250, 300, 20, 85, 430, 500],
+                        ['you', 75, 50, 320, 100, 750, 175]
+
                     ],
                     type: 'bar',
                     types: {
-                        dot: 'scatter'
+                        you: 'scatter'
+                    },
+                    order: null,
+                    colors: {
+                      'strongly disagree': '#920000',
+                      disagree: '#ec1b1b',
+                      'no opinion': '#dbd9d9' ,
+                      agree: '#0087d8',
+                      'strongly agree': '095983',
+                      you: '#000000'
+
                     },
                     groups: [
-                        ['data1', 'data2', 'data3', 'dot']
+                        ['strongly disagree', 'disagree', 'no opinion', 'agree', 'strongly agree', 'you']
                     ]
                 },
                 axis: {
-                    rotated: true
+                    rotated: true,
+                    y:{
+                        max: 1300,
+                        min: -200
+                    },
                 },
                 grid: {
                     x2: {
@@ -62,15 +79,19 @@ app.directive("bars", function () {
                     }
                 }
             });
-            setTimeout(function () {
-                chart.load({
-                    columns: [['data4', 100, -50, 150, 200, -300, -100]]
-                });
-            }, 1500);
 
-            setTimeout(function () {
-                chart.groups([['data1', 'data2', 'data3', 'data4' , 'dot']])
-            }, 2000);
+            /*
+                Animation stuff, may or may not be useful
+             */
+            //setTimeout(function () {
+            //    chart.load({
+            //        columns: [['fly_in', 50, 20, 400, 30, 600, 50]]
+            //    });
+            //}, 1500);
+            //
+            //setTimeout(function () {
+            //    chart.groups([['strongly disagree', 'disagree', 'no opinion', 'agree', 'strongly agree', 'you', 'fly_in']])
+            //}, 2000);
         }
     };
 });
