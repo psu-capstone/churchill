@@ -55,6 +55,19 @@ app.directive("bars", function () {
                     }
                 }
             });
+            setTimeout(function () {
+                chart.groups([['data1', 'data2', 'data3']])
+            }, 1000);
+
+            setTimeout(function () {
+                chart.load({
+                    columns: [['data4', 100, -50, 150, 200, -300, -100]]
+                });
+            }, 1500);
+
+            setTimeout(function () {
+                chart.groups([['data1', 'data2', 'data3', 'data4']])
+            }, 2000);
         }
     };
 });
