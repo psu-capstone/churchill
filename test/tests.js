@@ -12,19 +12,19 @@ describe('Unit: Routing', function () {
 
             expect($route.routes['/'].controller).toBe('main-controller');
             expect($route.routes['/'].templateUrl).
-                toEqual('pages/login.html');
+                toEqual('./pages/login.html');
 
             expect($route.routes['/home'].controller).toBe('main-controller');
             expect($route.routes['/home'].templateUrl).
-                toEqual('pages/login.html');
+                toEqual('./pages/login.html');
 
             expect($route.routes['/issue'].controller).toBe('issue-controller');
             expect($route.routes['/issue'].templateUrl).
-                toEqual('pages/issue.html');
+                toEqual('./pages/issue.html');
 
             expect($route.routes['/explore'].controller).toBe('explore-controller');
             expect($route.routes['/explore'].templateUrl).
-                toEqual('pages/d3graph.html');
+                toEqual('./pages/d3graph.html');
             expect($route.routes['/explore'].directive).toBe('bars');
         });
     });
