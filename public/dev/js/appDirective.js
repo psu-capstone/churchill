@@ -58,7 +58,7 @@ app.directive("bars", function () {
                       disagree: '#ec1b1b',
                       'no opinion': '#dbd9d9' ,
                       agree: '#0087d8',
-                      'strongly agree': '095983',
+                      'strongly agree': '#095983',
                       you: '#000000'
 
                     },
