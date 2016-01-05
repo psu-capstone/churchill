@@ -39,7 +39,9 @@ app.directive("bars", function () {
         link: function (scope, element, attrs) {
             var chart = c3.generate({
                 data: {
+                    x:'x',
                     columns: [
+                        ['x','Question1','Question2','Question3','Question4','Question5','Question6'],
                         ['strongly disagree', 30, 200, 200, 400, 150, 250],
                         ['disagree', 130, 100, 100, 200, 150, 50],
                         ['no opinion', 230, 200, 200, 300, 250, 250],
@@ -69,13 +71,10 @@ app.directive("bars", function () {
                 axis: {
                     rotated: true,
                     y:{
-                        max: 1300,
-                        min: -200
+                        max: 1300
                     },
-                },
-                grid: {
-                    x2: {
-                        show: true
+                    x:{
+                        type: 'categorized'
                     }
                 }
             });
