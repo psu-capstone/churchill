@@ -59,6 +59,9 @@ app.directive("bars", function () {
                         ['strongly disagree', 'disagree', 'no opinion', 'agree', 'strongly agree', 'you']
                     ]
                 },
+                point: {
+                    r: 5
+                },
                 axis: {
                     rotated: true,
                     y:{
