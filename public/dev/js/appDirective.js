@@ -40,16 +40,7 @@ app.directive("bars", function () {
             var chart = c3.generate({
                 data: {
                     x:'x',
-                    columns: [
-                        ['x','Question1','Question2','Question3','Question4','Question5','Question6'],
-                        ['strongly disagree', 30, 200, 200, 400, 150, 250],
-                        ['disagree', 130, 100, 100, 200, 150, 50],
-                        ['no opinion', 230, 200, 200, 300, 250, 250],
-                        ['agree', 75, 100, 450, 0, 300, 200],
-                        ['strongly agree', 250, 300, 20, 85, 430, 500],
-                        ['you', 75, 50, 320, 100, 750, 175]
-
-                    ],
+                    columns: JSON.parse(attrs.data),
                     type: 'bar',
                     types: {
                         you: 'scatter'

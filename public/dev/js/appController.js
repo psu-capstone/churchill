@@ -62,4 +62,13 @@ app.controller("issue-controller", [function() {
 app.controller("explore-controller", [function() {
     var self = this;
     self.title = "Explore the issues";
+    self.data = [['x','Question1','Question2','Question3','Question4','Question5','Question6'],
+                 ['strongly disagree', 30, 200, 200, 400, 150, 250],
+                 ['disagree', 130, 100, 100, 200, 150, 50],
+                 ['no opinion', 230, 200, 200, 300, 250, 250],
+                 ['agree', 75, 100, 450, 0, 300, 200],
+                 ['strongly agree', 250, 300, 20, 85, 430, 500],
+                 ['you', -2, -1, 0, 1, 2, -2]];
+
+
 }]);
