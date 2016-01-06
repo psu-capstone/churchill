@@ -53,7 +53,6 @@ app.directive("bars", function () {
                       agree: '#0087d8',
                       'strongly agree': '#095983',
                       you: '#000000'
-
                     },
                     groups: [
                         ['strongly disagree', 'disagree', 'no opinion', 'agree', 'strongly agree', 'you']
@@ -70,6 +69,11 @@ app.directive("bars", function () {
                     x:{
                         type: 'categorized'
                     }
+                },
+                onrendered: function () {
+                    d3.selectAll("circle")
+                        .style("opacity", 1)
+                        .style("stroke", "white");
                 }
             });
 
@@ -87,4 +91,5 @@ app.directive("bars", function () {
             //}, 2000);
         }
     };
+
 });
