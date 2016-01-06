@@ -70,5 +70,34 @@ app.controller("explore-controller", [function() {
                  ['strongly agree', 250, 300, 20, 85, 430, 500],
                  ['you', -2, -1, 0, 1, 2, -2]];
 
+    var scatterPositioning = function() {
+        var buffer,
+            opinionRow,
+            centered,
+            length = self.data[0].length,
+            data = self.data;
+        for(var i = 1; i < length; ++i) {
+             opinionRow = indexOpinion(data[6][i]);
+             centered = centerOpinionValue(opinionRow, i, data);
+             buffer = sumBuffer(opinionRow-1, i, data);
+             self.data[6][i] = centered + buffer;
+        }
+    };
 
+    var indexOpinion = function(x) {
+      return x + 3;
+    };
+
+    var centerOpinionValue = function(x, y, data) {
+        return data[x][y] * .5;
+    };
+
+    var sumBuffer = function(x, y, data) {
+        var sum = 0;
+        for(;x>0; --x) {
+            sum += data[x][y]
+        }
+        return sum;
+    }
+    scatterPositioning();
 }]);
