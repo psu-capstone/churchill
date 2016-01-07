@@ -15,3 +15,14 @@ app.factory('accessFac',function(){
     };
     return obj;
 });
+
+app.factory('dataFac',['$http', function($http) {
+    var urlBase = 'http://localhost:9000/';
+    var dataFactory = {};
+
+    dataFactory.postUser = function (user) {
+        return $http.post(urlBase + 'api/user', user);
+
+    };
+    return dataFactory;
+}]);
