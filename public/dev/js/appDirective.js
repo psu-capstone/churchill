@@ -76,19 +76,6 @@ app.directive("bars", function () {
                         .style("stroke", "white");
                 }
             });
-
-            /*
-                Animation stuff, may or may not be useful
-             */
-            //setTimeout(function () {
-            //    chart.load({
-            //        columns: [['fly_in', 50, 20, 400, 30, 600, 50]]
-            //    });
-            //}, 1500);
-            //
-            //setTimeout(function () {
-            //    chart.groups([['strongly disagree', 'disagree', 'no opinion', 'agree', 'strongly agree', 'you', 'fly_in']])
-            //}, 2000);
         }
     };
 
