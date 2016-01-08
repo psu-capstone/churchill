@@ -40,7 +40,7 @@ app.directive("bars", function () {
             var chart = c3.generate({
                 data: {
                     x:'x',
-                    columns: JSON.parse(attrs.data),
+                    columns: scope.exp.data,
                     type: 'bar',
                     types: {
                         you: 'scatter'
