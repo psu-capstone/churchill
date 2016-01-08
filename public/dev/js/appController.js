@@ -20,9 +20,13 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
                 city:"Portland"
             });
 
-            dataFac.postUser(user_arg).success(function(data , status) {
-                console.log(data);
-            });
+            dataFac.postUser(user_arg)
+                .success(function(data , status) {
+                    console.log(data);
+                })
+                .error(function(error) {
+                    console.log("An error has occurred" + error);
+                });
 
             console.log(self.username + " " + self.password);
             if (self.username == "admin" && self.password == "1234") {
