@@ -33,10 +33,6 @@ app.factory('dataFac',['$http', function($http) {
         return get(urlBase + endpoint + '?fieldId=' + fieldId, user);
     };
 
-    /**
-     * TODO: Add data validation before posting to the database
-     */
-
     dataFactory.postUser = function(user) {
         return post(urlBase + 'api/user', data);
     };
