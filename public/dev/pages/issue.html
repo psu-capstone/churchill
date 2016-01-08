@@ -1,4 +1,4 @@
-<ng-controller="issue-controller as issue">
+<div ng-controller = "issue-controller as issue">
     <div class="row">
       <div class=col-sm-12>
           <h2>{{ issue.title }}</h2>
@@ -30,8 +30,6 @@
         <h5>Help make Oregon's schools stronger!</h5>
     </div>
 
-    <div id="space-for-issues"></div>
-
     <div class="issue row add">
         <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
         <p></p>
@@ -44,8 +42,7 @@
                 <label style="font-size: 12px">Description</label>
                 <input type="text" ng-model="issue.new_description" class="form-control">
             </div>
-            <issuenew></issuenew>
-        </div>
+            <button ng-click="issue.submitIssue()" type='button' class='btn btn-success'>Add New Issue</button>        </div>
     </div>
 
 </div>

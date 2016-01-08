@@ -49,11 +49,14 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", [function() {
     var self = this;
     self.title = "Weigh in on an issue";
-    self.var = {
-        showform : false,
-        new_title : "",
-        new_description : ""
-    };
+    self.new_title = "";
+    self.new_description = "";
+    self.submitIssue = function() {
+        // For future, this is where user can send an alert to add a new issue to the moderator or dynamically
+        // For now, just clearing on submit button press
+        self.new_title = "";
+        self.new_description = "";
+    }
 }]);
 
 /**
