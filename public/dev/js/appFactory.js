@@ -34,7 +34,7 @@ app.factory('dataFac',['$http', function($http) {
     };
 
     dataFactory.postUser = function(user) {
-        return post(urlBase + 'api/user', data);
+        return post(urlBase + 'api/user', user);
     };
 
     dataFactory.authUser = function(user) {
@@ -49,12 +49,13 @@ app.factory('dataFac',['$http', function($http) {
         return post(urlBase + endpoint, data);
     }
 
-
     var get = function(url, data) {
         return $http.get(url, data);
     }
 
     var post = function(url, data) {
-        return $http.post(url + endpoint, data);
+        return $http.post(url, data);
     }
+
+    return dataFactory;
 }]);
