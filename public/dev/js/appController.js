@@ -106,6 +106,6 @@ app.controller("explore-controller", [function() {
             sum += data[x][y]
         }
         return sum;
-    }
+    };
     scatterPositioning();
 }]);
