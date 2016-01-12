@@ -22,7 +22,7 @@ app.factory('accessFac',function(){
  * or check for the same file in api/ which is in the top level directory for churchill
  */
 app.factory('dataFac',['$http', function($http) {
-    var urlBase = 'http://localhost:9000/';
+    var urlBase = 'http://capdev.meyersj.com:9000/';
     var dataFactory = {};
 
     dataFactory.getNode = function(endpoint, id, user) {
