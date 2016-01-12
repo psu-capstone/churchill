@@ -15,7 +15,8 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 
             // Testing API here
             var user_arg = JSON.stringify({
-                username: "rta",
+                username: self.username,
+                password: self.password,
                 name:"Ryan",
                 city:"Portland"
             });
