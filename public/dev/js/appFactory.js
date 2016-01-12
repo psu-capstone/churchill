@@ -47,15 +47,15 @@ app.factory('dataFac',['$http', function($http) {
 
     dataFactory.mapNodes = function(endpoint, data) {
         return post(urlBase + endpoint, data);
-    }
+    };
 
     var get = function(url, data) {
         return $http.get(url, data);
-    }
+    };
 
     var post = function(url, data) {
         return $http.post(url, data);
-    }
+    };
 
     return dataFactory;
 }]);
