@@ -44,9 +44,13 @@ app.directive("bars", function () {
                     d3.selectAll("circle")
                         .style("opacity", 1)
                         .style("stroke", "white");
+                },
+                legend: {
+                    item: {
+                        onclick: function (id) { return;  }
+                    }
                 }
             });
         }
     };
-
 });
