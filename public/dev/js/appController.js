@@ -11,6 +11,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.username = "";
         self.password = "";
         self.authorized = false;
+        self.showCreateForm = false;
         self.getAccess = function(){
 
             // Testing API here
@@ -44,7 +45,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
             }
         };
         self.createAccount = function() {
-
+            self.showCreateForm = !self.showCreateForm;
         };
 }]);
 
