@@ -49,6 +49,15 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", [function() {
     var self = this;
     self.title = "Weigh in on an issue";
+    self.issuerows = issuerows; // This can be replaced by a data pull once REST is developed
+    self.vote = function () {
+        
+    }
+/*    $(function() {
+            $( "#sortable" ).sortable({ 
+                placeholder: "ui-sortable-placeholder" 
+            });
+        });*/
     self.new_title = "";
     self.new_description = "";
     self.submitIssue = function() {
@@ -58,6 +67,31 @@ app.controller("issue-controller", [function() {
         self.new_description = "";
     }
 }]);
+
+var myAppModule = angular.module('myApp', ['ui.sortable']);
+
+var issuerows = [
+    {
+        name: "Oregon Tax System",
+        description: "Let us know what you think of Oregon's taxes!",
+        voting: true,
+    },
+    {
+        name: "Abortion",
+        description: "Share your views about abortion and see if common ground can be found on this polarizing issue!",
+        voting: false,
+    },
+    {
+        name: "Oregon K-12 Classrooms",
+        description: "Help make Oregon's schools stronger!",
+        voting: false,
+    },
+    {
+        name: "A New Issue",
+        description: "Something else to discuss that has been added",
+        voting: false,
+    }
+    ];
 
 /**
  * Processing the visualization data
