@@ -78,9 +78,9 @@ app.controller("explore-controller", [function() {
     self.likertToString = {
         '-2':'strongly disagree',
         '-1':'disagree',
-        '0':'no opinion',
-        '1':'agree',
-        '2':'strongly agree',
+         '0':'no opinion',
+         '1':'agree',
+         '2':'strongly agree'
     };
     self.opinion = [-2,-1,0,1,2,-2];
     self.data = [
