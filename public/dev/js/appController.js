@@ -75,40 +75,51 @@ app.controller("issue-controller", [function() {
 app.controller("explore-controller", [function() {
     var self = this;
     self.title = "Explore the issues";
-    self.opinion = [-2,-1,0,1,2,-2];
     self.likertToString = {
         '-2':'strongly disagree',
         '-1':'disagree',
-        '0':'no opinion',
-        '1':'agree',
-        '2':'strongly agree'
+         '0':'no opinion',
+         '1':'agree',
+         '2':'strongly agree'
     };
+    self.opinion = [-2,-1,0,1,2,-2];
     self.data = [
-        ['x','Question1','Question2','Question3','Question4','Question5','Question6'],
-        ['strongly disagree', 30, 200, 200, 400, 150, 250],
-        ['disagree', 130, 100, 100, 200, 150, 50],
-        ['no opinion', 230, 200, 200, 300, 250, 250],
-        ['agree', 75, 100, 450, 0, 300, 200],
-        ['strongly agree', 250, 300, 20, 85, 430, 500]
+        [30, 200, 200, 400, 150, 250],
+        [130, 100, 100, 200, 150, 50],
+        [230, 200, 200, 300, 250, 250],
+        [75, 100, 450, 0, 300, 200],
+        [250, 300, 20, 85, 430, 500]
     ];
+
+    var formatData = function() {
+        var length = self.data.length - 1,
+            headers = ['x','Question1','Question2','Question3','Question4','Question5','Question6'];
+
+        for(var i = 0; i < length; ++i) {
+            self.data[i].unshift(self.likertToString[i - 2]);
+        }
+        self.data[length].unshift('you');
+        self.data.unshift(headers);
+    };
 
     var scatterPositioning = function() {
         var buffer,
             opinionRow,
             centered,
             data = self.data,
-            length = data[0].length;
+            opinions = self.opinion,
+            length = opinions.length;
 
-        for(var i = 1; i < length; ++i) {
-             opinionRow = indexOpinion(data[6][i]);
+        for(var i = 0; i < length; ++i) {
+             opinionRow = index(opinions[i]);
              centered = centerOpinionValue(opinionRow, i, data);
-             buffer = sumBuffer(opinionRow-1, i, data);
-             self.data[6][i] = centered + buffer;
+             buffer = sumBuffer(opinionRow - 1, i, data);
+             data[length-1][i] = centered + buffer;
         }
     };
 
-    var indexOpinion = function(x) {
-      return x + 3;
+    var index = function(x) {
+      return x + 2;
     };
 
     var centerOpinionValue = function(x, y, data) {
@@ -117,7 +128,7 @@ app.controller("explore-controller", [function() {
 
     var sumBuffer = function(x, y, data) {
         var sum = 0;
-        for(;x>0; --x) {
+        for(;x>=0; --x) {
             sum += data[x][y]
         }
         return sum;
@@ -127,11 +138,12 @@ app.controller("explore-controller", [function() {
      * the rest of the data has been fetched
      */
     var appendUserData = function() {
-        var temp = ['you'];
+        var temp = [];
         self.opinion.forEach(function(x){temp.push(x);});
         self.data.push(temp);
     };
 
     appendUserData();
     scatterPositioning();
+    formatData();
 }]);
