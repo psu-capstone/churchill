@@ -7,10 +7,15 @@ app.directive("bars", function () {
         replace: true,
         template: '<div id="chart"></div>',
         link: function (scope, element, attrs) {
-            var chart = c3.generate({
+            var you = 'you',
+                scp = scope.exp,
+                opinion = scp.opinion,
+                lik = scp.likertToString,
+
+                chart = c3.generate({
                 data: {
                     x:'x',
-                    columns: scope.exp.data,
+                    columns: scp.data,
                     type: 'bar',
                     types: {
                         you: 'scatter'
@@ -25,7 +30,7 @@ app.directive("bars", function () {
                       you: '#000000'
                     },
                     groups: [
-                        ['strongly disagree', 'disagree', 'no opinion', 'agree', 'strongly agree', 'you']
+                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
                     ]
                 },
                 point: {
@@ -53,8 +58,8 @@ app.directive("bars", function () {
                 tooltip: {
                     format:{
                         value: function (value, ratio, id, index) {
-                            if(id === 'you') {
-                                value = scope.exp.likertValToString(scope.exp.opinion[index]);
+                            if(id === you) {
+                                value = lik[opinion[index]];
                             }
                             return value;
                         }
