@@ -6,14 +6,14 @@ app.directive("sort", function () {
     return {
         restrict: 'E',
         replace: true,
-        template: '<div id="stuff"></div>,
+        template: '<div id="stuff"></div>',
         link: function() {
-            $( "#sortable" ).sortable({ 
-                placeholder: "ui-sortable-placeholder" 
+            $("#sortable").sortable({
+                placeholder: "ui-sortable-placeholder"
             });
-        
+        }
     };
-}
+});
 
 app.directive("bars", function () {
     return {
