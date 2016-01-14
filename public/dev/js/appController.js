@@ -10,25 +10,11 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.unsuccessful = "Username or Password is incorrect";
         self.username = "";
         self.password = "";
+        self.name = "";
+        self.city = "";
         self.authorized = false;
         self.showCreateForm = false;
         self.getAccess = function(){
-
-            // Testing API here
-            var user_arg = JSON.stringify({
-                username: self.username,
-                password: self.password,
-                name:"Ryan",
-                city:"Portland"
-            });
-
-            dataFac.postUser(user_arg)
-                .success(function(data , status) {
-                    console.log(data);
-                })
-                .error(function(error) {
-                    console.log("An error has occurred" + error);
-                });
 
             console.log(self.username + " " + self.password);
             if (self.username == "admin" && self.password == "1234") {
@@ -47,6 +33,24 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.createAccount = function() {
             self.showCreateForm = !self.showCreateForm;
         };
+
+        self.addUser = function () {
+            //Sending to API to save user data
+            var user_arg = JSON.stringify({
+                username: self.username,
+                password: self.password,
+                name:     self.name,
+                city:     self.city
+            });
+
+            dataFac.postUser(user_arg)
+                .success(function(data , status) {
+                    console.log(data);
+                })
+                .error(function(error) {
+                    console.log("An error has occurred" + error);
+                });
+        }
 }]);
 
 /**
