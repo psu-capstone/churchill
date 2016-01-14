@@ -2,7 +2,7 @@
  * Main login controller, display a login form and save valid credentials,
  * for now, the only valid credential for testing is admin 1234
  */
-app.controller("main-controller", [ '$http', '$location', 'accessFac', 'apiFac',
+app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac',
     function($http, $location, accessFac, dataFac) {
         var self = this;
         self.image = "./images/demoLab_logo.png";
@@ -70,31 +70,22 @@ app.controller("issue-controller", [function() {
 app.controller("explore-controller", [function() {
     var self = this;
     self.title = "Explore the issues";
-    self.opinion = [-2,-1,0,1,2,-2]
-    self.data = [['x','Question1','Question2','Question3','Question4','Question5','Question6'],
-                 ['strongly disagree', 30, 200, 200, 400, 150, 250],
-                 ['disagree', 130, 100, 100, 200, 150, 50],
-                 ['no opinion', 230, 200, 200, 300, 250, 250],
-                 ['agree', 75, 100, 450, 0, 300, 200],
-                 ['strongly agree', 250, 300, 20, 85, 430, 500]];
-
-    self.likertValToString = function(val) {
-        switch(val) {
-            case -2:
-                return 'strongly disagree';
-            case -1:
-                return 'disagree';
-            case 0:
-                return 'no opinion';
-            case 1:
-                return 'agree';
-            case 2:
-                return 'strongly agree';
-            default:
-                throw "Non Recognized Likert Value"
-        }
+    self.opinion = [-2,-1,0,1,2,-2];
+    self.likertToString = {
+        '-2':'strongly disagree',
+        '-1':'disagree',
+        '0':'no opinion',
+        '1':'agree',
+        '2':'strongly agree'
     };
-
+    self.data = [
+        ['x','Question1','Question2','Question3','Question4','Question5','Question6'],
+        ['strongly disagree', 30, 200, 200, 400, 150, 250],
+        ['disagree', 130, 100, 100, 200, 150, 50],
+        ['no opinion', 230, 200, 200, 300, 250, 250],
+        ['agree', 75, 100, 450, 0, 300, 200],
+        ['strongly agree', 250, 300, 20, 85, 430, 500]
+    ];
 
     var scatterPositioning = function() {
         var buffer,
@@ -127,12 +118,15 @@ app.controller("explore-controller", [function() {
         return sum;
     };
 
-    var appendSelf = function() {
+    /* this is so you can append the user opinion on the fly after
+     * the rest of the data has been fetched
+     */
+    var appendUserData = function() {
         var temp = ['you'];
         self.opinion.forEach(function(x){temp.push(x);});
         self.data.push(temp);
     };
 
-    appendSelf();
+    appendUserData();
     scatterPositioning();
 }]);
