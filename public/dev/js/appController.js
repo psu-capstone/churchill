@@ -2,7 +2,7 @@
  * Main login controller, display a login form and save valid credentials,
  * for now, the only valid credential for testing is admin 1234
  */
-app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac',
+app.controller("main-controller", [ '$http', '$location', 'accessFac', 'apiFac',
     function($http, $location, accessFac, dataFac) {
         var self = this;
         self.image = "./images/demoLab_logo.png";
@@ -70,20 +70,39 @@ app.controller("issue-controller", [function() {
 app.controller("explore-controller", [function() {
     var self = this;
     self.title = "Explore the issues";
+    self.opinion = [-2,-1,0,1,2,-2]
     self.data = [['x','Question1','Question2','Question3','Question4','Question5','Question6'],
                  ['strongly disagree', 30, 200, 200, 400, 150, 250],
                  ['disagree', 130, 100, 100, 200, 150, 50],
                  ['no opinion', 230, 200, 200, 300, 250, 250],
                  ['agree', 75, 100, 450, 0, 300, 200],
-                 ['strongly agree', 250, 300, 20, 85, 430, 500],
-                 ['you', -2, -1, 0, 1, 2, -2]];
+                 ['strongly agree', 250, 300, 20, 85, 430, 500]];
+
+    self.likertValToString = function(val) {
+        switch(val) {
+            case -2:
+                return 'strongly disagree';
+            case -1:
+                return 'disagree';
+            case 0:
+                return 'no opinion';
+            case 1:
+                return 'agree';
+            case 2:
+                return 'strongly agree';
+            default:
+                throw "Non Recognized Likert Value"
+        }
+    };
+
 
     var scatterPositioning = function() {
         var buffer,
             opinionRow,
             centered,
-            length = self.data[0].length,
-            data = self.data;
+            data = self.data,
+            length = data[0].length;
+
         for(var i = 1; i < length; ++i) {
              opinionRow = indexOpinion(data[6][i]);
              centered = centerOpinionValue(opinionRow, i, data);
@@ -107,5 +126,13 @@ app.controller("explore-controller", [function() {
         }
         return sum;
     };
+
+    var appendSelf = function() {
+        var temp = ['you'];
+        self.opinion.forEach(function(x){temp.push(x);});
+        self.data.push(temp);
+    };
+
+    appendSelf();
     scatterPositioning();
 }]);

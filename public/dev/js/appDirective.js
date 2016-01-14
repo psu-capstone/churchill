@@ -47,7 +47,17 @@ app.directive("bars", function () {
                 },
                 legend: {
                     item: {
-                        onclick: function (id) { return;  }
+                        onclick: function (id) { return; }
+                    }
+                },
+                tooltip: {
+                    format:{
+                        value: function (value, ratio, id, index) {
+                            if(id === 'you') {
+                                value = scope.exp.likertValToString(scope.exp.opinion[index]);
+                            }
+                            return value;
+                        }
                     }
                 }
             });
