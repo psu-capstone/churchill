@@ -37,5 +37,8 @@
     "morgan": "~1.6.1",
     "run-sequence": "^1.1.4",
     "serve-favicon": "^2.3.0"
+  },
+  "dependencies": {
+    "angular-ui-sortable": "^0.13.4"
   }
 }
