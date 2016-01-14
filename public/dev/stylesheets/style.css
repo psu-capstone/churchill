@@ -25,3 +25,70 @@ p{clear: both;}
     stroke: #000;
     shape-rendering: crispEdges;
 }
+
+li.li1 {margin: 0.0px 0.0px 0.0px 0.0px; line-height: 14.0px; font: 12.0px Times; color: #000000; -webkit-text-stroke: #000000}
+span.s1 {-webkit-text-stroke: 0px #000000}
+span.s2 {font-kerning: none}
+ul.ul1 {list-style-type: disc}
+
+.ui-sortable {
+    width: 350px;
+    margin: 50px auto;
+    background-color: #ccc;
+    -webkit-box-shadow:  0px 0px 10px 1px rgba(0, 0, 0, .1);
+  box-shadow:  0px 0px 10px 1px rgba(0, 0, 0, .1);
+  list-style-type: none; 
+  padding: 0; 
+}
+
+.ui-sortable li.ui-state-default { 
+    margin: 0; 
+    height: 45px;
+    line-height: 48px;
+    font-size: 1.4em; 
+    color: #fff;
+    outline: 0;
+    padding: 0;
+    margin: 0;
+    text-indent: 15px;
+    background: rgb(78,82,91);
+    background: -moz-linear-gradient(top,  rgb(78,82,91) 0%, rgb(57,61,68) 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgb(78,82,91)), color-stop(100%,rgb(57,61,68)));
+    background: -webkit-linear-gradient(top,  rgb(78,82,91) 0%,rgb(57,61,68) 100%);
+    background: -o-linear-gradient(top,  rgb(78,82,91) 0%,rgb(57,61,68) 100%);
+    background: -ms-linear-gradient(top,  rgb(78,82,91) 0%,rgb(57,61,68) 100%);
+    background: linear-gradient(to bottom,  rgb(78,82,91) 0%,rgb(57,61,68) 100%);
+    border-top: 1px solid rgba(255,255,255,.2);
+    border-bottom: 1px solid rgba(0,0,0,.5);
+    text-shadow: -1px -1px 0px rgba(0,0,0,.5);
+    font-size: 1.1em;
+    position: relative;
+    cursor: pointer;
+}
+.ui-sortable li.ui-state-default:first-child {
+    border-top: 0; 
+}
+.ui-sortable li.ui-state-default:last-child {
+    border-bottom: 0;
+}
+
+.ui-sortable-placeholder {
+    border: 3px dashed #aaa;
+    height: 45px;
+    width: 344px;
+    background: #ccc;
+}
+
+.ui-sortable li.ui-state-default:after {
+    content: "\f0c9";
+    display: inline-block;
+    font-family: "FontAwesome";
+    position: absolute;
+    right: 18px;
+    top: 9px;
+    text-align: center;
+    line-height: 35px;
+    color: rgba(255,255,255,.2);
+    text-shadow: 0px 0px 0px rgba(0,0,0,0);
+    cursor: move;
+}

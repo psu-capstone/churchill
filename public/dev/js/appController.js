@@ -15,14 +15,19 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 
             // Testing API here
             var user_arg = JSON.stringify({
-                username: "rta",
+                username: self.username,
+                password: self.password,
                 name:"Ryan",
                 city:"Portland"
             });
 
-            dataFac.postUser(user_arg).success(function(data , status) {
-                console.log(data);
-            });
+            dataFac.postUser(user_arg)
+                .success(function(data , status) {
+                    console.log(data);
+                })
+                .error(function(error) {
+                    console.log("An error has occurred" + error);
+                });
 
             console.log(self.username + " " + self.password);
             if (self.username == "admin" && self.password == "1234") {
@@ -82,6 +87,13 @@ var issuerows = [
         voting: false,
     }
     ];
+
+app.controller('sortable-controller', function($scope) {
+  $scope.items = ["One", "Two", "Three"];
+
+  $scope.sortableOptions = {
+  };
+});
 
 /**
  * Processing the visualization data

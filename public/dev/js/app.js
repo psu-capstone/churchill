@@ -29,6 +29,10 @@ app.config(function($routeProvider) {
                 }
             }*/
         })
+        .when('/voting', {
+            templateUrl : './pages/voting.html',
+            controller  : 'sortable-controller'
+        })
         .when('/explore', {
             templateUrl : './pages/d3graph.html',
             controller  : 'explore-controller',

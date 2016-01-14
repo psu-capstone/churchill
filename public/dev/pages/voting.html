@@ -7,3 +7,9 @@
 
   </div>
 </div>
+
+<div ng-controller = "sortable-controller as sortable">
+    <ul ui-sortable="sortableOptions" ng-model="items">
+        <li ng-repeat="item in items" class="li1"><span class="s1"></span><span class="s2">{{ item }}</li>
+    </ul>
+</div>
