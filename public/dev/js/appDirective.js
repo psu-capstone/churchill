@@ -43,6 +43,39 @@ app.directive('modal', function () {
     };
 });
 
+/**
+ * Unique username check for account creation
+ */
+app.directive('userUnique', ['dataFac', function (dataFac) {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, element, attrs, ngModel) {
+            element.bind('blur', function (e) {
+                ngModel.$setValidity('unique', true);
+
+                var current = element.val();
+                var user_arg = JSON.stringify({
+                    username: current
+                });
+
+                // TODO fix this, console is properly reporting the GET but error isn't popping
+                // not sure if getNode is the right thing to use here, probably not, and the
+                // arguments using current twice is probably useless.
+                dataFac.getNode("api/user", current, current)
+                    .success(function(data) {
+                    if (data) {
+                        console.log(data);
+                        ngModel.$setValidity('unique', false);
+                    } else {
+                        console.log("An error has occurred" + error);
+                    }
+                });
+            });
+        }
+    }
+}]);
+
 
 /**
  * D3 directive that is embedded in explore-controller.

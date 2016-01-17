@@ -10,6 +10,8 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.unsuccessful = "Username or Password is incorrect";
         self.username = "";
         self.password = "";
+        self.new_user = "";
+        self.new_pass = "";
         self.name = "";
         self.city = "";
         self.authorized = false;
@@ -30,6 +32,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
                 console.log("Login unsuccessful");
             }
         };
+
         self.createAccount = function() {
             self.showCreateForm = !self.showCreateForm;
         };
@@ -37,8 +40,8 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.addUser = function () {
             //Sending to API to save user data
             var user_arg = JSON.stringify({
-                username: self.username,
-                password: self.password,
+                username: self.new_user,
+                password: self.new_pass,
                 name:     self.name,
                 city:     self.city
             });
@@ -50,13 +53,13 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
                 .error(function(error) {
                     console.log("An error has occurred" + error);
                 });
-        }
+        };
 }]);
 
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", [function() {
+app.controller("issue-controller", ['dataFac', function(dataFac) {
     var self = this;
     self.title = "Weigh in on an issue";
     self.new_title = "";
