@@ -59,18 +59,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", [function() {
     var self = this;
     self.title = "Weigh in on an issue";
-    self.issuerows = issuerows; // This can be replaced by a data pull once REST is developed
-    self.new_title = "";
-    self.new_description = "";
-    self.submitIssue = function() {
-        // For future, this is where user can send an alert to add a new issue to the moderator or dynamically
-        // For now, just clearing on submit button press
-        self.new_title = "";
-        self.new_description = "";
-    }
-}]);
-
-var issuerows = [
+    self.issuerows = [
     {
         name: "Oregon Tax System",
         description: "Let us know what you think of Oregon's taxes!",
@@ -92,13 +81,48 @@ var issuerows = [
         voting: false,
     }
     ];
+    
+    self.new_title = "";
+    self.new_description = "";
+    self.submitIssue = function() {
+        // For future, this is where user can send an alert to add a new issue to the moderator or dynamically
+        // For now, just clearing on submit button press
+        self.new_title = "";
+        self.new_description = "";
+    }
+}]);
 
 app.controller('sortable-controller', function($scope) {
-  $scope.items = ["One", "Two", "Three"];
+    $scope.items = [
+      {
+            name: "One",
+            sort: 2,
+      },
+      {     name: "Two",
+            sort: 1,
+      },
+      {
+            name: "Three",
+            sort: 0,
+      }];
 
+  $scope.items.sort(function (a, b) {
+    return a.sort > b.sort;
+  });
+    
   $scope.sortableOptions = {
   };
+    
+  $scope.sortableOptions = {
+    stop: function(e, ui) {
+      for (var index in $scope.items) {
+        $scope.items[index].sort = index;
+      } 
+    }
+  };
+    
 });
+
 
 /**
  * Processing the visualization data
