@@ -10,9 +10,24 @@
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
     <div class="issue row" ng-repeat="row in issue.issuerows">
         <div class="issue">
-            <button type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+            <button ng-click="row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
         </div>
-        <h5>{{row.description}}</h5> 
+        <h5>{{row.description}}</h5>
+        <div ng-controller = "test-controller as test" ng-show="row.voting">
+            <div ui-sortable="test.sortableOptions" ng-repeat="list in test.srcData" ng-model="list" class="sort" 
+                 style="border: 1px solid black; float:left;">
+                    <div id="item-list" ng-repeat="item in list">{{item}}</div>
+            </div>
+            <div style="float:left;">
+                <div ng-repeat="list in test.tgtData"> 
+                        {{test.title($index)}}
+                        <div ui-sortable="test.sortableOptions" ng-model="list" class="sort" 
+                             style="border: 1px solid black; min-height: 40px;">
+                            <div id="item-list" ng-repeat="item in list">{{item}}</div>
+                        </div>
+                </div>
+            </div>
+        </div>
     </div>
     
     <div class="issue row add">

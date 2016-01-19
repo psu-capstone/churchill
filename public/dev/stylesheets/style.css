@@ -34,10 +34,8 @@ p{clear: both;}
     cursor: move;
 }
 
+
 .sort, .sortSrc, .sortTgt {
-    float:left;
-    border: 1px solid black;
     margin: 10px;
-    width: 100px;
-    height: 120px;
+    min-width: 100px;
 }
