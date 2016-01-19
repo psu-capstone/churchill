@@ -1,3 +1,6 @@
+p{clear: both;}
+
+
 .btn.btn-primary.btn-block {
     font: 25px bold sans-serif;
     box-shadow: 3px 3px 3px #666;
@@ -21,4 +24,18 @@
     fill: none;
     stroke: #000;
     shape-rendering: crispEdges;
+}
+
+#item-list {
+    padding: 5px;
+    border: 1px solid #999;
+    background: #eee;
+    margin: 5px;
+    cursor: move;
+}
+
+
+.sort, .sortSrc, .sortTgt {
+    margin: 10px;
+    min-width: 100px;
 }

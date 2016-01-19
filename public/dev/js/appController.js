@@ -62,6 +62,33 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", ['dataFac', function(dataFac) {
     var self = this;
     self.title = "Weigh in on an issue";
+    self.issuerows = [
+    {
+        name: "Oregon Tax System",
+        description: "Let us know what you think of Oregon's taxes!",
+        voting: false,
+    },
+    {
+        name: "Abortion",
+        description: "Share your views about abortion and see if common ground can be found on this polarizing issue!",
+        voting: false,
+    },
+    {
+        name: "Oregon K-12 Classrooms",
+        description: "Help make Oregon's schools stronger!",
+        voting: false,
+    },
+    {
+        name: "A New Issue",
+        description: "Something else to discuss that has been added",
+        voting: false,
+    }
+    ];
+    
+    self.vote = function() {
+        voting = true;   
+    }
+    
     self.new_title = "";
     self.new_description = "";
     self.submitIssue = function() {
@@ -71,6 +98,42 @@ app.controller("issue-controller", ['dataFac', function(dataFac) {
         self.new_description = "";
     }
 }]);
+
+app.controller('rank-controller', [function() {
+    var self = this;
+    self.sortableOptions = {
+        connectWith: ".sort",
+        scroll: false,
+        stop: function(){console.log(self.tgtData);}
+    };
+    
+    self.tgtSortableOptions = {
+        connectWith: ".sortSrc",
+        scroll: false
+    };
+    
+    self.srcSortableOptions = {
+        connectWith: ".sortTgt",
+        scroll: false
+    };
+    
+    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
+    self.tgtData= [[],[],[],[],[]];
+    
+    self.likertToString = {
+        '-2':'strongly disagree',
+        '-1':'disagree',
+         '0':'no opinion',
+         '1':'agree',
+         '2':'strongly agree'
+    };
+    
+    self.title = function(index) {
+        return self.likertToString[index - 2];
+    };
+}]);
+
+
 
 /**
  * Processing the visualization data
