@@ -47,7 +47,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
             });
 
             dataFac.postUser(user_arg)
-                .success(function(data , status) {
+                .success(function(data) {
                     console.log(data);
                 })
                 .error(function(error) {
@@ -59,35 +59,35 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', function(dataFac) {
+app.controller("issue-controller", ['dataFac', function() {
     var self = this;
     self.title = "Weigh in on an issue";
     self.issuerows = [
     {
         name: "Oregon Tax System",
         description: "Let us know what you think of Oregon's taxes!",
-        voting: false,
+        voting: false
     },
     {
         name: "Abortion",
         description: "Share your views about abortion and see if common ground can be found on this polarizing issue!",
-        voting: false,
+        voting: false
     },
     {
         name: "Oregon K-12 Classrooms",
         description: "Help make Oregon's schools stronger!",
-        voting: false,
+        voting: false
     },
     {
         name: "A New Issue",
         description: "Something else to discuss that has been added",
-        voting: false,
+        voting: false
     }
     ];
     
     self.vote = function() {
         voting = true;   
-    }
+    };
     
     self.new_title = "";
     self.new_description = "";
@@ -99,6 +99,9 @@ app.controller("issue-controller", ['dataFac', function(dataFac) {
     }
 }]);
 
+/**
+ * Ranking issues
+ */
 app.controller('rank-controller', [function() {
     var self = this;
     self.sortableOptions = {
@@ -132,8 +135,6 @@ app.controller('rank-controller', [function() {
         return self.likertToString[index - 2];
     };
 }]);
-
-
 
 /**
  * Processing the visualization data

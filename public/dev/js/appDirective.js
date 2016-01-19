@@ -50,32 +50,27 @@ app.directive('userUnique', ['dataFac', function (dataFac) {
     return {
         restrict: 'A',
         require: 'ngModel',
-        link: function (scope, element, attrs, ngModel) {
+        link: function (scope, element, attrs, ctrl) {
             element.bind('blur', function (e) {
-                ngModel.$setValidity('unique', true);
-
                 var current = element.val();
-                var user_arg = JSON.stringify({
-                    username: current
-                });
-
-                // TODO fix this, console is properly reporting the GET but error isn't popping
-                // not sure if getNode is the right thing to use here, probably not, and the
-                // arguments using current twice is probably useless.
-                dataFac.getNode("api/user", current, current)
+                ctrl.$setValidity('unique', false);
+                dataFac.getNode("api/user", current)
                     .success(function(data) {
-                    if (data) {
-                        console.log(data);
-                        ngModel.$setValidity('unique', false);
-                    } else {
-                        console.log("An error has occurred" + error);
-                    }
-                });
+                        if(data["id"] == current) {
+                            console.log("Not Unique");
+                            ctrl.$setValidity('unique', false);
+                        } else {
+                            console.log("Unique");
+                            ctrl.$setValidity('unique', true);
+                        }
+                    })
+                    .error(function(error) {
+                        console.log("An error has occurred");
+                    });
             });
         }
     }
 }]);
-
 
 /**
  * D3 directive that is embedded in explore-controller.

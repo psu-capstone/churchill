@@ -15,8 +15,7 @@ app.config(function($routeProvider) {
         })
         .when('/issue', {
             templateUrl : './pages/issue.html',
-            controller  : 'issue-controller',
-            directive   : 'issuenew'
+            controller  : 'issue-controller'
             // Commented out for testing/developing
             /*resolve:{
                 "check":function(accessFac, $location){

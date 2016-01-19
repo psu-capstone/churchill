@@ -31,12 +31,14 @@
       <button ng-click="login.createAccount()" class="btn btn-primary">Create Account</button>
 
       <modal title="Create Account" visible="login.showCreateForm">
-        <form role="form">
+        <form role="form" name="userForm">
           <div class="form-group">
             <label for="username">Username</label>
             <input type="text" ng-model="login.new_user" user-unique="" ng-model-options="{ updateOn: 'blur' }"
-                   class="form-control" id="username" placeholder="Enter username" required  />
-            <span class="hide-while-in-focus" ng-show="thisform.username.$error.unique">Username taken!</span>
+                   class="form-control" id="username" name="username" placeholder="Enter username" required  />
+            <div class="hide-while-in-focus"
+                 ng-show="userForm.username.$error.unique"
+                 style="color: #ff0000; font-weight: bold">Username Taken</div>
           </div>
           <div class="form-group">
             <label for="password">Password</label>
