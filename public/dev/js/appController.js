@@ -63,7 +63,7 @@ app.controller("issue-controller", [function() {
     {
         name: "Oregon Tax System",
         description: "Let us know what you think of Oregon's taxes!",
-        voting: true,
+        voting: false,
     },
     {
         name: "Abortion",
@@ -81,6 +81,10 @@ app.controller("issue-controller", [function() {
         voting: false,
     }
     ];
+    
+    self.vote = function() {
+        voting = true;   
+    }
     
     self.new_title = "";
     self.new_description = "";
@@ -112,6 +116,18 @@ app.controller('test-controller', [function() {
     
     self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
     self.tgtData= [[],[],[],[],[]];
+    
+    self.likertToString = {
+        '-2':'strongly disagree',
+        '-1':'disagree',
+         '0':'no opinion',
+         '1':'agree',
+         '2':'strongly agree'
+    };
+    
+    self.title = function(index) {
+        return self.likertToString[index - 2];
+    };
 }]);
 
 
