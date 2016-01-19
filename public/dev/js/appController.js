@@ -102,8 +102,17 @@ app.controller("issue-controller", ['dataFac', function() {
 /**
  * Ranking issues
  */
-app.controller('rank-controller', [function() {
+app.controller('rank-controller', ['utilsFac', function(utilsFac) {
     var self = this;
+
+    /**
+     * TODO: title switch for each ranking set
+     */
+    self.title = 'Values';
+    self.lik = utilsFac.likert;
+    self.tgtData= [[],[],[],[],[]];
+    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
+
     self.sortableOptions = {
         connectWith: ".sort",
         scroll: false,
@@ -119,37 +128,16 @@ app.controller('rank-controller', [function() {
         connectWith: ".sortTgt",
         scroll: false
     };
-    
-    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
-    self.tgtData= [[],[],[],[],[]];
-    
-    self.likertToString = {
-        '-2':'strongly disagree',
-        '-1':'disagree',
-         '0':'no opinion',
-         '1':'agree',
-         '2':'strongly agree'
-    };
-    
-    self.title = function(index) {
-        return self.likertToString[index - 2];
-    };
 }]);
 
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", [function() {
+app.controller("explore-controller", ['utilsFac' ,function(utilsFac) {
     var self = this;
     self.title = "Explore the issues";
-    self.likertToString = {
-        '-2':'strongly disagree',
-        '-1':'disagree',
-         '0':'no opinion',
-         '1':'agree',
-         '2':'strongly agree'
-    };
     self.opinion = [-2,-1,0,1,2,-2];
+    self.lik = utilsFac.likert;
     self.data = [
         [30, 200, 200, 400, 150, 250],
         [130, 100, 100, 200, 150, 50],
@@ -163,7 +151,7 @@ app.controller("explore-controller", [function() {
             headers = ['x','Question1','Question2','Question3','Question4','Question5','Question6'];
 
         for(var i = 0; i < length; ++i) {
-            self.data[i].unshift(self.likertToString[i - 2]);
+            self.data[i].unshift(self.lik[i - 2]);
         }
         self.data[length].unshift('you');
         self.data.unshift(headers);

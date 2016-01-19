@@ -17,6 +17,21 @@ app.factory('accessFac',function(){
 });
 
 /**
+ * Singleton object that makes useful stuff uniquely available
+ */
+app.factory('utilsFac', function(){
+   return {
+       likert: {
+           '-2':'strongly disagree',
+           '-1':'disagree',
+           '0':'no opinion',
+           '1':'agree',
+           '2':'strongly agree'
+       }
+   };
+});
+
+/**
  * dataFac provides a simple interface for all REST calls to the back end . For more detailed information
  * about the API interface, go to https://github.com/psu-capstone/dlab-api/blob/develop/INTERFACE.md
  * or check for the same file in api/ which is in the top level directory for churchill
