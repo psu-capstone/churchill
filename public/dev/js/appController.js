@@ -96,7 +96,7 @@ app.controller("issue-controller", [function() {
     }
 }]);
 
-app.controller('test-controller', [function() {
+app.controller('rank-controller', [function() {
     var self = this;
     self.sortableOptions = {
         connectWith: ".sort",
