@@ -92,36 +92,28 @@ app.controller("issue-controller", [function() {
     }
 }]);
 
-app.controller('sortable-controller', function($scope) {
-    $scope.items = [
-      {
-            name: "One",
-            sort: 2,
-      },
-      {     name: "Two",
-            sort: 1,
-      },
-      {
-            name: "Three",
-            sort: 0,
-      }];
+app.controller('test-controller', [function() {
+    var self = this;
+    self.sortableOptions = {
+        connectWith: ".sort",
+        scroll: false,
+        stop: function(){console.log(self.tgtData);}
+    };
+    
+    self.tgtSortableOptions = {
+        connectWith: ".sortSrc",
+        scroll: false
+    };
+    
+    self.srcSortableOptions = {
+        connectWith: ".sortTgt",
+        scroll: false
+    };
+    
+    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
+    self.tgtData= [[],[],[],[],[]];
+}]);
 
-  $scope.items.sort(function (a, b) {
-    return a.sort > b.sort;
-  });
-    
-  $scope.sortableOptions = {
-  };
-    
-  $scope.sortableOptions = {
-    stop: function(e, ui) {
-      for (var index in $scope.items) {
-        $scope.items[index].sort = index;
-      } 
-    }
-  };
-    
-});
 
 
 /**

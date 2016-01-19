@@ -31,7 +31,7 @@ app.config(function($routeProvider) {
         })
         .when('/voting', {
             templateUrl : './pages/voting.html',
-            controller  : 'sortable-controller'
+            controller  : 'test-controller'
         })
         .when('/explore', {
             templateUrl : './pages/d3graph.html',

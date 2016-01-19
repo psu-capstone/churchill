@@ -1,6 +1,5 @@
 <div class="row">  
   <div class=col-sm-12>
-    <h2>{{ ctrl.title }}</h2>
     <p>
         Welcome to Democracy Lab!
    </p>
@@ -8,8 +7,11 @@
   </div>
 </div>
 
-<div ng-controller = "sortable-controller as sortable">
-    <ul ui-sortable="sortableOptions" ng-model="items">
-        <li ng-repeat="item in items" class="btn btn-primary nav-stacked active">{{ item.name }}</li>
-    </ul>
+<div ng-controller = "test-controller as test">
+    <div ui-sortable="test.sortableOptions" ng-repeat="list in test.srcData" ng-model="list" class="sort">
+            <div id="item-list" ng-repeat="item in list">{{item}}</div>
+    </div>
+    <div ui-sortable="test.sortableOptions" ng-repeat="list in test.tgtData" ng-model="list" class="sort">
+            <div id="item-list" ng-repeat="item in list">{{item}}</div>
+    </div>
 </div>
