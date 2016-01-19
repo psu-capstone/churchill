@@ -73,22 +73,19 @@ app.directive('userUnique', ['dataFac', function (dataFac) {
 }]);
 
 /**
- * D3 directive that is embedded in explore-controller.
+ * drag and drop likert scale ranking directive
  */
-
-app.directive("sort", function () {
+app.directive("sort", [function () {
     return {
         restrict: 'E',
         replace: true,
-        template: '<div id="stuff"></div>',
-        link: function() {
-            $("#sortable").sortable({
-                placeholder: "ui-sortable-placeholder"
-            });
-        }
+        templateUrl: './widgets/rank.html'
     };
-});
+}]);
 
+/**
+ * D3 directive that is embedded in explore-controller.
+ */
 app.directive("bars", function () {
     return {
         restrict: 'E',
@@ -98,7 +95,7 @@ app.directive("bars", function () {
             var you = 'you',
                 scp = scope.exp,
                 opinion = scp.opinion,
-                lik = scp.likertToString,
+                lik = scp.likert,
 
                 chart = c3.generate({
                 data: {
