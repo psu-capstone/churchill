@@ -18,6 +18,7 @@ module.exports = function(config) {
       'node_modules/angular/angular.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'node_modules/angular-route/angular-route.js',
+      'node_modules/angular-ui-sortable/dist/sortable.js',
       'node_modules/angular-ui-bootstrap/ui-bootstrap.js',
       'public/dev/js/*.js',
       'test/*.js'

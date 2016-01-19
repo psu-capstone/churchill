@@ -1,6 +1,5 @@
 p{clear: both;}
 
-
 .btn.btn-primary.btn-block {
     font: 25px bold sans-serif;
     box-shadow: 3px 3px 3px #666;
@@ -16,9 +15,11 @@ p{clear: both;}
     float: left;
     width: 350px;
 }
+
 .axis text {
     font: 10px sans-serif;
 }
+
 .axis path,
 .axis line {
     fill: none;
@@ -26,14 +27,13 @@ p{clear: both;}
     shape-rendering: crispEdges;
 }
 
-#item-list {
+#item-list-src, #item-list-tgt {
     padding: 5px;
     border: 1px solid #999;
     background: #eee;
     margin: 5px;
     cursor: move;
 }
-
 
 .sort, .sortSrc, .sortTgt {
     margin: 10px;

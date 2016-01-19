@@ -43,6 +43,34 @@ app.directive('modal', function () {
     };
 });
 
+/**
+ * Unique username check for account creation
+ */
+app.directive('userUnique', ['dataFac', function (dataFac) {
+    return {
+        restrict: 'A',
+        require: 'ngModel',
+        link: function (scope, element, attrs, ctrl) {
+            element.bind('blur', function (e) {
+                var current = element.val();
+                ctrl.$setValidity('unique', false);
+                dataFac.getNode("api/user", current)
+                    .success(function(data) {
+                        if(data["id"] == current) {
+                            console.log("Not Unique");
+                            ctrl.$setValidity('unique', false);
+                        } else {
+                            console.log("Unique");
+                            ctrl.$setValidity('unique', true);
+                        }
+                    })
+                    .error(function(error) {
+                        console.log("An error has occurred");
+                    });
+            });
+        }
+    }
+}]);
 
 /**
  * D3 directive that is embedded in explore-controller.
