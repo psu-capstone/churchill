@@ -10,5 +10,6 @@ public/build
 # Ignore Karma test results
 test/results.html
 
-
+# Ignore Mac File System files
+.DS_Store
 

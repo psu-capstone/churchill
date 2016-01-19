@@ -59,6 +59,29 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", [function() {
     var self = this;
     self.title = "Weigh in on an issue";
+    self.issuerows = [
+    {
+        name: "Oregon Tax System",
+        description: "Let us know what you think of Oregon's taxes!",
+        voting: true,
+    },
+    {
+        name: "Abortion",
+        description: "Share your views about abortion and see if common ground can be found on this polarizing issue!",
+        voting: false,
+    },
+    {
+        name: "Oregon K-12 Classrooms",
+        description: "Help make Oregon's schools stronger!",
+        voting: false,
+    },
+    {
+        name: "A New Issue",
+        description: "Something else to discuss that has been added",
+        voting: false,
+    }
+    ];
+    
     self.new_title = "";
     self.new_description = "";
     self.submitIssue = function() {
@@ -68,6 +91,30 @@ app.controller("issue-controller", [function() {
         self.new_description = "";
     }
 }]);
+
+app.controller('test-controller', [function() {
+    var self = this;
+    self.sortableOptions = {
+        connectWith: ".sort",
+        scroll: false,
+        stop: function(){console.log(self.tgtData);}
+    };
+    
+    self.tgtSortableOptions = {
+        connectWith: ".sortSrc",
+        scroll: false
+    };
+    
+    self.srcSortableOptions = {
+        connectWith: ".sortTgt",
+        scroll: false
+    };
+    
+    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
+    self.tgtData= [[],[],[],[],[]];
+}]);
+
+
 
 /**
  * Processing the visualization data

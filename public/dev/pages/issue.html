@@ -7,29 +7,14 @@
       </div>
     </div>
 
-    <div class="issue row">
+    <!-- Added an array to the issue-controller for dynamically pulling from database-->
+    <div class="issue row" ng-repeat="row in issue.issuerows">
         <div class="issue">
-            <button type="button" class="btn btn-primary btn-block">Oregon Tax System</button>
+            <button type="button" class="btn btn-primary btn-block">{{row.name}}</button>
         </div>
-        <h5>Let us know what you think of Oregon's taxes!</h5>
+        <h5>{{row.description}}</h5> 
     </div>
-
-    <div class="issue row">
-        <div class="issue">
-            <button type="button" class="btn btn-primary btn-block">
-                Abortion
-            </button>
-        </div>
-        <h5>Share your views about abortion and see if common ground can be found on this polarizing issue! </h5>
-    </div>
-
-    <div class="issue row">
-        <div class="issue">
-            <button type="button" class="btn btn-primary btn-block">Oregon K-12 Classrooms</button>
-        </div>
-        <h5>Help make Oregon's schools stronger!</h5>
-    </div>
-
+    
     <div class="issue row add">
         <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
         <p></p>
@@ -44,5 +29,5 @@
             </div>
             <button ng-click="issue.submitIssue()" type='button' class='btn btn-success'>Add New Issue</button>        </div>
     </div>
-
+    
 </div>

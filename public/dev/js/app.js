@@ -1,4 +1,4 @@
-var app = angular.module("democracy-lab-app", ['ngRoute', 'ui.bootstrap']);
+var app = angular.module("democracy-lab-app", ['ngRoute', 'ui.bootstrap', 'ui.sortable']);
 
 /**
  * Configure the routes taken on the web page here
@@ -28,6 +28,10 @@ app.config(function($routeProvider) {
                     }
                 }
             }*/
+        })
+        .when('/voting', {
+            templateUrl : './pages/voting.html',
+            controller  : 'test-controller'
         })
         .when('/explore', {
             templateUrl : './pages/d3graph.html',
