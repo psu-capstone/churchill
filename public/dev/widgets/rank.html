@@ -1,39 +1,7 @@
 <div ng-controller = "rank-controller as rank">
     <uib-tabset justified="true" ng-show="row.voting">
-        <uib-tab heading="Values" ng-click="rank.showValues()">
-            <div ui-sortable="rank.sortableOptions" ng-repeat="list in rank.getData()" ng-model="list" class="sort"
-                 style="border: 1px solid black; float:left; min-height: 40px;">
-                <div id="item-list-src" ng-repeat="item in list">{{item.name}}</div>
-            </div>
-            <div style="float:left;">
-                <div ng-repeat="list in rank.tgtData">
-                    {{rank.lik[$index-2]}}
-                    <div ui-sortable="rank.sortableOptions" ng-model="list" class="sort"
-                         style="border: 1px solid black; min-height: 40px;">
-                        <div id="item-list-tgt" ng-repeat="item in list">{{item.name}}</div>
-                    </div>
-                </div>
-            </div>
-            <button ng-click="rank.submit()" type='button' class='btn btn-success'>{{ rank.buttonTitle }}</button>
-        </uib-tab>
-        <uib-tab heading="Objectives" ng-click="rank.showObjectives()">
-            <div ui-sortable="rank.sortableOptions" ng-repeat="list in rank.getData()" ng-model="list" class="sort"
-                 style="border: 1px solid black; float:left; min-height: 40px;">
-                <div id="item-list-src" ng-repeat="item in list">{{item.name}}</div>
-            </div>
-            <div style="float:left;">
-                <div ng-repeat="list in rank.tgtData">
-                    {{rank.lik[$index-2]}}
-                    <div ui-sortable="rank.sortableOptions" ng-model="list" class="sort"
-                         style="border: 1px solid black; min-height: 40px;">
-                        <div id="item-list-tgt" ng-repeat="item in list">{{item.name}}</div>
-                    </div>
-                </div>
-            </div>
-            <button ng-click="rank.submit()" type='button' class='btn btn-success'>{{ rank.buttonTitle }}</button>
-        </uib-tab>
-        <uib-tab heading="Policies" ng-click="rank.showPolicies()">
-            <div ui-sortable="rank.sortableOptions" ng-repeat="list in rank.getData()" ng-model="list" class="sort"
+        <uib-tab heading="{{rank.getTitle($index + 1)}}" ng-click="rank.showContent($index + 1)" ng-repeat="content in rank.srcData">
+            <div ui-sortable="rank.sortableOptions" ng-repeat="list in rank.getData($index + 1)" ng-model="list" class="sort"
                  style="border: 1px solid black; float:left; min-height: 40px;">
                 <div id="item-list-src" ng-repeat="item in list">{{item.name}}</div>
             </div>

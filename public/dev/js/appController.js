@@ -157,34 +157,19 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
             console.log("An error has occurred" + error);
         });
 
-    self.showPolicies= function() {
-        self.state = 3;
-        updateBuckets();
-    };
-
-    self.showValues= function() {
-        self.state = 1;
-        updateBuckets();
-    };
-
-    self.showObjectives = function() {
-        self.state = 2;
-        updateBuckets();
-    };
-
-    var updateBuckets = function() {
-        self.tgtData = self.buckets[self.state];
+    self.showContent = function(x) {
+        self.tgtData = self.buckets[x];
     };
 
     /**
      * TODO: This will have to be worked on
      */
-    self.getData = function() {
-        return self.srcData[self.title[self.state]];
+    self.getData = function(x) {
+        return self.srcData[self.title[x]];
     };
 
-    self.getTitle = function() {
-        return self.title[self.state];
+    self.getTitle = function(x) {
+        return self.title[x];
     };
 
     self.sortableOptions = {
