@@ -116,7 +116,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     /**
      * TODO: create actual state
      */
-    self.state = 2;
+    self.state = 1;
     /**
      * TODO: title switch for each ranking set
      */
@@ -126,8 +126,9 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
      */
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
-    self.tgtData= [[],[],[],[],[]];
-    self.srcData={};
+    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]}
+    self.tgtData = self.buckets[self.state];
+    self.srcData = {};
 
     /**
      * TODO: Load data lazily
@@ -156,6 +157,25 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
             console.log("An error has occurred" + error);
         });
 
+    self.showPolicies= function() {
+        self.state = 3;
+        updateBuckets();
+    };
+
+    self.showValues= function() {
+        self.state = 1;
+        updateBuckets();
+    };
+
+    self.showObjectives = function() {
+        self.state = 2;
+        updateBuckets();
+    };
+
+    var updateBuckets = function() {
+        self.tgtData = self.buckets[self.state];
+    };
+
     /**
      * TODO: This will have to be worked on
      */
@@ -170,7 +190,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.sortableOptions = {
         connectWith: ".sort",
         scroll: false,
-        stop: function(){console.log(self.tgtData);}
+        stop: function(){console.log(self.tgtData[self.state]);}
     };
     
     self.tgtSortableOptions = {
