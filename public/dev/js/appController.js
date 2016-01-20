@@ -116,18 +116,14 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
     self.tgtData= [[],[],[],[],[]];
-    self.srcData=[];
-    self.rawData={};
 
-    var getRawData = function() {
-        dataFac.getAll('api/issue/value', 'i1')
-            .success(function(data) {
-                self.rawData =  data;
-            })
-            .error(function(error) {
-                console.log("An error has occurred" + error);
-            });
-    };
+    dataFac.getAll('api/issue/value', 'i1')
+        .success(function(data) {
+            self.srcData =  data;
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
 
 
     self.sortableOptions = {
