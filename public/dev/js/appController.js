@@ -109,6 +109,10 @@ app.controller('rank-controller', ['utilsFac', function(utilsFac) {
      * TODO: title switch for each ranking set
      */
     self.title = 'Values';
+    /**
+     * TODO: button title switch dependant on ranking set
+     */
+    self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
     self.tgtData= [[],[],[],[],[]];
     self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
@@ -127,6 +131,10 @@ app.controller('rank-controller', ['utilsFac', function(utilsFac) {
     self.srcSortableOptions = {
         connectWith: ".sortTgt",
         scroll: false
+    };
+
+    self.submit = function () {
+
     };
 }]);
 
