@@ -121,6 +121,9 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.tgtData= [[],[],[],[],[]];
     self.srcData={};
 
+    /**
+     * TODO: Load data lazily
+     */
     dataFac.getAll('api/issue/value', 'i1')
         .success(function(data) {
             self.srcData['values'] =  data;
@@ -145,6 +148,9 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
             console.log("An error has occurred" + error);
         });
 
+    /**
+     * TODO: This will have to be worked on
+     */
     self.getData = function() {
         return self.srcData[self.title[self.state]];
     };
@@ -169,6 +175,9 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
         scroll: false
     };
 
+    /**
+     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
+     */
     self.submit = function () {
 
     };
