@@ -1,7 +1,7 @@
 <div ng-controller = "rank-controller as rank" ng-show="row.voting">
     <div>{{rank.title}}</div>
     <div ui-sortable="rank.sortableOptions" ng-repeat="list in rank.srcData" ng-model="list" class="sort"
-         style="border: 1px solid black; float:left;">
+         style="border: 1px solid black; float:left; min-height: 40px;">
         <div id="item-list-src" ng-repeat="item in list">{{item}}</div>
     </div>
     <div style="float:left;">
@@ -13,4 +13,5 @@
             </div>
         </div>
     </div>
+    <button ng-click="rank.submit()" type='button' class='btn btn-success'>{{ rank.buttonTitle }}</button>
 </div>
