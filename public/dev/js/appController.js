@@ -100,6 +100,14 @@ app.controller("issue-controller", ['dataFac', function() {
     }
 }]);
 
+
+app.controller('tab-controller', function () {
+    this.tabs = [
+        { title:'Dynamic Title 1', content:'Dynamic content 1' },
+        { title:'Dynamic Title 2', content:'Dynamic content 2', disabled: true }
+    ];
+});
+
 /**
  * Ranking issues
  */
