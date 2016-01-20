@@ -1,6 +1,6 @@
 <div ng-controller = "rank-controller as rank" ng-show="row.voting">
-    <div>{{rank.title}}</div>
-    <div ui-sortable="rank.sortableOptions" ng-repeat="list in rank.srcData" ng-model="list" class="sort"
+    <div>{{rank.getTitle()}}</div>
+    <div ui-sortable="rank.sortableOptions" ng-repeat="list in rank.getData()" ng-model="list" class="sort"
          style="border: 1px solid black; float:left; min-height: 40px;">
         <div id="item-list-src" ng-repeat="item in list">{{item.name}}</div>
     </div>
