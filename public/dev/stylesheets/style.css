@@ -27,7 +27,15 @@ p{clear: both;}
     shape-rendering: crispEdges;
 }
 
-#item-list-src, #item-list-tgt {
+#item-list-src {
+    padding: 5px;
+    border: 1px solid #999;
+    background: #eee;
+    margin: 5px;
+    cursor: move;
+}
+
+#item-list-tgt {
     padding: 5px;
     border: 1px solid #999;
     background: #eee;
