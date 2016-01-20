@@ -116,7 +116,19 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
     self.tgtData= [[],[],[],[],[]];
-    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
+    self.srcData=[];
+    self.rawData={};
+
+    var getRawData = function() {
+        dataFac.getAll('api/issue/value', 'i1')
+            .success(function(data) {
+                self.rawData =  data;
+            })
+            .error(function(error) {
+                console.log("An error has occurred" + error);
+            });
+    };
+
 
     self.sortableOptions = {
         connectWith: ".sort",
@@ -135,13 +147,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     };
 
     self.submit = function () {
-        dataFac.getAll('api/issue/policy', 'i1')
-            .success(function(data) {
-                console.log(data);
-            })
-            .error(function(error) {
-                console.log("An error has occurred" + error);
-            });
+
     };
 }]);
 
