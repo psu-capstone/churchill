@@ -95,7 +95,7 @@ app.directive("bars", function () {
             var you = 'you',
                 scp = scope.exp,
                 opinion = scp.opinion,
-                lik = scp.likert,
+                lik = scp.lik,
 
                 chart = c3.generate({
                 data: {
