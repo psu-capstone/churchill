@@ -13,7 +13,19 @@
             <button ng-click="row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
         </div>
         <h5>{{row.description}}</h5>
-        <sort></sort>
+        <div ng-controller="tab-controller as tab"></div>
+            <uib-tabset justified="true" ng-show="row.voting">
+                <uib-tab heading="Values">
+                     <sort></sort>
+                </uib-tab>
+                <uib-tab heading="Objectives">
+                     <sort></sort>
+                </uib-tab>
+                <uib-tab heading="Policies">
+                     <sort></sort>
+                </uib-tab>
+            </uib-tabset>
+        </div>
     </div>
     
     <div class="issue row add">
