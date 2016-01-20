@@ -1,16 +1,14 @@
 {
   "author": "Fuzzy Logic",
   "name": "Democracy-Lab",
+  "license": "(MIT)",
   "description": "2015-16 Capstone Project",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "homepage": "https://travis-ci.org/psu-capstone/churchill",
   "main": "server.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/psu-capstone/churchill.git"
-  },
-  "scripts": {
-    "test": "./node_modules/.bin/karma start --single-run --browsers Chrome"
   },
   "engines": {
     "node": ">= 0.4"
@@ -38,8 +36,5 @@
     "morgan": "~1.6.1",
     "run-sequence": "^1.1.4",
     "serve-favicon": "^2.3.0"
-  },
-  "dependencies": {
-    "angular-ui-sortable": "^0.13.4"
   }
 }

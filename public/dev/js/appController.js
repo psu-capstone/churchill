@@ -62,6 +62,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", ['dataFac', function() {
     var self = this;
     self.title = "Weigh in on an issue";
+    self.voting = false;
     self.issuerows = [
     {
         name: "Oregon Tax System",
@@ -86,7 +87,7 @@ app.controller("issue-controller", ['dataFac', function() {
     ];
     
     self.vote = function() {
-        voting = true;   
+        self.voting = true;
     };
     
     self.new_title = "";
