@@ -105,26 +105,53 @@ app.controller("issue-controller", ['dataFac', function() {
  */
 app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dataFac) {
     var self = this;
-
+    /**
+     * TODO: create actual state
+     */
+    self.state = 2;
     /**
      * TODO: title switch for each ranking set
      */
-    self.title = 'Values';
+    self.title = { 1 : 'values', 2 : 'objectives', 3 : 'policies'};
     /**
      * TODO: button title switch dependant on ranking set
      */
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
     self.tgtData= [[],[],[],[],[]];
+    self.srcData={};
 
     dataFac.getAll('api/issue/value', 'i1')
         .success(function(data) {
-            self.srcData =  data;
+            self.srcData['values'] =  data;
         })
         .error(function(error) {
             console.log("An error has occurred" + error);
         });
 
+    dataFac.getAll('api/issue/objective', 'i1')
+        .success(function(data) {
+            self.srcData['objectives'] =  data;
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
+
+    dataFac.getAll('api/issue/policy', 'i1')
+        .success(function(data) {
+            self.srcData['policies'] =  data;
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
+
+    self.getData = function() {
+        return self.srcData[self.title[self.state]];
+    };
+
+    self.getTitle = function() {
+        return self.title[self.state];
+    };
 
     self.sortableOptions = {
         connectWith: ".sort",
