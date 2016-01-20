@@ -103,7 +103,7 @@ app.controller("issue-controller", ['dataFac', function() {
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['utilsFac', function(utilsFac) {
+app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dataFac) {
     var self = this;
 
     /**
@@ -135,7 +135,13 @@ app.controller('rank-controller', ['utilsFac', function(utilsFac) {
     };
 
     self.submit = function () {
-
+        dataFac.getAll('api/issue/policy', 'i1')
+            .success(function(data) {
+                console.log(data);
+            })
+            .error(function(error) {
+                console.log("An error has occurred" + error);
+            });
     };
 }]);
 
