@@ -1,11 +1,14 @@
 /**
  * Karma tests
  *
- * Created by ryan on 11/16/15.
+ * @author ryan
  */
 
+/**
+ * app.js Tests
+ */
 describe('Unit: Routing', function () {
-    it('should map routes to controllers', function() {
+    it('Should Map Routes to Controllers', function() {
         module('democracy-lab-app');
 
         inject(function($route) {
@@ -30,32 +33,51 @@ describe('Unit: Routing', function () {
     });
 });
 
+/**
+ * appController.js Tests
+ */
 describe('Unit: main-controller', function() {
     // Load the module with MainController
     beforeEach(module('democracy-lab-app'));
 
     var ctrl;
+    var fact;
     // inject the $controller and $rootScope services
     // in the beforeEach block
-    beforeEach(inject(function($controller) {
+    beforeEach(inject(function($controller, $injector) {
         // Create the controller
         ctrl = $controller('main-controller');
+        fact = $injector.get('dataFac');
     }));
 
-    it('Should verify title is "Login or Create Account"', function() {
+    it('Verify title', function() {
         expect(ctrl.title).toEqual("Login or Create Account");
     });
-    //TODO fix these up, not properly checking the Factory
+
     it('Verify incorrect login', function() {
         ctrl.getAccess();
         expect(ctrl.authorized).toEqual(false);
     });
-    it('Verify incorrect login', function() {
+
+    it('Verify correct login', function() {
         ctrl.username = "admin";
         ctrl.password = "1234";
         ctrl.getAccess();
         expect(ctrl.authorized).toEqual(true);
     });
+
+    it('Verify Create Form pops', function() {
+        ctrl.createAccount();
+        expect(ctrl.showCreateForm).toEqual(true);
+    });
+
+    // TODO fix later
+    it('Verify User already in DB', function() {
+        ctrl.new_user = "rta";
+        fact.postUser(ctrl.new_user);
+        expect(false);
+    });
+
 });
 
 describe('Unit: issue-controller', function() {
@@ -69,10 +91,27 @@ describe('Unit: issue-controller', function() {
         // Create the controller
         ctrl = $controller('issue-controller');
     }));
-    it('should verify title is "Weigh in on..."',
+
+    it('Verify Title',
         function() {
             expect(ctrl.title).toEqual("Weigh in on an issue");
-        });
+    });
+
+    it('Verify Form Clears on Press', function() {
+        ctrl.submitIssue();
+        expect(ctrl.new_title = "");
+        expect(ctrl.new_description = "");
+    });
+
+    it('Verify voting initializes to false', function() {
+       expect(ctrl.issuerows[1].voting).toEqual(false);
+    });
+
+    it('Verify vote changes voting to true', function() {
+        ctrl.vote();
+        expect(ctrl.voting).toEqual(true);
+    });
+
 });
 
 describe('Unit: explore-controller', function() {
@@ -86,7 +125,7 @@ describe('Unit: explore-controller', function() {
         // Create the controller
         ctrl = $controller('explore-controller');
     }));
-    it('should verify title is "Explore the..."',
+    it('Verify Title',
         function() {
             expect(ctrl.title).toEqual("Explore the issues");
         });

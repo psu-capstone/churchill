@@ -18,19 +18,25 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.showCreateForm = false;
         self.getAccess = function(){
 
-            console.log(self.username + " " + self.password);
-            if (self.username == "admin" && self.password == "1234") {
-                //call the method in accessFac to allow the user permission.
-                accessFac.getPermission();
-                self.authorized = true;
-                console.log("Login successful");
-                $location.path('/issue');
-            } else {
-                accessFac.rejectPermission();
-                self.authorized = false;
-                self.reject = true;
-                console.log("Login unsuccessful");
-            }
+            var user_arg = JSON.stringify({
+                username: self.username,
+                password: self.password
+            });
+
+            dataFac.authUser(user_arg)
+                .success(function(data) {
+                    if(data["success"] == true) {
+                        accessFac.getPermission();
+                        self.authorized = true;
+                        $location.path('/issue');
+                    } else {
+                        accessFac.rejectPermission();
+                        self.authorized = false;
+                        self.reject = true;
+                    }
+                })
+                .error(function(error) {
+                });
         };
 
         self.createAccount = function() {
@@ -62,6 +68,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", ['dataFac', function() {
     var self = this;
     self.title = "Weigh in on an issue";
+    self.voting = false;
     self.issuerows = [
     {
         name: "Oregon Tax System",
@@ -86,7 +93,7 @@ app.controller("issue-controller", ['dataFac', function() {
     ];
     
     self.vote = function() {
-        voting = true;   
+        self.voting = true;
     };
     
     self.new_title = "";
@@ -99,15 +106,82 @@ app.controller("issue-controller", ['dataFac', function() {
     }
 }]);
 
+
+app.controller('tab-controller', function () {
+    this.tabs = [
+        { title:'Dynamic Title 1', content:'Dynamic content 1' },
+        { title:'Dynamic Title 2', content:'Dynamic content 2', disabled: true }
+    ];
+});
+
 /**
  * Ranking issues
  */
-app.controller('rank-controller', [function() {
+app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dataFac) {
     var self = this;
+    /**
+     * TODO: create actual state
+     */
+    self.state = 1;
+    /**
+     * TODO: title switch for each ranking set
+     */
+    self.title = { 1 : 'values', 2 : 'objectives', 3 : 'policies'};
+    /**
+     * TODO: button title switch dependant on ranking set
+     */
+    self.buttonTitle = 'Submit';
+    self.lik = utilsFac.likert;
+    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]}
+    self.tgtData = self.buckets[self.state];
+    self.srcData = {};
+
+    /**
+     * TODO: Load data lazily
+     */
+    dataFac.getAll('api/issue/value', 'i1')
+        .success(function(data) {
+            self.srcData['values'] =  data;
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
+
+    dataFac.getAll('api/issue/objective', 'i1')
+        .success(function(data) {
+            self.srcData['objectives'] =  data;
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
+
+    dataFac.getAll('api/issue/policy', 'i1')
+        .success(function(data) {
+            self.srcData['policies'] =  data;
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
+
+    self.showContent = function(x) {
+        self.tgtData = self.buckets[x];
+    };
+
+    /**
+     * TODO: This will have to be worked on
+     */
+    self.getData = function(x) {
+        return self.srcData[self.title[x]];
+    };
+
+    self.getTitle = function(x) {
+        return self.title[x];
+    };
+
     self.sortableOptions = {
         connectWith: ".sort",
         scroll: false,
-        stop: function(){console.log(self.tgtData);}
+        stop: function(){console.log(self.tgtData[self.state]);}
     };
     
     self.tgtSortableOptions = {
@@ -119,37 +193,23 @@ app.controller('rank-controller', [function() {
         connectWith: ".sortTgt",
         scroll: false
     };
-    
-    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
-    self.tgtData= [[],[],[],[],[]];
-    
-    self.likertToString = {
-        '-2':'strongly disagree',
-        '-1':'disagree',
-         '0':'no opinion',
-         '1':'agree',
-         '2':'strongly agree'
-    };
-    
-    self.title = function(index) {
-        return self.likertToString[index - 2];
+
+    /**
+     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
+     */
+    self.submit = function () {
+
     };
 }]);
 
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", [function() {
+app.controller("explore-controller", ['utilsFac' ,function(utilsFac) {
     var self = this;
     self.title = "Explore the issues";
-    self.likertToString = {
-        '-2':'strongly disagree',
-        '-1':'disagree',
-         '0':'no opinion',
-         '1':'agree',
-         '2':'strongly agree'
-    };
     self.opinion = [-2,-1,0,1,2,-2];
+    self.lik = utilsFac.likert;
     self.data = [
         [30, 200, 200, 400, 150, 250],
         [130, 100, 100, 200, 150, 50],
@@ -163,7 +223,7 @@ app.controller("explore-controller", [function() {
             headers = ['x','Question1','Question2','Question3','Question4','Question5','Question6'];
 
         for(var i = 0; i < length; ++i) {
-            self.data[i].unshift(self.likertToString[i - 2]);
+            self.data[i].unshift(self.lik[i - 2]);
         }
         self.data[length].unshift('you');
         self.data.unshift(headers);
