@@ -18,19 +18,25 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.showCreateForm = false;
         self.getAccess = function(){
 
-            console.log(self.username + " " + self.password);
-            if (self.username == "admin" && self.password == "1234") {
-                //call the method in accessFac to allow the user permission.
-                accessFac.getPermission();
-                self.authorized = true;
-                console.log("Login successful");
-                $location.path('/issue');
-            } else {
-                accessFac.rejectPermission();
-                self.authorized = false;
-                self.reject = true;
-                console.log("Login unsuccessful");
-            }
+            var user_arg = JSON.stringify({
+                username: self.username,
+                password: self.password
+            });
+
+            dataFac.authUser(user_arg)
+                .success(function(data) {
+                    if(data["success"] == true) {
+                        accessFac.getPermission();
+                        self.authorized = true;
+                        $location.path('/issue');
+                    } else {
+                        accessFac.rejectPermission();
+                        self.authorized = false;
+                        self.reject = true;
+                    }
+                })
+                .error(function(error) {
+                });
         };
 
         self.createAccount = function() {
@@ -62,6 +68,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 app.controller("issue-controller", ['dataFac', function() {
     var self = this;
     self.title = "Weigh in on an issue";
+    self.voting = false;
     self.issuerows = [
     {
         name: "Oregon Tax System",
@@ -86,7 +93,7 @@ app.controller("issue-controller", ['dataFac', function() {
     ];
     
     self.vote = function() {
-        voting = true;   
+        self.voting = true;
     };
     
     self.new_title = "";
@@ -102,12 +109,64 @@ app.controller("issue-controller", ['dataFac', function() {
 /**
  * Ranking issues
  */
-app.controller('rank-controller', [function() {
+app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(utilsFac, dataFac, $scope) {
     var self = this;
+    /**
+     * TODO: Make global factory version of this
+     */
+    var endpoints = { 1 : 'value', 2 : 'objective', 3 : 'policy'};
+    var fetchContent = function(which) {
+        dataFac.getAll('api/issue/' + which, 'i1')
+            .success(function(data) {
+                self.srcData[which] = data;
+            })
+            .error(function(error) {
+                console.log("An error has occurred" + error);
+            });
+    };
+
+    self.title = { 1: 'Values', 2 : 'Objectives', 3 : 'Policies'};
+    /**
+     * TODO: make button appear only when ready to post ranking
+     */
+    self.buttonTitle = 'Submit';
+    self.lik = utilsFac.likert;
+    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]};
+    self.tgtData = self.buckets[1];
+    self.srcData = {};
+
+    $scope.$watch('show', function(value) {
+        if(value) {
+            self.showContent(1);
+        }
+    });
+
+    self.showContent = function(x) {
+        var which = endpoints[x];
+        if( self.srcData[which] === undefined ) {
+            fetchContent(which);
+        }
+        self.tgtData = self.buckets[x];
+    };
+
+    self.getData = function(x) {
+        return self.srcData[endpoints[x]];
+    };
+
+    self.getTitle = function(x) {
+        return self.title[x];
+    };
+
+    /**
+     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
+     */
+    self.submit = function () {
+
+    };
+
     self.sortableOptions = {
         connectWith: ".sort",
-        scroll: false,
-        stop: function(){console.log(self.tgtData);}
+        scroll: false
     };
     
     self.tgtSortableOptions = {
@@ -119,37 +178,16 @@ app.controller('rank-controller', [function() {
         connectWith: ".sortTgt",
         scroll: false
     };
-    
-    self.srcData= [["Src Item 1", "Src Item 2", "Src Item 3", "Src Item 4", "Src Item 5"]];
-    self.tgtData= [[],[],[],[],[]];
-    
-    self.likertToString = {
-        '-2':'strongly disagree',
-        '-1':'disagree',
-         '0':'no opinion',
-         '1':'agree',
-         '2':'strongly agree'
-    };
-    
-    self.title = function(index) {
-        return self.likertToString[index - 2];
-    };
 }]);
 
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", [function() {
+app.controller("explore-controller", ['utilsFac' ,function(utilsFac) {
     var self = this;
     self.title = "Explore the issues";
-    self.likertToString = {
-        '-2':'strongly disagree',
-        '-1':'disagree',
-         '0':'no opinion',
-         '1':'agree',
-         '2':'strongly agree'
-    };
     self.opinion = [-2,-1,0,1,2,-2];
+    self.lik = utilsFac.likert;
     self.data = [
         [30, 200, 200, 400, 150, 250],
         [130, 100, 100, 200, 150, 50],
@@ -163,7 +201,7 @@ app.controller("explore-controller", [function() {
             headers = ['x','Question1','Question2','Question3','Question4','Question5','Question6'];
 
         for(var i = 0; i < length; ++i) {
-            self.data[i].unshift(self.likertToString[i - 2]);
+            self.data[i].unshift(self.lik[i - 2]);
         }
         self.data[length].unshift('you');
         self.data.unshift(headers);
