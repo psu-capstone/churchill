@@ -131,7 +131,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
      */
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
-    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]}
+    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]};
     self.tgtData = self.buckets[1];
     self.srcData = {};
 
