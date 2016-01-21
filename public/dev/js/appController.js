@@ -106,34 +106,20 @@ app.controller("issue-controller", ['dataFac', function() {
     }
 }]);
 
-
-app.controller('tab-controller', function () {
-    this.tabs = [
-        { title:'Dynamic Title 1', content:'Dynamic content 1' },
-        { title:'Dynamic Title 2', content:'Dynamic content 2', disabled: true }
-    ];
-});
-
 /**
  * Ranking issues
  */
 app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dataFac) {
     var self = this;
-    /**
-     * TODO: create actual state
-     */
-    self.state = 1;
-    /**
-     * TODO: title switch for each ranking set
-     */
+
     self.title = { 1 : 'values', 2 : 'objectives', 3 : 'policies'};
     /**
-     * TODO: button title switch dependant on ranking set
+     * TODO: make button appear only when ready to post ranking
      */
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
     self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]}
-    self.tgtData = self.buckets[self.state];
+    self.tgtData = self.buckets[1];
     self.srcData = {};
 
     /**
@@ -167,9 +153,6 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
         self.tgtData = self.buckets[x];
     };
 
-    /**
-     * TODO: This will have to be worked on
-     */
     self.getData = function(x) {
         return self.srcData[self.title[x]];
     };
@@ -178,10 +161,16 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
         return self.title[x];
     };
 
+    /**
+     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
+     */
+    self.submit = function () {
+
+    };
+
     self.sortableOptions = {
         connectWith: ".sort",
-        scroll: false,
-        stop: function(){console.log(self.tgtData[self.state]);}
+        scroll: false
     };
     
     self.tgtSortableOptions = {
@@ -192,13 +181,6 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.srcSortableOptions = {
         connectWith: ".sortTgt",
         scroll: false
-    };
-
-    /**
-     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
-     */
-    self.submit = function () {
-
     };
 }]);
 
