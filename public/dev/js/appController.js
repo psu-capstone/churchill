@@ -199,7 +199,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['utilsFac' ,function(utilsFac) {
+app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, dataFac) {
     var self = this;
     self.title = "Explore the issues";
     self.opinion = [-2,-1,0,1,2,-2];
@@ -211,7 +211,16 @@ app.controller("explore-controller", ['utilsFac' ,function(utilsFac) {
         [75, 100, 450, 0, 300, 200],
         [250, 300, 20, 85, 430, 500]
     ];
+    self.apiData = {};
 
+    dataFac.getStacked('api/summary/value', 'i1')
+        .success(function(data) {
+            self.apiData =  data;
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
+    
     var formatData = function() {
         var length = self.data.length - 1,
             headers = ['x','Question1','Question2','Question3','Question4','Question5','Question6'];
