@@ -18,19 +18,25 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.showCreateForm = false;
         self.getAccess = function(){
 
-            console.log(self.username + " " + self.password);
-            if (self.username == "admin" && self.password == "1234") {
-                //call the method in accessFac to allow the user permission.
-                accessFac.getPermission();
-                self.authorized = true;
-                console.log("Login successful");
-                $location.path('/issue');
-            } else {
-                accessFac.rejectPermission();
-                self.authorized = false;
-                self.reject = true;
-                console.log("Login unsuccessful");
-            }
+            var user_arg = JSON.stringify({
+                username: self.username,
+                password: self.password
+            });
+
+            dataFac.authUser(user_arg)
+                .success(function(data) {
+                    if(data["success"] == true) {
+                        accessFac.getPermission();
+                        self.authorized = true;
+                        $location.path('/issue');
+                    } else {
+                        accessFac.rejectPermission();
+                        self.authorized = false;
+                        self.reject = true;
+                    }
+                })
+                .error(function(error) {
+                });
         };
 
         self.createAccount = function() {
