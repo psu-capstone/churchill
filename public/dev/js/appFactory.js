@@ -1,5 +1,5 @@
 /**
- * Factory settings for the login, flesh this out later to talk to REST API
+ * Factory settings for the login
  */
 app.factory('accessFac',function(){
     var obj = {};
