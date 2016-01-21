@@ -112,7 +112,7 @@ app.controller("issue-controller", ['dataFac', function() {
 app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dataFac) {
     var self = this;
 
-    self.title = { 1 : 'values', 2 : 'objectives', 3 : 'policies'};
+    self.title = { 1 : 'values', 2 : 'objective', 3 : 'policy'};
     /**
      * TODO: make button appear only when ready to post ranking
      */
@@ -121,10 +121,6 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]}
     self.tgtData = self.buckets[1];
     self.srcData = {};
-
-    /**
-     * TODO: Load data lazily
-     */
     dataFac.getAll('api/issue/value', 'i1')
         .success(function(data) {
             self.srcData['values'] =  data;
@@ -133,23 +129,17 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
             console.log("An error has occurred" + error);
         });
 
-    dataFac.getAll('api/issue/objective', 'i1')
-        .success(function(data) {
-            self.srcData['objectives'] =  data;
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
-
-    dataFac.getAll('api/issue/policy', 'i1')
-        .success(function(data) {
-            self.srcData['policies'] =  data;
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
-
     self.showContent = function(x) {
+        var which = self.getTitle(x);
+        if( self.srcData[which] === undefined ) {
+            dataFac.getAll('api/issue/' + which, 'i1')
+                .success(function(data) {
+                    self.srcData[which] =  data;
+                })
+                .error(function(error) {
+                    console.log("An error has occurred" + error);
+                });
+        }
         self.tgtData = self.buckets[x];
     };
 
