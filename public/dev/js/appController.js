@@ -109,10 +109,23 @@ app.controller("issue-controller", ['dataFac', function() {
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dataFac) {
+app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(utilsFac, dataFac, $scope) {
     var self = this;
+    /**
+     * TODO: Make global factory version of this
+     */
+    var endpoints = { 1 : 'value', 2 : 'objective', 3 : 'policy'};
+    var fetchContent = function(which) {
+        dataFac.getAll('api/issue/' + which, 'i1')
+            .success(function(data) {
+                self.srcData[which] = data;
+            })
+            .error(function(error) {
+                console.log("An error has occurred" + error);
+            });
+    };
 
-    self.title = { 1 : 'values', 2 : 'objective', 3 : 'policy'};
+    self.title = { 1: 'Values', 2 : 'Objectives', 3 : 'Policies'};
     /**
      * TODO: make button appear only when ready to post ranking
      */
@@ -121,30 +134,23 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]}
     self.tgtData = self.buckets[1];
     self.srcData = {};
-    dataFac.getAll('api/issue/value', 'i1')
-        .success(function(data) {
-            self.srcData['values'] =  data;
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
+
+    $scope.$watch('show', function(value) {
+        if(value) {
+            self.showContent(1);
+        }
+    });
 
     self.showContent = function(x) {
-        var which = self.getTitle(x);
+        var which = endpoints[x];
         if( self.srcData[which] === undefined ) {
-            dataFac.getAll('api/issue/' + which, 'i1')
-                .success(function(data) {
-                    self.srcData[which] =  data;
-                })
-                .error(function(error) {
-                    console.log("An error has occurred" + error);
-                });
+            fetchContent(which);
         }
         self.tgtData = self.buckets[x];
     };
 
     self.getData = function(x) {
-        return self.srcData[self.title[x]];
+        return self.srcData[endpoints[x]];
     };
 
     self.getTitle = function(x) {
