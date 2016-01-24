@@ -110,20 +110,17 @@ app.controller("issue-controller", ['dataFac', function() {
  * Ranking issues
  */
 app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(utilsFac, dataFac, $scope) {
-    var self = this;
-    /**
-     * TODO: Make global factory version of this
-     */
-    var endpoints = { 1 : 'value', 2 : 'objective', 3 : 'policy'};
-    var fetchContent = function(which) {
-        dataFac.getAll('api/issue/' + which, 'i1')
-            .success(function(data) {
-                self.srcData[which] = data;
-            })
-            .error(function(error) {
-                console.log("An error has occurred" + error);
-            });
-    };
+    var self = this,
+        endpoints = utilsFac.endpointPfx,
+        fetchContent = function(which) {
+            dataFac.getAll('api/issue/' + which, 'i1')
+                .success(function(data) {
+                    self.srcData[which] = data;
+                })
+                .error(function(error) {
+                    console.log("An error has occurred" + error);
+                });
+        };
 
     self.title = { 1: 'Values', 2 : 'Objectives', 3 : 'Policies'};
     /**
