@@ -27,6 +27,11 @@ app.factory('utilsFac', function(){
            '0':'no opinion',
            '1':'agree',
            '2':'strongly agree'
+       },
+       endpointPfx: {
+           1 : 'value',
+           2 : 'objective',
+           3 : 'policy'
        }
    };
 });
