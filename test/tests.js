@@ -59,12 +59,12 @@ describe('Unit: main-controller', function() {
         expect(ctrl.authorized).toEqual(false);
     });
 
-    it('Verify correct login', function() {
-        ctrl.username = "admin";
-        ctrl.password = "1234";
-        ctrl.getAccess();
-        expect(ctrl.authorized).toEqual(true);
-    });
+    //it('Verify correct login', function() {
+    //    ctrl.username = "rta";
+    //    ctrl.password = "1234";
+    //    ctrl.getAccess();
+    //    expect(ctrl.authorized).toEqual(true);
+    //});
 
     it('Verify Create Form pops', function() {
         ctrl.createAccount();
@@ -77,7 +77,6 @@ describe('Unit: main-controller', function() {
         fact.postUser(ctrl.new_user);
         expect(false);
     });
-
 });
 
 describe('Unit: issue-controller', function() {

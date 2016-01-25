@@ -1,5 +1,5 @@
 /**
- * Factory settings for the login, flesh this out later to talk to REST API
+ * Factory settings for the login
  */
 app.factory('accessFac',function(){
     var obj = {};
@@ -27,6 +27,11 @@ app.factory('utilsFac', function(){
            '0':'no opinion',
            '1':'agree',
            '2':'strongly agree'
+       },
+       endpointPfx: {
+           1 : 'value',
+           2 : 'objective',
+           3 : 'policy'
        }
    };
 });

@@ -18,19 +18,25 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.showCreateForm = false;
         self.getAccess = function(){
 
-            console.log(self.username + " " + self.password);
-            if (self.username == "admin" && self.password == "1234") {
-                //call the method in accessFac to allow the user permission.
-                accessFac.getPermission();
-                self.authorized = true;
-                console.log("Login successful");
-                $location.path('/issue');
-            } else {
-                accessFac.rejectPermission();
-                self.authorized = false;
-                self.reject = true;
-                console.log("Login unsuccessful");
-            }
+            var user_arg = JSON.stringify({
+                username: self.username,
+                password: self.password
+            });
+
+            dataFac.authUser(user_arg)
+                .success(function(data) {
+                    if(data["success"] == true) {
+                        accessFac.getPermission();
+                        self.authorized = true;
+                        $location.path('/issue');
+                    } else {
+                        accessFac.rejectPermission();
+                        self.authorized = false;
+                        self.reject = true;
+                    }
+                })
+                .error(function(error) {
+                });
         };
 
         self.createAccount = function() {
@@ -100,82 +106,109 @@ app.controller("issue-controller", ['dataFac', function() {
     }
 }]);
 
-
-app.controller('tab-controller', function () {
-    this.tabs = [
-        { title:'Dynamic Title 1', content:'Dynamic content 1' },
-        { title:'Dynamic Title 2', content:'Dynamic content 2', disabled: true }
-    ];
-});
-
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dataFac) {
-    var self = this;
-    /**
-     * TODO: create actual state
-     */
-    self.state = 1;
-    /**
-     * TODO: title switch for each ranking set
-     */
-    self.title = { 1 : 'values', 2 : 'objectives', 3 : 'policies'};
-    /**
-     * TODO: button title switch dependant on ranking set
-     */
+app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(utilsFac, dataFac, $scope) {
+    var self = this,
+        endpoints = utilsFac.endpointPfx,
+        fetchContent = function(which) {
+            dataFac.getAll('api/issue/' + which, 'i1')
+                .success(function(data) {
+                    self.srcData[which] = data;
+                })
+                .error(function(error) {
+                    console.log("An error has occurred" + error);
+                });
+        };
+
+    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]};
+    self.title = { 1: 'Values', 2 : 'Objectives', 3 : 'Policies'};
+    self.tgtData = self.buckets[1];
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
-    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]}
-    self.tgtData = self.buckets[self.state];
     self.srcData = {};
 
-    /**
-     * TODO: Load data lazily
-     */
-    dataFac.getAll('api/issue/value', 'i1')
-        .success(function(data) {
-            self.srcData['values'] =  data;
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
-
-    dataFac.getAll('api/issue/objective', 'i1')
-        .success(function(data) {
-            self.srcData['objectives'] =  data;
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
-
-    dataFac.getAll('api/issue/policy', 'i1')
-        .success(function(data) {
-            self.srcData['policies'] =  data;
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
+    $scope.$watch('show', function(value) {
+        if(value) {
+            self.showContent(1);
+        }
+    });
 
     self.showContent = function(x) {
+        var which = endpoints[x];
+        if( self.srcData[which] === undefined ) {
+            fetchContent(which);
+        }
         self.tgtData = self.buckets[x];
     };
 
-    /**
-     * TODO: This will have to be worked on
-     */
     self.getData = function(x) {
-        return self.srcData[self.title[x]];
+        return self.srcData[endpoints[x]];
     };
 
     self.getTitle = function(x) {
         return self.title[x];
     };
 
+    self.showSubmitButton = function() {
+        var source_bucket,
+            disable = false;
+        for(var which in endpoints) {
+            source_bucket = self.srcData[endpoints[which]];
+            if(source_bucket !== undefined) {
+                if(source_bucket['nodes'].length != 0) {
+                    disable = true;
+                }
+            } else {
+                disable = true;
+            }
+        };
+        $('#submitButton').prop('disabled', function(i, v) { return disable; });
+    };
+
+    /**
+     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
+     */
+    self.submit = function () {
+        var i, j,
+            rank,
+            ready,
+            bucket,
+            ranked,
+            rankingSet,
+            userId = 'u1',
+            issueId = 'i1';
+
+        for(i in self.buckets) {
+            bucket = self.buckets[i];
+            for (j in bucket) {
+                rankingSet = bucket[j];
+                rank = (j - 2);
+                for (; 0 < rankingSet.length;) {
+                    ranked = rankingSet.pop();
+                    ready = JSON.stringify({
+                        user_id: userId,
+                        node_id: ranked.node_id,
+                        issue_id: issueId,
+                        rank: rank
+                    });
+                    dataFac.rankNode('api/rank/' + utilsFac.endpointPfx[i], ready)
+                        .success(function (data) {
+                            console.log(data);
+                        })
+                        .error(function (error) {
+                            console.log("An error has occurred" + error);
+                        });
+                }
+            }
+        }
+    };
+
     self.sortableOptions = {
         connectWith: ".sort",
         scroll: false,
-        stop: function(){console.log(self.tgtData[self.state]);}
+        stop: function() {self.showSubmitButton()}
     };
     
     self.tgtSortableOptions = {
@@ -186,13 +219,6 @@ app.controller('rank-controller', ['utilsFac', 'dataFac', function(utilsFac, dat
     self.srcSortableOptions = {
         connectWith: ".sortTgt",
         scroll: false
-    };
-
-    /**
-     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
-     */
-    self.submit = function () {
-
     };
 }]);
 
