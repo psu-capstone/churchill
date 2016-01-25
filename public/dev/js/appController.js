@@ -122,14 +122,11 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
                 });
         };
 
+    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]};
     self.title = { 1: 'Values', 2 : 'Objectives', 3 : 'Policies'};
-    /**
-     * TODO: make button appear only when ready to post ranking
-     */
+    self.tgtData = self.buckets[1];
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
-    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]};
-    self.tgtData = self.buckets[1];
     self.srcData = {};
 
     $scope.$watch('show', function(value) {
@@ -154,6 +151,22 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
         return self.title[x];
     };
 
+    self.showSubmitButton = function() {
+        var source_bucket,
+            disable = false;
+        for(var i = 1; i < 4; ++i){
+            source_bucket = self.srcData[endpoints[i]];
+            if(source_bucket !== undefined) {
+                if(source_bucket['nodes'].length != 0) {
+                    disable = true;
+                }
+            } else {
+                disable = true;
+            }
+        };
+        $('#submitButton').prop('disabled', function(i, v) { return disable; });
+    };
+
     /**
      * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
      */
@@ -163,7 +176,8 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
 
     self.sortableOptions = {
         connectWith: ".sort",
-        scroll: false
+        scroll: false,
+        stop: function() {self.showSubmitButton()}
     };
     
     self.tgtSortableOptions = {
