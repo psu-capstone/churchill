@@ -154,8 +154,8 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
     self.showSubmitButton = function() {
         var source_bucket,
             disable = false;
-        for(var i = 1; i < 4; ++i){
-            source_bucket = self.srcData[endpoints[i]];
+        for(var which in endpoints) {
+            source_bucket = self.srcData[endpoints[which]];
             if(source_bucket !== undefined) {
                 if(source_bucket['nodes'].length != 0) {
                     disable = true;
@@ -171,7 +171,42 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
      * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
      */
     self.submit = function () {
+        var i, j, k,
+            rank,
+            ready,
+            bucket,
+            ranked,
+            rankingSet,
+            userId = 'u1',
+            issueId = 'i1';
 
+        var count = 0;
+
+        for(i in self.buckets) {
+            bucket = self.buckets[i];
+            for(j in bucket) {
+               rankingSet = bucket[j];
+               rank = (j - 2);
+               for(; 0 < rankingSet.length;) {
+                   ranked = rankingSet.pop();
+                   ready = JSON.stringify( {
+                       user_id:userId,
+                       node_id:ranked.node_id,
+                       issue_id: issueId,
+                       rank: rank
+                   });
+                   dataFac.rankNode('api/rank/' + utilsFac.endpointPfx[i], ready)
+                       .success(function(data) {
+                           console.log(data);
+                       })
+                       .error(function(error) {
+                           console.log("An error has occurred" + error);
+                       });
+                   ++count;
+               }
+            }
+        }
+        console.log(count);
     };
 
     self.sortableOptions = {
