@@ -204,18 +204,33 @@ app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, 
     self.title = "Explore the issues";
     self.opinion = [-2,-1,0,1,2,-2];
     self.lik = utilsFac.likert;
-    self.data = [
+    
+    self.data = [];
+        /*[
         [30, 200, 200, 400, 150, 250],
         [130, 100, 100, 200, 150, 50],
         [230, 200, 200, 300, 250, 250],
         [75, 100, 450, 0, 300, 200],
         [250, 300, 20, 85, 430, 500]
     ];
+    */
     self.apiData = {};
 
+    var transpose = function(){
+        var formatted = [[],[],[],[],[]];
+        
+        for(var i in self.apiData){
+            for(var j = 0; j < self.apiData[i].length; j++){
+                formatted[j].push(self.apiData[i][j]);        
+            }
+        }
+        self.data = formatted;
+    };
+    
     dataFac.getStacked('api/summary/value', 'i1')
         .success(function(data) {
-            self.apiData =  data;
+            self.apiData = data.data;
+            transpose();
         })
         .error(function(error) {
             console.log("An error has occurred" + error);
