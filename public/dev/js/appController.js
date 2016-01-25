@@ -171,7 +171,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
      * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
      */
     self.submit = function () {
-        var i, j, k,
+        var i, j,
             rank,
             ready,
             bucket,
@@ -180,33 +180,29 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
             userId = 'u1',
             issueId = 'i1';
 
-        var count = 0;
-
         for(i in self.buckets) {
             bucket = self.buckets[i];
-            for(j in bucket) {
-               rankingSet = bucket[j];
-               rank = (j - 2);
-               for(; 0 < rankingSet.length;) {
-                   ranked = rankingSet.pop();
-                   ready = JSON.stringify( {
-                       user_id:userId,
-                       node_id:ranked.node_id,
-                       issue_id: issueId,
-                       rank: rank
-                   });
-                   dataFac.rankNode('api/rank/' + utilsFac.endpointPfx[i], ready)
-                       .success(function(data) {
-                           console.log(data);
-                       })
-                       .error(function(error) {
-                           console.log("An error has occurred" + error);
-                       });
-                   ++count;
-               }
+            for (j in bucket) {
+                rankingSet = bucket[j];
+                rank = (j - 2);
+                for (; 0 < rankingSet.length;) {
+                    ranked = rankingSet.pop();
+                    ready = JSON.stringify({
+                        user_id: userId,
+                        node_id: ranked.node_id,
+                        issue_id: issueId,
+                        rank: rank
+                    });
+                    dataFac.rankNode('api/rank/' + utilsFac.endpointPfx[i], ready)
+                        .success(function (data) {
+                            console.log(data);
+                        })
+                        .error(function (error) {
+                            console.log("An error has occurred" + error);
+                        });
+                }
             }
         }
-        console.log(count);
     };
 
     self.sortableOptions = {
