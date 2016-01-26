@@ -102,10 +102,6 @@ describe('Unit: issue-controller', function() {
         expect(ctrl.new_description = "");
     });
 
-    it('Verify voting initializes to false', function() {
-       expect(ctrl.issuerows[1].voting).toEqual(false);
-    });
-
     it('Verify vote changes voting to true', function() {
         ctrl.vote();
         expect(ctrl.voting).toEqual(true);
