@@ -57,10 +57,8 @@ app.directive('userUnique', ['dataFac', function (dataFac) {
                 dataFac.getNode("api/user", current)
                     .success(function(data) {
                         if(data["id"] == current) {
-                            console.log("Not Unique");
                             ctrl.$setValidity('unique', false);
                         } else {
-                            console.log("Unique");
                             ctrl.$setValidity('unique', true);
                         }
                     })
@@ -68,20 +66,6 @@ app.directive('userUnique', ['dataFac', function (dataFac) {
                         console.log("An error has occurred");
                     });
             });
-        }
-    }
-}]);
-
-/**
- * Pull issues from database
- */
-app.directive('issueFills', ['dataFac', function() {
-    return {
-        restrict: 'E',
-        replace: true,
-        templateUrl: './widgets/issueTemplate.html',
-        link: function(scope, element) {
-
         }
     }
 }]);

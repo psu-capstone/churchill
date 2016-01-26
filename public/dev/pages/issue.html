@@ -1,4 +1,4 @@
-<div ng-controller = "issue-controller as issue">
+<div ng-controller = "issue-controller as issue" ng-init="issue.getIssues()">
     <div class="row">
       <div class=col-sm-12>
           <h2>{{ issue.title }}</h2>
@@ -7,16 +7,15 @@
       </div>
     </div>
 
-    <issue-fills></issue-fills>
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
-    <!--<div class="issue row" ng-repeat="row in issue.issuerows">-->
-        <!--<div class="issue">-->
-            <!--<button ng-click="row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>-->
-        <!--</div>-->
-        <!--<h5>{{row.description}}</h5>-->
-        <!--<sort></sort>-->
-    <!--</div>-->
-    
+    <div class="issue row" ng-repeat="row in issue.issuerows">
+        <div class="issue">
+            <button ng-click="row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+        </div>
+        <h5>{{row.description}}</h5>
+        <sort></sort>
+    </div>
+
     <div class="issue row add">
         <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
         <p></p>
@@ -29,6 +28,7 @@
                 <label style="font-size: 12px">Description</label>
                 <input type="text" ng-model="issue.new_description" class="form-control">
             </div>
-            <button ng-click="issue.submitIssue()" type='button' class='btn btn-success'>Add New Issue</button>        </div>
+            <button ng-click="issue.submitIssue()" type='button' class='btn btn-success'>Add New Issue</button>
+        </div>
     </div>
 </div>
