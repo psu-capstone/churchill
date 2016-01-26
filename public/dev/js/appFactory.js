@@ -53,6 +53,10 @@ app.factory('dataFac',['$http', function($http) {
         return get(urlBase + endpoint + '?filter_id=' + fieldId);
     };
 
+    dataFactory.getStacked = function(endpoint, issueId) {
+        return get(urlBase + endpoint + '?issue_id=' + issueId);
+    };
+    
     dataFactory.postUser = function(data) {
         return post(urlBase + 'api/user', data);
     };

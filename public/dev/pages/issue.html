@@ -7,14 +7,15 @@
       </div>
     </div>
 
+    <issue-fills></issue-fills>
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
-    <div class="issue row" ng-repeat="row in issue.issuerows">
-        <div class="issue">
-            <button ng-click="row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
-        </div>
-        <h5>{{row.description}}</h5>
-        <sort></sort>
-    </div>
+    <!--<div class="issue row" ng-repeat="row in issue.issuerows">-->
+        <!--<div class="issue">-->
+            <!--<button ng-click="row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>-->
+        <!--</div>-->
+        <!--<h5>{{row.description}}</h5>-->
+        <!--<sort></sort>-->
+    <!--</div>-->
     
     <div class="issue row add">
         <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
