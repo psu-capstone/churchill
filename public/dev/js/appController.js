@@ -65,32 +65,25 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', function() {
+app.controller("issue-controller", ['dataFac', function(dataFac) {
     var self = this;
     self.title = "Weigh in on an issue";
     self.voting = false;
-    self.issuerows = [
-    {
-        name: "Oregon Tax System",
-        description: "Let us know what you think of Oregon's taxes!",
-        voting: false
-    },
-    {
-        name: "Abortion",
-        description: "Share your views about abortion and see if common ground can be found on this polarizing issue!",
-        voting: false
-    },
-    {
-        name: "Oregon K-12 Classrooms",
-        description: "Help make Oregon's schools stronger!",
-        voting: false
-    },
-    {
-        name: "A New Issue",
-        description: "Something else to discuss that has been added",
-        voting: false
-    }
-    ];
+
+    self.issuerows = [];
+
+     self.getIssues = function() {
+        dataFac.getAll('api/community/issue', 'i1')
+            .success(function(data) {
+                for(var i = 0; i < data['nodes'].length; i++) {
+                    var temp = data['nodes'][i].name;
+                    self.issuerows.push({name: temp, description: 'placeholder', voting: false });
+                }
+            })
+            .error(function(data) {
+                console.log(data);
+            });
+    };
     
     self.vote = function() {
         self.voting = true;
