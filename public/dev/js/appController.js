@@ -167,9 +167,6 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
         $('#submitButton').prop('disabled', function(i, v) { return disable; });
     };
 
-    /**
-     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
-     */
     self.submit = function () {
         var i, j,
             rank,
