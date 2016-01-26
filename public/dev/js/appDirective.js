@@ -104,6 +104,7 @@ app.directive("bars", function () {
     return {
         restrict: 'E',
         replace: true,
+        controller: 'explore-controller as exp',
         template: '<div id="chart"></div>',
         link: function (scope) {
             var unwatch = scope.$watch('exp.data', function(newVal){
