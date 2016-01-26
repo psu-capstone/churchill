@@ -228,18 +228,10 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
 app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, dataFac) {
     var self = this;
     self.title = "Explore the issues";
-    self.opinion = [-2,-1,0,1,2,-2];
+    self.opinion = [-2,-1,0,1,2];
     self.lik = utilsFac.likert;
     
     self.data = [];
-        /*[
-        [30, 200, 200, 400, 150, 250],
-        [130, 100, 100, 200, 150, 50],
-        [230, 200, 200, 300, 250, 250],
-        [75, 100, 450, 0, 300, 200],
-        [250, 300, 20, 85, 430, 500]
-    ];
-    */
     self.apiData = {};
 
     var transpose = function(){
@@ -253,23 +245,14 @@ app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, 
         self.data = formatted;
     };
     
-    dataFac.getStacked('api/summary/value', 'i1')
-        .success(function(data) {
-            self.apiData = data.data;
-            transpose();
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
-    
     var formatData = function() {
-        var length = self.data.length - 1,
-            headers = ['x','Question1','Question2','Question3','Question4','Question5','Question6'];
+        var length = self.data.length,
+            headers = ['x','Question1','Question2','Question3','Question4','Question5'];
 
-        for(var i = 0; i < length; ++i) {
+        for(var i = 0; i < length - 1; ++i) {
             self.data[i].unshift(self.lik[i - 2]);
         }
-        self.data[length].unshift('you');
+        self.data[length -1].unshift('you');
         self.data.unshift(headers);
     };
 
@@ -285,7 +268,7 @@ app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, 
              opinionRow = index(opinions[i]);
              centered = centerOpinionValue(opinionRow, i, data);
              buffer = sumBuffer(opinionRow - 1, i, data);
-             data[length-1][i] = centered + buffer;
+             data[length][i] = centered + buffer;
         }
     };
 
@@ -314,7 +297,15 @@ app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, 
         self.data.push(temp);
     };
 
-    appendUserData();
-    scatterPositioning();
-    formatData();
+    dataFac.getStacked('api/summary/value', 'i1')
+        .success(function(data) {
+            self.apiData = data.data;
+            transpose();
+            appendUserData();
+            scatterPositioning();
+            formatData();
+        })
+        .error(function(error) {
+            console.log("An error has occurred" + error);
+        });
 }]);

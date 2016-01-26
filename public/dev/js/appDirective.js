@@ -73,6 +73,20 @@ app.directive('userUnique', ['dataFac', function (dataFac) {
 }]);
 
 /**
+ * Pull issues from database
+ */
+app.directive('issueFills', ['dataFac', function() {
+    return {
+        restrict: 'E',
+        replace: true,
+        templateUrl: './widgets/issueTemplate.html',
+        link: function(scope, element) {
+
+        }
+    }
+}]);
+
+/**
  * drag and drop likert scale ranking directive
  */
 app.directive("sort", [function () {
@@ -91,64 +105,68 @@ app.directive("bars", function () {
         restrict: 'E',
         replace: true,
         template: '<div id="chart"></div>',
-        link: function (scope, element, attrs) {
-            var you = 'you',
-                scp = scope.exp,
-                opinion = scp.opinion,
-                lik = scp.lik,
-
-                chart = c3.generate({
-                data: {
-                    x:'x',
-                    columns: scp.data,
-                    type: 'bar',
-                    types: {
-                        you: 'scatter'
-                    },
-                    order: null,
-                    colors: {
-                      'strongly disagree': '#920000',
-                      disagree: '#ec1b1b',
-                      'no opinion': '#dbd9d9' ,
-                      agree: '#0087d8',
-                      'strongly agree': '#095983',
-                      you: '#000000'
-                    },
-                    groups: [
-                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
-                    ]
-                },
-                point: {
-                    r: 5
-                },
-                axis: {
-                    rotated: true,
-                    y:{
-                        max: 1300
-                    },
-                    x:{
-                        type: 'categorized'
-                    }
-                },
-                onrendered: function () {
-                    d3.selectAll("circle")
-                        .style("opacity", 1)
-                        .style("stroke", "white");
-                },
-                legend: {
-                    item: {
-                        onclick: function (id) { return; }
-                    }
-                },
-                tooltip: {
-                    format:{
-                        value: function (value, ratio, id, index) {
-                            if(id === you) {
-                                value = lik[opinion[index]];
+        link: function (scope) {
+            var unwatch = scope.$watch('exp.data', function(newVal){
+                if (newVal.length > 0) {
+                    var you = 'you',
+                        scp = scope.exp,
+                        opinion = scp.opinion,
+                        lik = scp.lik,
+                        chart = c3.generate({
+                            data: {
+                                x:'x',
+                                columns: scp.data,
+                                type: 'bar',
+                                types: {
+                                    you: 'scatter'
+                                },
+                                order: null,
+                                colors: {
+                                    'strongly disagree': '#920000',
+                                    disagree: '#ec1b1b',
+                                    'no opinion': '#dbd9d9' ,
+                                    agree: '#0087d8',
+                                    'strongly agree': '#095983',
+                                    you: '#000000'
+                                },
+                                groups: [
+                                    [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
+                                ]
+                            },
+                            point: {
+                                r: 5
+                            },
+                            axis: {
+                                rotated: true,
+                                y:{
+                                    max: 4
+                                },
+                                x:{
+                                    type: 'categorized'
+                                }
+                            },
+                            onrendered: function () {
+                                d3.selectAll("circle")
+                                    .style("opacity", 1)
+                                    .style("stroke", "white");
+                            },
+                            legend: {
+                                item: {
+                                    onclick: function (id) { return; }
+                                }
+                            },
+                            tooltip: {
+                                format:{
+                                    value: function (value, ratio, id, index) {
+                                        if(id === you) {
+                                            value = lik[opinion[index]];
+                                        }
+                                        return value;
+                                    }
+                                }
                             }
-                            return value;
-                        }
-                    }
+                        });
+                    unwatch();
                 }
             });
         }
