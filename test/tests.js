@@ -24,11 +24,6 @@ describe('Unit: Routing', function () {
             expect($route.routes['/issue'].controller).toBe('issue-controller');
             expect($route.routes['/issue'].templateUrl).
                 toEqual('./pages/issue.html');
-
-            expect($route.routes['/explore'].controller).toBe('explore-controller');
-            expect($route.routes['/explore'].templateUrl).
-                toEqual('./pages/d3graph.html');
-            expect($route.routes['/explore'].directive).toBe('bars');
         });
     });
 });
