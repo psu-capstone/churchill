@@ -215,50 +215,88 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, dataFac) {
-    var self = this;
+app.controller("explore-controller", ['utilsFac', 'dataFac', '$q' ,function(utilsFac, dataFac, $q) {
+    var self = this,
+        tempData = null,
+        endpoints = utilsFac.endpointPfx,
+        fetchContent = function(which) {
+            var dfrd = $q.defer();
+            dataFac.getStacked('api/summary/' + which, 'i1')
+                .success(function(data) {
+                    dfrd.resolve(data);
+                })
+                .error(function(error) {
+                    dfrd.reject("An error has occurred" + error);
+                });
+            return dfrd.promise;
+        };
     self.title = "Explore the issues";
-    self.opinion = [-2,-1,0,1,2];
     self.lik = utilsFac.likert;
-    
-    self.data = [];
-    self.apiData = {};
+    self.srcData = {};
+    self.opinions = {1:[-2,-1,0,1,2], 2:[-2,-1,0,1,2], 3:[-2,-1,0,1,2,1,2,0]}
+
+    self.showContent = function(x) {
+        var which = endpoints[x];
+        if( self.srcData[which] === undefined ) {
+            fetchContent(which).then(function(data){
+                tempData = data.data;
+                self.opinion = self.opinions[x];
+                transpose();
+                appendUserData();
+                scatterPositioning();
+                formatData();
+                self.srcData[which] = tempData
+                self.data = self.srcData[which];
+            });
+        } else {
+            self.data = self.srcData[which];
+        }
+    };
+
 
     var transpose = function(){
         var formatted = [[],[],[],[],[]];
         
-        for(var i in self.apiData){
-            for(var j = 0; j < self.apiData[i].length; j++){
-                formatted[j].push(self.apiData[i][j]);        
+        for(var i in tempData){
+            for(var j = 0; j < tempData[i].length; j++){
+                formatted[j].push(tempData[i][j]);
             }
         }
-        self.data = formatted;
+        tempData = formatted;
     };
     
     var formatData = function() {
-        var length = self.data.length,
+        var length = tempData.length,
             headers = ['x','Question1','Question2','Question3','Question4','Question5'];
 
-        for(var i = 0; i < length - 1; ++i) {
-            self.data[i].unshift(self.lik[i - 2]);
+        if(tempData[0].length == 8 ) {
+            headers.push('Question6');
+            headers.push('Question7');
+            headers.push('Question8');
+
         }
-        self.data[length -1].unshift('you');
-        self.data.unshift(headers);
+
+
+        for(var i = 0; i < length - 1; ++i) {
+            tempData[i].unshift(self.lik[i - 2]);
+        }
+        tempData[length -1].unshift('you');
+        tempData.unshift(headers);
     };
 
     var scatterPositioning = function() {
         var buffer,
             opinionRow,
             centered,
-            data = self.data,
             opinions = self.opinion,
-            length = opinions.length;
+            length = opinions.length,
+            userColumn = tempData[5];
 
         for(var i = 0; i < length; ++i) {
              opinionRow = index(opinions[i]);
-             centered = centerOpinionValue(opinionRow, i, data);
-             buffer = sumBuffer(opinionRow - 1, i, data);
-             data[length][i] = centered + buffer;
+             centered = centerOpinionValue(opinionRow, i, tempData);
+             buffer = sumBuffer(opinionRow - 1, i, tempData);
+             userColumn[i] = centered + buffer;
         }
     };
 
@@ -284,18 +322,6 @@ app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, 
     var appendUserData = function() {
         var temp = [];
         self.opinion.forEach(function(x){temp.push(x);});
-        self.data.push(temp);
+        tempData.push(temp);
     };
-
-    dataFac.getStacked('api/summary/value', 'i1')
-        .success(function(data) {
-            self.apiData = data.data;
-            transpose();
-            appendUserData();
-            scatterPositioning();
-            formatData();
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
 }]);

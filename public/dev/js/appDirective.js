@@ -91,7 +91,7 @@ app.directive("bars", function () {
         template: '<div id="chart"></div>',
         link: function (scope) {
             var unwatch = scope.$watch('exp.data', function(newVal){
-                if (newVal.length > 0) {
+                if (newVal && newVal.length > 0) {
                     var you = 'you',
                         scp = scope.exp,
                         opinion = scp.opinion,
@@ -123,7 +123,7 @@ app.directive("bars", function () {
                             axis: {
                                 rotated: true,
                                 y:{
-                                    max: 4
+                                    max: 100
                                 },
                                 x:{
                                     type: 'categorized'
