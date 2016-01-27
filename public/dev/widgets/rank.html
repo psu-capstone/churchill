@@ -15,9 +15,10 @@
                         </div>
                     </div>
                 </div>
-                <bars ng-show="!showRank"></bars>
+
             </uib-tab>
             <button ng-show="showRank" id="submitButton" ng-click="rank.submit(); showRank = false" type='button' class='btn btn-success' disabled>{{ rank.buttonTitle }}</button>
+            <bars ng-show="!showRank"></bars>
         </uib-tabset>
     </div>
 </div>
