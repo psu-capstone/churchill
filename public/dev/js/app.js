@@ -27,21 +27,5 @@ app.config(function($routeProvider) {
                     }
                 }
             }*/
-        })
-        .when('/explore', {
-            templateUrl : './pages/d3graph.html',
-            controller  : 'explore-controller',
-            directive   : 'bars'
-            // Commented out for testing/developing
-            /*resolve:{
-                "check":function(accessFac, $location){
-                    if(accessFac.checkPermission()){
-                        $location.path('/explore');
-                    }else{
-                        $location.path('/home');    //redirect user to home.
-                        alert("Please Login");
-                    }
-                }
-            }*/
         });
 });
