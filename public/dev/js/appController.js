@@ -122,7 +122,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
     self.lik = utilsFac.likert;
     self.srcData = {};
 
-    $scope.$watch('show', function(value) {
+    $scope.$watch('row.voting', function(value) {
         if(value) {
             self.showContent(1);
         }
