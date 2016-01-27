@@ -1,4 +1,4 @@
-<div ng-controller = "rank-controller as rank" ng-init=" button = false; showRank = false;">
+<div ng-controller = "rank-controller as rank" ng-init=" button = false; showRank = true;">
     <div ng-controller = "explore-controller as exp">
         <uib-tabset justified="true" ng-show="row.voting">
             <uib-tab heading="{{content}}" ng-click="showRank == true ? rank.showContent($index + 1) : exp.showContent($index + 1)" ng-repeat="content in rank.title">
