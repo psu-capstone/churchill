@@ -2,8 +2,8 @@
  * Main login controller, display a login form and save valid credentials,
  * for now, the only valid credential for testing is admin 1234
  */
-app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac',
-    function($http, $location, accessFac, dataFac) {
+app.controller("main-controller", [ '$http', '$location', '$rootScope', 'accessFac', 'dataFac',
+    function($http, $location, $rootScope, accessFac, dataFac) {
         var self = this;
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
@@ -27,6 +27,7 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
                 .success(function(data) {
                     if(data["success"] == true) {
                         accessFac.getPermission();
+                        $rootScope.user = self.username;
                         self.authorized = true;
                         $location.path('/issue');
                     } else {
@@ -88,6 +89,18 @@ app.controller("issue-controller", ['dataFac', function(dataFac) {
     self.vote = function() {
         self.voting = true;
     };
+
+    self.choices = [{id: 'choice1'}];
+
+    self.addNewChoice = function() {
+        var newItemNo = self.choices.length + 1;
+        self.choices.push({'id':'choice'+ newItemNo});
+    };
+
+    self.removeChoice = function() {
+        var lastItem = self.choices.length - 1;
+        self.choices.splice(lastItem);
+    };
     
     self.new_title = "";
     self.new_description = "";
@@ -102,7 +115,7 @@ app.controller("issue-controller", ['dataFac', function(dataFac) {
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(utilsFac, dataFac, $scope) {
+app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$rootScope', function(utilsFac, dataFac, $scope, $rootScope) {
     var self = this,
         endpoints = utilsFac.endpointPfx,
         fetchContent = function(which) {
@@ -127,6 +140,10 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
             self.showContent(1);
         }
     });
+
+    self.getLoggedInUser = function() {
+        return $rootScope.user;
+    };
 
     self.showContent = function(x) {
         var which = endpoints[x];
@@ -156,7 +173,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
             } else {
                 disable = true;
             }
-        };
+        }
         $('#submitButton').prop('disabled', function(i, v) { return disable; });
     };
 
@@ -215,7 +232,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['utilsFac', 'dataFac', '$q' ,function(utilsFac, dataFac, $q) {
+app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$rootScope' ,function(utilsFac, dataFac, $q, $rootScope) {
     var self = this,
         tempData = null,
         endpoints = utilsFac.endpointPfx,
@@ -253,6 +270,9 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q' ,function(util
         }
     };
 
+    self.getLoggedInUser = function() {
+        return $rootScope.user;
+    };
 
     var transpose = function(){
         var formatted = [[],[],[],[],[]];
@@ -273,7 +293,6 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q' ,function(util
             headers.push('Question6');
             headers.push('Question7');
             headers.push('Question8');
-
         }
 
 
