@@ -115,12 +115,12 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
                 });
         };
 
-    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]};
-    self.title = { 1: 'Values', 2 : 'Objectives', 3 : 'Policies'};
-    self.tgtData = self.buckets[1];
+    self.buckets = [[[],[],[],[],[]], [[],[],[],[],[]],[[],[],[],[],[]]];
+    self.title = ['Values', 'Objectives', 'Policies'];
+    self.tgtData = self.buckets[0];
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
-    self.currentSet = 1;
+    self.currentSet = 0;
     self.srcData = {};
 
     $scope.$watch('row.voting', function(value) {
@@ -236,7 +236,7 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', function(util
     self.lik = utilsFac.likert;
     self.srcData = {};
     self.currentSet = 1;
-    self.opinions = {1:[-2,-1,0,1,2], 2:[-2,-1,0,1,2], 3:[-2,-1,0,1,2,1,2,0]};
+    self.opinions = [[-2,-1,0,1,2],[-2,-1,0,1,2],[-2,-1,0,1,2,1,2,0]];
 
     self.showContent = function() {
         var which = endpoints[self.currentSet];
