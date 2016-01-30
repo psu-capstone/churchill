@@ -19,7 +19,7 @@
     <div class="issue row add">
         <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
         <p></p>
-        <div class="formwrapper" ng-init = "issue.showform = false" ng-show="issue.showform">
+        <div class="formWrapper" ng-init = "issue.showform = false" ng-show="issue.showform">
             <div class="form-group">
                 <label style="font-size: 12px">Title</label>
                 <input type="text" ng-model="issue.new_title" class="form-control">
@@ -28,6 +28,17 @@
                 <label style="font-size: 12px">Description</label>
                 <input type="text" ng-model="issue.new_description" class="form-control">
             </div>
+            <fieldset  data-ng-repeat="choice in issue.choices">
+                <select>
+                    <option>Values</option>
+                    <option>Objective</option>
+                    <option>Policies</option>
+                </select>
+                <input type="text" ng-model="choice.name" name="" placeholder="Enter Value">
+                <button class="remove" ng-show="$last" ng-click="issue.removeChoice()">-</button>
+            </fieldset>
+            <button class="btn btn-info" ng-click="issue.addNewChoice()" style="margin: 0 auto">Add fields</button>
+            <p></p>
             <button ng-click="issue.submitIssue()" type='button' class='btn btn-success'>Add New Issue</button>
         </div>
     </div>
