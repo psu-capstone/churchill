@@ -28,11 +28,11 @@ app.factory('utilsFac', function(){
            '1':'agree',
            '2':'strongly agree'
        },
-       endpointPfx: {
-           1 : 'value',
-           2 : 'objective',
-           3 : 'policy'
-       }
+       endpointPfx: [
+           'value',
+           'objective',
+           'policy'
+       ]
    };
 });
 
