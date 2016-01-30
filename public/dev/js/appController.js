@@ -120,20 +120,21 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
     self.tgtData = self.buckets[1];
     self.buttonTitle = 'Submit';
     self.lik = utilsFac.likert;
+    self.currentSet = 1;
     self.srcData = {};
 
     $scope.$watch('row.voting', function(value) {
         if(value) {
-            self.showContent(1);
+            self.showContent();
         }
     });
 
-    self.showContent = function(x) {
-        var which = endpoints[x];
+    self.showContent = function() {
+        var which = endpoints[self.currentSet];
         if( self.srcData[which] === undefined ) {
             fetchContent(which);
         }
-        self.tgtData = self.buckets[x];
+        self.tgtData = self.buckets[self.currentSet];
     };
 
     self.getData = function(x) {
@@ -215,7 +216,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['utilsFac', 'dataFac', '$q' ,function(utilsFac, dataFac, $q) {
+app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', function(utilsFac, dataFac, $q) {
     var self = this,
         tempData = null,
         endpoints = utilsFac.endpointPfx,
@@ -230,17 +231,19 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q' ,function(util
                 });
             return dfrd.promise;
         };
+
     self.title = "Explore the issues";
     self.lik = utilsFac.likert;
     self.srcData = {};
-    self.opinions = {1:[-2,-1,0,1,2], 2:[-2,-1,0,1,2], 3:[-2,-1,0,1,2,1,2,0]}
+    self.currentSet = 1;
+    self.opinions = {1:[-2,-1,0,1,2], 2:[-2,-1,0,1,2], 3:[-2,-1,0,1,2,1,2,0]};
 
-    self.showContent = function(x) {
-        var which = endpoints[x];
+    self.showContent = function() {
+        var which = endpoints[self.currentSet];
         if( self.srcData[which] === undefined ) {
             fetchContent(which).then(function(data){
                 tempData = data.data;
-                self.opinion = self.opinions[x];
+                self.opinion = self.opinions[self.currentSet];
                 transpose();
                 appendUserData();
                 scatterPositioning();
