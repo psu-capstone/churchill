@@ -1,7 +1,7 @@
-<div ng-controller = "rank-controller as rank" ng-init=" button = false; showRank = true;">
+<div ng-controller = "rank-controller as rank" ng-init="showRank = false;">
     <div ng-controller = "explore-controller as exp">
         <uib-tabset justified="true" ng-show="row.voting">
-            <uib-tab heading="{{content}}" ng-click="showRank == true ? rank.showContent($index + 1) : exp.showContent($index + 1)" ng-repeat="content in rank.title">
+            <uib-tab heading="{{content}}" ng-click="rank.currentSet = exp.currentSet = $index + 1; showRank == true ? rank.showContent() : exp.showContent()" ng-repeat="content in rank.title">
                 <div ui-sortable="rank.sortableOptions" ng-show="showRank" ng-repeat="list in rank.getData($index + 1)" ng-model="list" class="sort"
                      style="border: 1px solid black; float:left; min-height: 40px;">
                     <div id="item-list-src" ng-repeat="item in list">{{item.name}}</div>
@@ -17,7 +17,7 @@
                 </div>
 
             </uib-tab>
-            <button ng-show="showRank" id="submitButton" ng-click="rank.submit(); showRank = false; exp.showContent($index + 1)" type='button' class='btn btn-success' disabled>{{ rank.buttonTitle }}</button>
+            <button ng-show="showRank" id="submitButton" ng-click="rank.submit(); showRank = false; exp.showContent()" type='button' class='btn btn-success' disabled>{{ rank.buttonTitle }}</button>
             <bars ng-show="!showRank"></bars>
         </uib-tabset>
     </div>
