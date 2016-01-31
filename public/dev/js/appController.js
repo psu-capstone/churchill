@@ -74,16 +74,12 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, 
     self.issuerows = [];
 
      self.getIssues = function() {
-        dataFac.getAll('api/community/issue', 'i1')
-            .success(function(data) {
-                for(var i = 0; i < data['nodes'].length; i++) {
-                    var temp = data['nodes'][i].name;
-                    self.issuerows.push({name: temp, description: 'placeholder', voting: false });
-                }
-            })
-            .error(function(data) {
-                console.log(data);
-            });
+         dataFac.fetch(endpointFac.url_get_issues('i1')).then(function(data){
+             for(var i = 0; i < data['nodes'].length; i++) {
+                 var temp = data['nodes'][i].name;
+                 self.issuerows.push({name: temp, description: 'placeholder', voting: false });
+             }
+         });
     };
     
     self.vote = function() {

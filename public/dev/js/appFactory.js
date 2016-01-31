@@ -38,11 +38,14 @@ app.factory('utilsFac', function(){
 
 app.factory('endpointFac', ['$cookies', function($cookies) {
     return {
-        url_get_rank: function(which, filterId) {
-            return 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $cookies.name;
+        url_get_issues: function(filterId) {
+            return 'api/community/issue' + '?filter_id=' + filterId;
         },
         url_get_issue_items: function(which, filterId) {
             return 'api/issue/' + which + '?filter_id=' + filterId;
+        },
+        url_get_rank: function(which, filterId) {
+            return 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $cookies.name;
         },
         url_get_stacked: function(which, issueId) {
             return 'api/summary/' + which + '?issue_id=' + issueId;
@@ -61,10 +64,6 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
 
     dataFactory.getNode = function(endpoint, id) {
         return get(urlBase + endpoint + '?id=' + id.toString());
-    };
-
-    dataFactory.getAll = function(endpoint, fieldId) {
-        return get(urlBase + endpoint + '?filter_id=' + fieldId);
     };
     
     dataFactory.postUser = function(data) {
