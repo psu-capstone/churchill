@@ -41,9 +41,12 @@ app.factory('utilsFac', function(){
  * about the API interface, go to https://github.com/psu-capstone/dlab-api/blob/develop/INTERFACE.md
  * or check for the same file in api/ which is in the top level directory for churchill
  */
-app.factory('dataFac',['$http', function($http) {
+app.factory('dataFac',['$http', '$q', '$rootScope', function($http, $q, $rootScope) {
     var urlBase = 'http://capdev.meyersj.com:9000/';
     var dataFactory = {};
+    var getRank = function(which, filterId, userId){
+        return get(urlBase + 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $rootScope.user);
+    };
 
     dataFactory.getNode = function(endpoint, id) {
         return get(urlBase + endpoint + '?id=' + id.toString());
@@ -52,6 +55,8 @@ app.factory('dataFac',['$http', function($http) {
     dataFactory.getAll = function(endpoint, fieldId) {
         return get(urlBase + endpoint + '?filter_id=' + fieldId);
     };
+
+
 
     dataFactory.getStacked = function(endpoint, issueId) {
         return get(urlBase + endpoint + '?issue_id=' + issueId);
@@ -71,6 +76,18 @@ app.factory('dataFac',['$http', function($http) {
 
     dataFactory.mapNodes = function(endpoint, data) {
         return post(urlBase + endpoint, data);
+    };
+
+    dataFactory.fetchRank = function(which) {
+        var dfrd = $q.defer();
+        getRank(which, 'i1', $rootScope.user)
+            .success(function(data) {
+                dfrd.resolve(data);
+            })
+            .error(function(error) {
+                dfrd.reject("An error has occurred" + error);
+            });
+        return dfrd.promise;
     };
 
     var get = function(url) {

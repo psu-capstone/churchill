@@ -138,6 +138,9 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$cookies', f
 
     $scope.$watch('row.voting', function(value) {
         if(value) {
+            dataFac.fetchRank('value').then(function(data){
+                console.log(data);
+            });
             self.showContent();
         }
     });
@@ -181,7 +184,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$cookies', f
             bucket,
             ranked,
             rankingSet,
-            userId = 'u1',
+            userId = $rootScope.user,
             issueId = 'i1';
 
         for(i in self.buckets) {
@@ -235,6 +238,7 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$cookies' , 
         endpoints = utilsFac.endpointPfx,
         fetchContent = function(which) {
             var dfrd = $q.defer();
+
             dataFac.getStacked('api/summary/' + which, 'i1')
                 .success(function(data) {
                     dfrd.resolve(data);
@@ -244,6 +248,17 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$cookies' , 
                 });
             return dfrd.promise;
         };
+        //fetchOpinions = function(which) {
+        //    var dfrd = $q.defer();
+        //    dataFac.getRank(which, 'i1', $rootScope.user)
+        //        .success(function(data) {
+        //            dfrd.resolve(data);
+        //        })
+        //        .error(function(error) {
+        //            dfrd.reject("An error has occurred" + error);
+        //        });
+        //    return dfrd.promise;
+        //};
 
     self.title = "Explore the issues";
     self.currentUser = $cookies.name;
@@ -255,6 +270,9 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$cookies' , 
     self.showContent = function() {
         var which = endpoints[self.currentSet];
         if( self.srcData[which] === undefined ) {
+            //fetchOpinions('value').then(function(data) {
+            //    console.log(data);
+            //});
             fetchContent(which).then(function(data){
                 tempData = data.data;
                 self.opinion = self.opinions[self.currentSet];
