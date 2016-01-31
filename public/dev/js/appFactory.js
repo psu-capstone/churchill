@@ -49,6 +49,9 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
         },
         url_get_stacked: function(which, issueId) {
             return 'api/summary/' + which + '?issue_id=' + issueId;
+        },
+        url_get_node: function(which, id){
+            return 'api/' + which + '?id=' + id.toString();
         }
     };
 }]);
@@ -61,10 +64,6 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
 app.factory('dataFac',['$http', '$q', function($http, $q) {
     var urlBase = 'http://capdev.meyersj.com:9000/';
     var dataFactory = {};
-
-    dataFactory.getNode = function(endpoint, id) {
-        return get(urlBase + endpoint + '?id=' + id.toString());
-    };
     
     dataFactory.postUser = function(data) {
         return post(urlBase + 'api/user', data);
@@ -92,10 +91,6 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
                 dfrd.reject(error);
             });
         return dfrd.promise;
-    }
-
-    var get = function(url) {
-        return $http.get(url);
     };
 
     var post = function(url, data) {
