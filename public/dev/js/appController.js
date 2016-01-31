@@ -231,11 +231,12 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$scope',
-    function(endpointFac, utilsFac, dataFac, $scope) {
+app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$scope', '$q',
+    function(endpointFac, utilsFac, dataFac, $scope, $q) {
 
     var self = this,
         tempData = null,
+        headerData = null,
         endpoints = utilsFac.endpointPfx,
 
         parseOpinions = function(which, data) {
@@ -247,6 +248,29 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             }
         },
 
+        /*
+        var getHeaderData = function (which) {
+        var tempheader = [];
+        self.header.push('x');
+        for(var i = 0; i < Object.keys(tempData).length; i++)
+            {
+                fetchHeader(which, Object.keys(tempData)[i]).then(function(apidata)
+                                                                  {
+                    self.header.push(apidata.name);
+                });
+            }
+        }
+        */
+
+        getHeaderData = function(which) {
+            
+            var promises = Object.keys(tempData).map(function(myid) {
+                return dataFac.fetch(endpointFac.url_get_node(which, myid));
+            });
+            
+            return $q.all(promises);
+        },
+        
         transpose = function(){
             var formatted = [[],[],[],[],[]];
 
@@ -319,11 +343,13 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
 
         processData = function(which, data) {
             tempData = data.data;
+            getHeaderData(which).then(function(tempheader){
+            headerData = tempheader;
             transpose();
             appendUserData();
             scatterPositioning();
             formatData();
-            self.srcData[which] = tempData
+            self.srcData[which] = tempData});
         };
 
     $scope.$watch('issue.showRank', function(value) {
