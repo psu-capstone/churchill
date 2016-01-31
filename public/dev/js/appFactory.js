@@ -36,26 +36,34 @@ app.factory('utilsFac', function(){
    };
 });
 
+app.factory('endpointFac', ['$cookies', function($cookies) {
+    return {
+        url_get_issues: function(filterId) {
+            return 'api/community/issue' + '?filter_id=' + filterId;
+        },
+        url_get_issue_items: function(which, filterId) {
+            return 'api/issue/' + which + '?filter_id=' + filterId;
+        },
+        url_get_rank: function(which, filterId) {
+            return 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $cookies.name;
+        },
+        url_get_stacked: function(which, issueId) {
+            return 'api/summary/' + which + '?issue_id=' + issueId;
+        },
+        url_get_node: function(which, id){
+            return 'api/' + which + '?id=' + id.toString();
+        }
+    };
+}]);
+
 /**
  * dataFac provides a simple interface for all REST calls to the back end . For more detailed information
  * about the API interface, go to https://github.com/psu-capstone/dlab-api/blob/develop/INTERFACE.md
  * or check for the same file in api/ which is in the top level directory for churchill
  */
-app.factory('dataFac',['$http', function($http) {
+app.factory('dataFac',['$http', '$q', function($http, $q) {
     var urlBase = 'http://capdev.meyersj.com:9000/';
     var dataFactory = {};
-
-    dataFactory.getNode = function(endpoint, id) {
-        return get(urlBase + endpoint + '?id=' + id.toString());
-    };
-
-    dataFactory.getAll = function(endpoint, fieldId) {
-        return get(urlBase + endpoint + '?filter_id=' + fieldId);
-    };
-
-    dataFactory.getStacked = function(endpoint, issueId) {
-        return get(urlBase + endpoint + '?issue_id=' + issueId);
-    };
     
     dataFactory.postUser = function(data) {
         return post(urlBase + 'api/user', data);
@@ -73,8 +81,16 @@ app.factory('dataFac',['$http', function($http) {
         return post(urlBase + endpoint, data);
     };
 
-    var get = function(url) {
-        return $http.get(url);
+    dataFactory.fetch = function(url) {
+        var dfrd = $q.defer();
+        $http.get(urlBase + url)
+            .success(function(data) {
+                dfrd.resolve(data);
+            })
+            .error(function(error) {
+                dfrd.reject(error);
+            });
+        return dfrd.promise;
     };
 
     var post = function(url, data) {

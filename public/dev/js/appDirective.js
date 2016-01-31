@@ -46,7 +46,7 @@ app.directive('modal', function () {
 /**
  * Unique username check for account creation
  */
-app.directive('userUnique', ['dataFac', function (dataFac) {
+app.directive('userUnique', ['dataFac', 'endpointFac', function (dataFac, endpointFac) {
     return {
         restrict: 'A',
         require: 'ngModel',
@@ -54,17 +54,13 @@ app.directive('userUnique', ['dataFac', function (dataFac) {
             element.bind('blur', function (e) {
                 var current = element.val();
                 ctrl.$setValidity('unique', false);
-                dataFac.getNode("api/user", current)
-                    .success(function(data) {
-                        if(data["id"] == current) {
-                            ctrl.$setValidity('unique', false);
-                        } else {
-                            ctrl.$setValidity('unique', true);
-                        }
-                    })
-                    .error(function(error) {
-                        console.log("An error has occurred");
-                    });
+                dataFac.fetch(endpointFac.url_get_node('user', current)).then(function(data){
+                    if(data["id"] == current) {
+                        ctrl.$setValidity('unique', false);
+                    } else {
+                        ctrl.$setValidity('unique', true);
+                    }
+                });
             });
         }
     }
