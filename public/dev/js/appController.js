@@ -69,7 +69,7 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, 
     var self = this;
     self.title = "Weigh in on an issue";
     self.voting = false;
-    self.showRank = true;
+    self.showRank = null;
 
     self.issuerows = [];
 
@@ -339,7 +339,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.title = "Explore the issues";
     self.lik = utilsFac.likert;
     self.srcData = {};
-    self.currentSet = 1;
+    self.currentSet = 0;
     self.opinions = {};
 
     self.showContent = function() {
