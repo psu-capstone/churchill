@@ -36,10 +36,10 @@ app.factory('utilsFac', function(){
    };
 });
 
-app.factory('endpointFac', ['$rootScope', function($rootScope) {
+app.factory('endpointFac', ['$cookies', function($cookies) {
     return {
         url_get_rank: function(which, filterId) {
-            return 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $rootScope.user;
+            return 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $cookies.name;
         },
         url_get_issue_items: function(which, filterId) {
             return 'api/issue/' + which + '?filter_id=' + filterId;
@@ -55,7 +55,7 @@ app.factory('endpointFac', ['$rootScope', function($rootScope) {
  * about the API interface, go to https://github.com/psu-capstone/dlab-api/blob/develop/INTERFACE.md
  * or check for the same file in api/ which is in the top level directory for churchill
  */
-app.factory('dataFac',['$http', '$q', '$rootScope', function($http, $q, $rootScope) {
+app.factory('dataFac',['$http', '$q', function($http, $q) {
     var urlBase = 'http://capdev.meyersj.com:9000/';
     var dataFactory = {};
 

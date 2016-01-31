@@ -125,7 +125,9 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, 
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope', '$rootScope', '$cookies', function(endpointFac, utilsFac, dataFac, $scope, $rootScope, $cookies) {
+app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope', '$cookies',
+    function(endpointFac, utilsFac, dataFac, $scope, $cookies) {
+
     var self = this,
         endpoints = utilsFac.endpointPfx;
 
@@ -201,7 +203,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             bucket,
             ranked,
             rankingSet,
-            userId = $rootScope.user,
+            userId = $cookies.name,
             issueId = 'i1';
 
         for(i in self.buckets) {
@@ -233,8 +235,8 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$q', '$rootScope', '$scope', '$cookies' ,
-    function(endpointFac, utilsFac, dataFac, $q, $rootScope, $scope, $cookies) {
+app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$scope',
+    function(endpointFac, utilsFac, dataFac, $scope) {
 
     var self = this,
         tempData = null,
@@ -335,7 +337,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$q'
     });
 
     self.title = "Explore the issues";
-    self.currentUser = $cookies.name;
     self.lik = utilsFac.likert;
     self.srcData = {};
     self.currentSet = 1;
