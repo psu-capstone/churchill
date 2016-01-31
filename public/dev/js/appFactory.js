@@ -36,6 +36,17 @@ app.factory('utilsFac', function(){
    };
 });
 
+app.factory('endpointFac', ['$rootScope', function($rootScope) {
+    return {
+        url_get_rank: function(which, filterId) {
+            return 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $rootScope.user;
+        },
+        url_get_issue_items: function(which, filterId) {
+            return 'api/issue/' + which + '?filter_id=' + filterId;
+        }
+    };
+}]);
+
 /**
  * dataFac provides a simple interface for all REST calls to the back end . For more detailed information
  * about the API interface, go to https://github.com/psu-capstone/dlab-api/blob/develop/INTERFACE.md
@@ -44,9 +55,6 @@ app.factory('utilsFac', function(){
 app.factory('dataFac',['$http', '$q', '$rootScope', function($http, $q, $rootScope) {
     var urlBase = 'http://capdev.meyersj.com:9000/';
     var dataFactory = {};
-    var getRank = function(which, filterId, userId){
-        return get(urlBase + 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $rootScope.user);
-    };
 
     dataFactory.getNode = function(endpoint, id) {
         return get(urlBase + endpoint + '?id=' + id.toString());
@@ -78,17 +86,39 @@ app.factory('dataFac',['$http', '$q', '$rootScope', function($http, $q, $rootSco
         return post(urlBase + endpoint, data);
     };
 
-    dataFactory.fetchRank = function(which) {
+    //dataFactory.fetchRank = function(which) {
+    //    var dfrd = $q.defer();
+    //    getRank(which, 'i1', $rootScope.user)
+    //        .success(function(data) {
+    //            dfrd.resolve(data);
+    //        })
+    //        .error(function(error) {
+    //            dfrd.reject("An error has occurred" + error);
+    //        });
+    //    return dfrd.promise;
+    //};
+    //
+    //dataFactory.fetchIssueItems = function(which) {
+    //        dataFac.getAll()
+    //            .success(function(data) {
+    //                self.srcData[which] = data;
+    //            })
+    //            .error(function(error) {
+    //                console.log("An error has occurred" + error);
+    //            });
+    //};
+
+    dataFactory.fetch = function(url) {
         var dfrd = $q.defer();
-        getRank(which, 'i1', $rootScope.user)
+        $http.get(urlBase + url)
             .success(function(data) {
                 dfrd.resolve(data);
             })
             .error(function(error) {
-                dfrd.reject("An error has occurred" + error);
+                dfrd.reject(error);
             });
         return dfrd.promise;
-    };
+    }
 
     var get = function(url) {
         return $http.get(url);

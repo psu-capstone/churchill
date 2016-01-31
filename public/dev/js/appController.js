@@ -114,18 +114,10 @@ app.controller("issue-controller", ['dataFac', function(dataFac) {
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$cookies', function(utilsFac, dataFac, $scope, $cookies) {
+app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope', '$rootScope', '$cookies', function(endpointFac, utilsFac, dataFac, $scope, $rootScope, $cookies) {
     var self = this,
-        endpoints = utilsFac.endpointPfx,
-        fetchContent = function(which) {
-            dataFac.getAll('api/issue/' + which, 'i1')
-                .success(function(data) {
-                    self.srcData[which] = data;
-                })
-                .error(function(error) {
-                    console.log("An error has occurred" + error);
-                });
-        };
+        endpoints = utilsFac.endpointPfx;
+
 
     self.buckets = [[[],[],[],[],[]], [[],[],[],[],[]],[[],[],[],[],[]]];
     self.title = ['Values', 'Objectives', 'Policies'];
@@ -138,7 +130,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$cookies', f
 
     $scope.$watch('row.voting', function(value) {
         if(value) {
-            dataFac.fetchRank('value').then(function(data){
+            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
                 console.log(data);
             });
             self.showContent();
@@ -148,7 +140,9 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$cookies', f
     self.showContent = function() {
         var which = endpoints[self.currentSet];
         if( self.srcData[which] === undefined ) {
-            fetchContent(which);
+            dataFac.fetch(endpointFac.url_get_issue_items(which, 'i1')).then(function(data) {
+               self.srcData[which] = data;
+            });
         }
         self.tgtData = self.buckets[self.currentSet];
     };
