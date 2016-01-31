@@ -65,10 +65,11 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', function(dataFac) {
+app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, endpointFac) {
     var self = this;
     self.title = "Weigh in on an issue";
     self.voting = false;
+    self.showRank = true;
 
     self.issuerows = [];
 
@@ -109,6 +110,16 @@ app.controller("issue-controller", ['dataFac', function(dataFac) {
         self.new_title = "";
         self.new_description = "";
     }
+
+    self.checkForRank = function() {
+        dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
+            if(data['nodes'].length == 0){
+                self.showRank = true;
+            } else {
+                self.showRank = false;
+            }
+        });
+    };
 }]);
 
 /**
@@ -118,11 +129,8 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     var self = this,
         endpoints = utilsFac.endpointPfx;
 
-    $scope.$watch('row.voting', function(value) {
-        if(value) {
-            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
-                console.log(data);
-            });
+    $scope.$watch('issue.showRank', function(value) {
+        if(value == true) {
             self.showContent();
         }
     });
@@ -225,7 +233,9 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$q', '$rootScope', '$cookies', function(endpointFac, utilsFac, dataFac, $q, $rootScope, $cookies) {
+app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$q', '$rootScope', '$scope', '$cookies' ,
+    function(endpointFac, utilsFac, dataFac, $q, $rootScope, $scope, $cookies) {
+
     var self = this,
         tempData = null,
         endpoints = utilsFac.endpointPfx,
@@ -317,6 +327,12 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$q'
             formatData();
             self.srcData[which] = tempData
         };
+
+    $scope.$watch('issue.showRank', function(value) {
+        if(value == false) {
+            self.showContent();
+        }
+    });
 
     self.title = "Explore the issues";
     self.currentUser = $cookies.name;
