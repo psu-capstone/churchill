@@ -45,10 +45,6 @@ describe('Unit: main-controller', function() {
         fact = $injector.get('dataFac');
     }));
 
-    it('Verify title', function() {
-        expect(ctrl.title).toEqual("Login or Create Account");
-    });
-
     it('Verify Create Form pops', function() {
         ctrl.createAccount();
         expect(ctrl.showCreateForm).toEqual(true);
@@ -74,11 +70,6 @@ describe('Unit: issue-controller', function() {
         ctrl = $controller('issue-controller');
     }));
 
-    it('Verify Title',
-        function() {
-            expect(ctrl.title).toEqual("Weigh in on an issue");
-    });
-
     it('Verify Form Clears on Press', function() {
         ctrl.submitIssue();
         expect(ctrl.new_title = "");
@@ -103,8 +94,4 @@ describe('Unit: explore-controller', function() {
         // Create the controller
         ctrl = $controller('explore-controller');
     }));
-    it('Verify Title',
-        function() {
-            expect(ctrl.title).toEqual("Explore the issues");
-        });
 });
