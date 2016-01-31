@@ -1,4 +1,4 @@
-var app = angular.module("democracy-lab-app", ['ngRoute', 'ui.bootstrap', 'ui.sortable']);
+var app = angular.module("democracy-lab-app", ['ngRoute', 'ngCookies', 'ui.bootstrap', 'ui.sortable']);
 
 /**
  * Configure the routes taken on the web page here

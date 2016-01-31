@@ -2,8 +2,8 @@
  * Main login controller, display a login form and save valid credentials,
  * for now, the only valid credential for testing is admin 1234
  */
-app.controller("main-controller", [ '$http', '$location', '$rootScope', 'accessFac', 'dataFac',
-    function($http, $location, $rootScope, accessFac, dataFac) {
+app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac',
+    function($http, $location, $cookies, accessFac, dataFac) {
         var self = this;
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
@@ -14,8 +14,8 @@ app.controller("main-controller", [ '$http', '$location', '$rootScope', 'accessF
         self.new_pass = "";
         self.name = "";
         self.city = "";
-        self.authorized = false;
         self.showCreateForm = false;
+
         self.getAccess = function(){
 
             var user_arg = JSON.stringify({
@@ -27,12 +27,11 @@ app.controller("main-controller", [ '$http', '$location', '$rootScope', 'accessF
                 .success(function(data) {
                     if(data["success"] == true) {
                         accessFac.getPermission();
-                        $rootScope.user = self.username;
-                        self.authorized = true;
+                        $cookies.name = self.username;
+                        console.log($cookies.name);
                         $location.path('/issue');
                     } else {
                         accessFac.rejectPermission();
-                        self.authorized = false;
                         self.reject = true;
                     }
                 })
@@ -115,7 +114,7 @@ app.controller("issue-controller", ['dataFac', function(dataFac) {
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$rootScope', function(utilsFac, dataFac, $scope, $rootScope) {
+app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$cookies', function(utilsFac, dataFac, $scope, $cookies) {
     var self = this,
         endpoints = utilsFac.endpointPfx,
         fetchContent = function(which) {
@@ -135,16 +134,13 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$rootScope',
     self.lik = utilsFac.likert;
     self.currentSet = 0;
     self.srcData = {};
+    self.currentUser = $cookies.name;
 
     $scope.$watch('row.voting', function(value) {
         if(value) {
             self.showContent();
         }
     });
-
-    self.getLoggedInUser = function() {
-        return $rootScope.user;
-    };
 
     self.showContent = function() {
         var which = endpoints[self.currentSet];
@@ -233,7 +229,7 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', '$rootScope',
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$rootScope' ,function(utilsFac, dataFac, $q, $rootScope) {
+app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$cookies' , function(utilsFac, dataFac, $q, $cookies) {
     var self = this,
         tempData = null,
         endpoints = utilsFac.endpointPfx,
@@ -250,6 +246,7 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$rootScope' 
         };
 
     self.title = "Explore the issues";
+    self.currentUser = $cookies.name;
     self.lik = utilsFac.likert;
     self.srcData = {};
     self.currentSet = 1;
@@ -271,10 +268,6 @@ app.controller("explore-controller", ['utilsFac', 'dataFac', '$q', '$rootScope' 
         } else {
             self.data = self.srcData[which];
         }
-    };
-
-    self.getLoggedInUser = function() {
-        return $rootScope.user;
     };
 
     var transpose = function(){

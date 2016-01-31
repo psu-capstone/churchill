@@ -20,6 +20,7 @@ module.exports = function(config) {
       'node_modules/angular-route/angular-route.js',
       'node_modules/angular-ui-sortable/dist/sortable.js',
       'node_modules/angular-ui-bootstrap/ui-bootstrap.js',
+      'node_modules/angular-cookies/angular-cookies.js',
       'public/dev/js/*.js',
       'test/*.js'
     ],
