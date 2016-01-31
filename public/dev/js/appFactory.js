@@ -43,6 +43,9 @@ app.factory('endpointFac', ['$rootScope', function($rootScope) {
         },
         url_get_issue_items: function(which, filterId) {
             return 'api/issue/' + which + '?filter_id=' + filterId;
+        },
+        url_get_stacked: function(which, issueId) {
+            return 'api/summary/' + which + '?issue_id=' + issueId;
         }
     };
 }]);
@@ -63,12 +66,6 @@ app.factory('dataFac',['$http', '$q', '$rootScope', function($http, $q, $rootSco
     dataFactory.getAll = function(endpoint, fieldId) {
         return get(urlBase + endpoint + '?filter_id=' + fieldId);
     };
-
-
-
-    dataFactory.getStacked = function(endpoint, issueId) {
-        return get(urlBase + endpoint + '?issue_id=' + issueId);
-    };
     
     dataFactory.postUser = function(data) {
         return post(urlBase + 'api/user', data);
@@ -85,28 +82,6 @@ app.factory('dataFac',['$http', '$q', '$rootScope', function($http, $q, $rootSco
     dataFactory.mapNodes = function(endpoint, data) {
         return post(urlBase + endpoint, data);
     };
-
-    //dataFactory.fetchRank = function(which) {
-    //    var dfrd = $q.defer();
-    //    getRank(which, 'i1', $rootScope.user)
-    //        .success(function(data) {
-    //            dfrd.resolve(data);
-    //        })
-    //        .error(function(error) {
-    //            dfrd.reject("An error has occurred" + error);
-    //        });
-    //    return dfrd.promise;
-    //};
-    //
-    //dataFactory.fetchIssueItems = function(which) {
-    //        dataFac.getAll()
-    //            .success(function(data) {
-    //                self.srcData[which] = data;
-    //            })
-    //            .error(function(error) {
-    //                console.log("An error has occurred" + error);
-    //            });
-    //};
 
     dataFactory.fetch = function(url) {
         var dfrd = $q.defer();
