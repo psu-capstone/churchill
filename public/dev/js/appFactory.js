@@ -32,7 +32,10 @@ app.factory('utilsFac', function(){
            'value',
            'objective',
            'policy'
-       ]
+       ],
+       echo: function(noise) {
+           console.log(noise);
+       }
    };
 });
 
@@ -59,6 +62,9 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
         },
         url_auth_user: function() {
             return urlBase + 'api/login';
+        },
+        url_rank_node: function(which) {
+            return urlBase + 'api/rank/' + which;
         }
     };
 }]);
@@ -79,10 +85,10 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
     //dataFactory.authUser = function(data) {
     //    return post(urlBase + 'api/login', data);
     //};
-
-    dataFactory.rankNode = function(endpoint, data) {
-        return post(urlBase + endpoint, data);
-    };
+    //
+    //dataFactory.rankNode = function(endpoint, data) {
+    //    return post(urlBase + endpoint, data);
+    //};
 
     dataFactory.mapNodes = function(endpoint, data) {
         return post(urlBase + endpoint, data);

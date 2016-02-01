@@ -39,7 +39,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 password: self.password
             });
 
-            dataFac.put(endpointFac.url_auth_user, user_arg, authCallback, echo);
+            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, echo);
         };
 
         self.createAccount = function() {
@@ -192,8 +192,10 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 
     self.submit = function () {
         var i, j,
+            url,
             rank,
             ready,
+            which,
             bucket,
             ranked,
             rankingSet,
@@ -202,6 +204,8 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 
         for(i in self.buckets) {
             bucket = self.buckets[i];
+            which = utilsFac.endpointPfx[i];
+            url = endpointFac.url_rank_node(which);
             for (j in bucket) {
                 rankingSet = bucket[j];
                 rank = (j - 2);
@@ -213,13 +217,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.rankNode('api/rank/' + utilsFac.endpointPfx[i], ready)
-                        .success(function (data) {
-                            console.log(data);
-                        })
-                        .error(function (error) {
-                            console.log("An error has occurred" + error);
-                        });
+                    dataFac.put(url, ready, utilsFac.echo, utilsFac.echo);
                 }
             }
         }
