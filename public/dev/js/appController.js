@@ -240,7 +240,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
          */
         tempData = null,
         headerData = null,
-        endpoints = utilsFac.endpointPfx,
+        endpoints = utilsFac.endpointPfx;
 
         parseOpinions = function(which, data) {
             var temp;
@@ -321,19 +321,12 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             tempData.push(temp);
         },
 
-        processData = function(which, data) {
-            tempData = data.data;
-            /**
-             * TODO: header retrieval may make more sense somewhere else, consider $rootScope or service raw data storage
-             */
-            dataFac.multiFetch(which, tempData, endpointFac.url_get_node).then(function(tempheader) {
-                headerData = tempheader;
-                transpose();
-                appendUserData();
-                scatterPositioning();
-                formatData();
-                self.srcData[which] = tempData
-            });
+        processData = function(which) {
+            transpose();
+            appendUserData();
+            scatterPositioning();
+            formatData();
+            self.srcData[which] = tempData;
         };
 
     $scope.$watch('issue.showRank', function(value) {
@@ -355,8 +348,12 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 parseOpinions(which, opinionData['nodes']);
                 self.opinion = self.opinions[which];
                 dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
-                    processData(which, chartData);
-                    self.data = self.srcData[which];
+                    tempData = chartData.data;
+                    dataFac.multiFetch(which, tempData, endpointFac.url_get_node).then(function(tempHeader) {
+                        headerData = tempHeader.data;
+                        processData(which);
+                        self.data = self.srcData[which];
+                    });
                 });
             });
         } else {
