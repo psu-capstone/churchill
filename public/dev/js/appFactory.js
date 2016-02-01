@@ -93,6 +93,14 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
         return dfrd.promise;
     };
 
+    dataFactory.multiFetch = function(model, which, url_constructor) {
+        var promises = Object.keys(model).map(function(myid) {
+            return dataFactory.fetch(url_constructor(which, myid));
+        });
+
+        return $q.all(promises);
+    };
+
     var post = function(url, data) {
         return $http.post(url, data);
     };

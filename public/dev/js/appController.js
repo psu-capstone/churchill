@@ -235,6 +235,9 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     function(endpointFac, utilsFac, dataFac, $scope, $q) {
 
     var self = this,
+        /**
+         * TODO:tempData as a concept seems a little hackish, should re-evaluate
+         */
         tempData = null,
         headerData = null,
         endpoints = utilsFac.endpointPfx,
@@ -246,29 +249,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             for(var i in data){
                 temp.push(data[i].rank)
             }
-        },
-
-        /*
-        var getHeaderData = function (which) {
-        var tempheader = [];
-        self.header.push('x');
-        for(var i = 0; i < Object.keys(tempData).length; i++)
-            {
-                fetchHeader(which, Object.keys(tempData)[i]).then(function(apidata)
-                                                                  {
-                    self.header.push(apidata.name);
-                });
-            }
-        }
-        */
-
-        getHeaderData = function(which) {
-            
-            var promises = Object.keys(tempData).map(function(myid) {
-                return dataFac.fetch(endpointFac.url_get_node(which, myid));
-            });
-            
-            return $q.all(promises);
         },
         
         transpose = function(){
@@ -343,13 +323,17 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
 
         processData = function(which, data) {
             tempData = data.data;
-            getHeaderData(which).then(function(tempheader){
-            headerData = tempheader;
-            transpose();
-            appendUserData();
-            scatterPositioning();
-            formatData();
-            self.srcData[which] = tempData});
+            /**
+             * TODO: header retrieval may make more sense somewhere else, consider $rootScope or service raw data storage
+             */
+            dataFac.multiFetch(which, tempData, endpointFac.url_get_node).then(function(tempheader) {
+                headerData = tempheader;
+                transpose();
+                appendUserData();
+                scatterPositioning();
+                formatData();
+                self.srcData[which] = tempData
+            });
         };
 
     $scope.$watch('issue.showRank', function(value) {
