@@ -103,15 +103,11 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, 
         // For now, just clearing on submit button press
         self.new_title = "";
         self.new_description = "";
-    }
+    };
 
     self.checkForRank = function() {
         dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
-            if(data['nodes'].length == 0){
-                self.showRank = true;
-            } else {
-                self.showRank = false;
-            }
+            self.showRank = data['nodes'].length == 0;
         });
     };
 }]);
@@ -187,7 +183,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                 disable = true;
             }
         }
-        $('#submitButton').prop('disabled', function(i, v) { return disable; });
+        $('#submitButton').prop('disabled', function() { return disable; });
     };
 
     self.submit = function () {
@@ -237,7 +233,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         parseOpinions = function(which, data) {
             var temp;
             self.opinions[which] = [];
-            temp = self.opinions[which]
+            temp = self.opinions[which];
             for(var i in data){
                 temp.push(data[i].rank)
             }
