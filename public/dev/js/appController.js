@@ -2,9 +2,26 @@
  * Main login controller, display a login form and save valid credentials,
  * for now, the only valid credential for testing is admin 1234
  */
-app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac',
-    function($http, $location, $cookies, accessFac, dataFac) {
-        var self = this;
+app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac', 'endpointFac',
+    function($http, $location, $cookies, accessFac, dataFac, endpointFac) {
+        var self = this,
+
+            authCallback = function(response) {
+                if(response["success"] == true) {
+                    accessFac.getPermission();
+                    $cookies.name = self.username;
+                    console.log($cookies.name);
+                    $location.path('/issue');
+                } else {
+                    accessFac.rejectPermission();
+                    self.reject = true;
+                }
+            },
+
+            echo = function(response) {
+                console.log(response);
+            };
+
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
@@ -17,26 +34,12 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.showCreateForm = false;
 
         self.getAccess = function(){
-
             var user_arg = JSON.stringify({
                 username: self.username,
                 password: self.password
             });
 
-            dataFac.authUser(user_arg)
-                .success(function(data) {
-                    if(data["success"] == true) {
-                        accessFac.getPermission();
-                        $cookies.name = self.username;
-                        console.log($cookies.name);
-                        $location.path('/issue');
-                    } else {
-                        accessFac.rejectPermission();
-                        self.reject = true;
-                    }
-                })
-                .error(function(error) {
-                });
+            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, echo);
         };
 
         self.createAccount = function() {
@@ -52,13 +55,8 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 city:     self.city
             });
 
-            dataFac.postUser(user_arg)
-                .success(function(data) {
-                    console.log(data);
-                })
-                .error(function(error) {
-                    console.log("An error has occurred" + error);
-                });
+
+            dataFac.put(endpointFac.url_post_user(), user_arg, echo, echo);
         };
 }]);
 
@@ -194,8 +192,10 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 
     self.submit = function () {
         var i, j,
+            url,
             rank,
             ready,
+            which,
             bucket,
             ranked,
             rankingSet,
@@ -204,6 +204,8 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 
         for(i in self.buckets) {
             bucket = self.buckets[i];
+            which = utilsFac.endpointPfx[i];
+            url = endpointFac.url_rank_node(which);
             for (j in bucket) {
                 rankingSet = bucket[j];
                 rank = (j - 2);
@@ -215,13 +217,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.rankNode('api/rank/' + utilsFac.endpointPfx[i], ready)
-                        .success(function (data) {
-                            console.log(data);
-                        })
-                        .error(function (error) {
-                            console.log("An error has occurred" + error);
-                        });
+                    dataFac.put(url, ready, utilsFac.echo, utilsFac.echo);
                 }
             }
         }
