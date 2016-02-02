@@ -119,7 +119,7 @@ app.directive("bars", function () {
                             axis: {
                                 rotated: true,
                                 y: {
-                                    max: 100
+                                    max: scp.xAxisMax
                                 },
                                 x: {
                                     type: 'categorized'

@@ -322,8 +322,28 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             appendUserData();
             scatterPositioning();
             formatData();
-            self.srcData[which] = tempData;
-        };
+            maxArraySums(which);
+            self.srcData[which] = tempData
+        },
+
+        /* This function will compute the sum of each array in data and
+           return the largest.
+        */
+        maxArraySums = function() {
+            var rows = self.srcData[which].length,
+                cols = self.opinion.length,
+                sums = [0,0,0,0,0,0];
+
+                for (var i = 0; i < rows; ++i) {
+                    for (var j = 0; j < cols; ++j) {
+                        sums[j] += self.srcData[which][i][j];
+                        console.log(self.srcData[i][j]);
+                    }
+                }
+
+                self.xAxisMax = Math.max.apply(null, sums);
+                console.log(self.xAxisMax)
+            };
 
     $scope.$watch('issue.showRank', function(value) {
         if(value == false) {
@@ -336,6 +356,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.srcData = {};
     self.currentSet = 0;
     self.opinions = {};
+    self.xAxisMax = null;
 
     self.showContent = function() {
         var which = endpoints[self.currentSet];
