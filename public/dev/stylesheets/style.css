@@ -7,7 +7,7 @@ p{clear: both;}
 .issue.row.add {
     padding: 10px;
     float: left;
-    width: 350px;
+    width: 100%;
 }
 
 .axis text {
