@@ -246,6 +246,13 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 temp.push(data[i].rank)
             }
         },
+
+        parseData = function(data) {
+            tempData = [];
+            for(var i in data){
+                tempData.push(data[i].data);
+            }
+        },
         
         transpose = function(){
             var formatted = [[],[],[],[],[]];
@@ -256,6 +263,48 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 }
             }
             tempData = formatted;
+        },
+
+        /* This function will compute the sum of each array in data and
+         return the largest.
+         */
+        maxArraySums = function() {
+            var col = tempData.length,
+                rows = tempData[0].length,
+                sums = [];
+
+            for (var i = 0; i < rows; ++i) {
+                sums.push(0);
+                for (var j = 0; j < col; ++j) {
+                    sums[i] += tempData[j][i];
+                }
+            }
+            self.xAxisMax = Math.max.apply(null, sums);
+        },
+
+        /* this is so you can append the user opinion on the fly after
+         * the rest of the data has been fetched
+         */
+        appendUserData = function() {
+            var temp = [];
+            self.opinion.forEach(function(x){temp.push(x);});
+            tempData.push(temp);
+        },
+
+        scatterPositioning = function() {
+            var buffer,
+                opinionRow,
+                centered,
+                opinions = self.opinion,
+                length = opinions.length,
+                userColumn = tempData[5];
+
+            for(var i = 0; i < length; ++i) {
+                opinionRow = index(opinions[i]);
+                centered = centerOpinionValue(opinionRow, i, tempData);
+                buffer = sumBuffer(opinionRow - 1, i, tempData);
+                userColumn[i] = centered + buffer;
+            }
         },
 
         formatData = function() {
@@ -276,22 +325,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             tempData.unshift(headers);
         },
 
-        scatterPositioning = function() {
-            var buffer,
-                opinionRow,
-                centered,
-                opinions = self.opinion,
-                length = opinions.length,
-                userColumn = tempData[5];
-
-            for(var i = 0; i < length; ++i) {
-                opinionRow = index(opinions[i]);
-                centered = centerOpinionValue(opinionRow, i, tempData);
-                buffer = sumBuffer(opinionRow - 1, i, tempData);
-                userColumn[i] = centered + buffer;
-            }
-        },
-
         index = function(x) {
             return x + 2;
         },
@@ -308,49 +341,15 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             return sum;
         },
 
-        /* this is so you can append the user opinion on the fly after
-         * the rest of the data has been fetched
-         */
-        appendUserData = function() {
-            var temp = [];
-            self.opinion.forEach(function(x){temp.push(x);});
-            tempData.push(temp);
-        },
-
         processData = function(which, data) {
             parseData(data.data)
             transpose();
+            maxArraySums();
             appendUserData();
             scatterPositioning();
             formatData();
             self.srcData[which] = tempData;
-            maxArraySums(which);
-        },
 
-        /* This function will compute the sum of each array in data and
-           return the largest.
-        */
-        maxArraySums = function(which) {
-            var rows = self.srcData[which].length,
-                cols = self.opinion.length,
-                sums = [0,0,0,0,0,0];
-
-                for (var i = 0; i < rows; ++i) {
-                    for (var j = 0; j < cols; ++j) {
-                        sums[j] += self.srcData[which][i][j];
-                        console.log(self.srcData[which][i][j]);
-                    }
-                }
-
-                self.xAxisMax = Math.max.apply(null, sums);
-                console.log(self.xAxisMax)
-        },
-
-        parseData = function(data) {
-            tempData = [];
-            for(var i in data){
-                tempData.push(data[i].data);
-            }
         };
 
     $scope.$watch('issue.showRank', function(value) {
