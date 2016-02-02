@@ -227,16 +227,12 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$scope', '$q',
-    function(endpointFac, utilsFac, dataFac, $scope, $q) {
+app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$scope',
+    function(endpointFac, utilsFac, dataFac, $scope) {
 
     var self = this,
-        /**
-         * TODO:tempData as a concept seems a little hackish, should re-evaluate
-         */
         tempData = null,
-        headerData = null,
-        endpoints = utilsFac.endpointPfx;
+        endpoints = utilsFac.endpointPfx,
 
         parseOpinions = function(which, data) {
             var temp;
@@ -248,21 +244,27 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         },
 
         parseData = function(data) {
-            tempData = [];
+
             for(var i in data){
                 tempData.push(data[i].data);
             }
         },
-        
+
         transpose = function(){
-            var formatted = [[],[],[],[],[]];
+            var length,
+                transposed = [];
+            length = tempData[0].length;
+            for(var i = 0; i < length; i++){
+                transposed.push([]);
+            }
 
             for(var i in tempData){
-                for(var j = 0; j < tempData[i].length; j++){
-                    formatted[j].push(tempData[i][j]);
+                length = tempData[i].length;
+                for(var j = 0; j < length; j++){
+                    transposed[j].push(tempData[i][j]);
                 }
             }
-            tempData = formatted;
+            tempData = transposed;
         },
 
         /* This function will compute the sum of each array in data and
@@ -341,8 +343,9 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             return sum;
         },
 
-        processData = function(which, data) {
-            parseData(data.data)
+        processData = function(which, rawData) {
+            tempData = [];
+            parseData(rawData.data);
             transpose();
             maxArraySums();
             appendUserData();
@@ -372,12 +375,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 parseOpinions(which, opinionData['nodes']);
                 self.opinion = self.opinions[which];
                 dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
-                    tempData = chartData.data;
-                    dataFac.multiFetch(which, tempData, endpointFac.url_get_node).then(function(tempHeader) {
-                        headerData = tempHeader.data;
-                        processData(which, chartData);
-                        self.data = self.srcData[which];
-                    });
+                    processData(which, chartData);
+                    self.data = self.srcData[which];
                 });
             });
         } else {
