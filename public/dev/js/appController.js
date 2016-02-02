@@ -317,7 +317,9 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             tempData.push(temp);
         },
 
-        processData = function(which) {
+        processData = function(which, data) {
+            //tempData = data.data;
+            parseData(data.data)
             transpose();
             appendUserData();
             scatterPositioning();
@@ -343,7 +345,14 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
 
                 self.xAxisMax = Math.max.apply(null, sums);
                 console.log(self.xAxisMax)
-            };
+        },
+
+        parseData = function(data) {
+            tempData = [];
+            for(var i in data){
+                tempData.push(data[i].data);
+            }
+        };
 
     $scope.$watch('issue.showRank', function(value) {
         if(value == false) {
