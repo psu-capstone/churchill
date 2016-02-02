@@ -318,20 +318,19 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         },
 
         processData = function(which, data) {
-            //tempData = data.data;
             parseData(data.data)
             transpose();
             appendUserData();
             scatterPositioning();
             formatData();
+            self.srcData[which] = tempData;
             maxArraySums(which);
-            self.srcData[which] = tempData
         },
 
         /* This function will compute the sum of each array in data and
            return the largest.
         */
-        maxArraySums = function() {
+        maxArraySums = function(which) {
             var rows = self.srcData[which].length,
                 cols = self.opinion.length,
                 sums = [0,0,0,0,0,0];
@@ -339,7 +338,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 for (var i = 0; i < rows; ++i) {
                     for (var j = 0; j < cols; ++j) {
                         sums[j] += self.srcData[which][i][j];
-                        console.log(self.srcData[i][j]);
+                        console.log(self.srcData[which][i][j]);
                     }
                 }
 
@@ -377,7 +376,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                     tempData = chartData.data;
                     dataFac.multiFetch(which, tempData, endpointFac.url_get_node).then(function(tempHeader) {
                         headerData = tempHeader.data;
-                        processData(which);
+                        processData(which, chartData);
                         self.data = self.srcData[which];
                     });
                 });
