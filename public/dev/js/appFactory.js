@@ -75,58 +75,32 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
  * or check for the same file in api/ which is in the top level directory for churchill
  */
 app.factory('dataFac',['$http', '$q', function($http, $q) {
-    var dataFactory = {};
-    var urlBase = 'http://capdev.meyersj.com:9000/';
-    
-    //dataFactory.postUser = function(data) {
-    //    return post(urlBase + 'api/user', data);
-    //};
-    //
-    //dataFactory.authUser = function(data) {
-    //    return post(urlBase + 'api/login', data);
-    //};
-    //
-    //dataFactory.rankNode = function(endpoint, data) {
-    //    return post(urlBase + endpoint, data);
-    //};
-
-    dataFactory.mapNodes = function(endpoint, data) {
-        return post(urlBase + endpoint, data);
-    };
-
-    dataFactory.fetch = function(url) {
-        var dfrd = $q.defer();
-        $http.get(url)
-            .success(function(data) {
-                dfrd.resolve(data);
-            })
-            .error(function(error) {
-                dfrd.reject(error);
+    return {
+        put: function(url, data, onSuccess, onError) {
+            $http.post(url, data)
+                .success(function(response) {
+                    return onSuccess(response);
+                })
+                .error(function(error) {
+                    return onError(error);
+                });
+        },
+        fetch: function(url) {
+            var dfrd = $q.defer();
+            $http.get(url)
+                .success(function(data) {
+                    dfrd.resolve(data);
+                })
+                .error(function(error) {
+                    dfrd.reject(error);
+                });
+            return dfrd.promise;
+        },
+        multiFetch: function(which, model, url_constructor) {
+            var promises = Object.keys(model).map(function (myid) {
+                return dataFactory.fetch(url_constructor(which, myid));
             });
-        return dfrd.promise;
+            return $q.all(promises);
+        }
     };
-
-    dataFactory.multiFetch = function(which, model, url_constructor) {
-        var promises = Object.keys(model).map(function (myid) {
-            return dataFactory.fetch(url_constructor(which, myid));
-        });
-
-        return $q.all(promises);
-    };
-
-    dataFactory.put = function(url, data, onSuccess, onError) {
-        $http.post(url, data)
-             .success(function(response) {
-                 return onSuccess(response);
-             })
-             .error(function(error) {
-                 return onError(error);
-             });
-    };
-
-    var post = function(url, data) {
-        return $http.post(url, data);
-    };
-
-    return dataFactory;
 }]);

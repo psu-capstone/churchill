@@ -2,8 +2,8 @@
  * Main login controller, display a login form and save valid credentials,
  * for now, the only valid credential for testing is admin 1234
  */
-app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac', 'endpointFac',
-    function($http, $location, $cookies, accessFac, dataFac, endpointFac) {
+app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac', 'endpointFac', 'utilsFac',
+    function($http, $location, $cookies, accessFac, dataFac, endpointFac, utilsFac) {
         var self = this,
 
             authCallback = function(response) {
@@ -16,10 +16,6 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                     accessFac.rejectPermission();
                     self.reject = true;
                 }
-            },
-
-            echo = function(response) {
-                console.log(response);
             };
 
         self.image = "./images/demoLab_logo.png";
@@ -39,7 +35,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 password: self.password
             });
 
-            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, echo);
+            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, utilsFac.echo);
         };
 
         self.createAccount = function() {
@@ -56,7 +52,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             });
 
 
-            dataFac.put(endpointFac.url_post_user(), user_arg, echo, echo);
+            dataFac.put(endpointFac.url_post_user(), user_arg, utilsFac.echo, utilsFac.echo);
         };
 }]);
 
@@ -249,8 +245,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         transpose = function(){
             var length,
                 transposed = [];
-            length = tempData[0].length;
-            for(var i = 0; i < length; i++){
+                length = tempData[0].length;
+            for(var idx = 0; idx < length; idx++){
                 transposed.push([]);
             }
 
@@ -264,7 +260,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         },
 
         /* This function will compute the sum of each array in data and
-         return the largest.
+           return the largest.
          */
         maxArraySums = function() {
             var col = tempData.length,
