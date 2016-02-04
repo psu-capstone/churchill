@@ -73,6 +73,7 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, 
                  var temp = data['nodes'][i].name;
                  self.issuerows.push({name: temp, description: 'placeholder', voting: false });
              }
+             self.issuerows.push({name: temp, description: 'placeholder', voting: false });
          });
     };
     
