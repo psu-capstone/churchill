@@ -37,12 +37,14 @@ describe('Unit: main-controller', function() {
 
     var ctrl;
     var fact;
+    var end;
     // inject the $controller and $rootScope services
     // in the beforeEach block
     beforeEach(inject(function($controller, $injector) {
         // Create the controller
         ctrl = $controller('main-controller');
         fact = $injector.get('dataFac');
+        end  = $injector.get('endpointFac');
     }));
 
     it('Verify Create Form pops', function() {
@@ -53,7 +55,7 @@ describe('Unit: main-controller', function() {
     // TODO fix later
     it('Verify User already in DB', function() {
         ctrl.new_user = "rta";
-        fact.postUser(ctrl.new_user);
+        fact.put(end.url_post_user(),ctrl.new_user, ctrl.echo, ctrl.echo);
         expect(false);
     });
 });
