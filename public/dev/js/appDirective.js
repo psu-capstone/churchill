@@ -46,7 +46,7 @@ app.directive('modal', function () {
 /**
  * Unique username check for account creation
  */
-app.directive('userUnique', ['dataFac', function (dataFac) {
+app.directive('userUnique', ['dataFac', 'endpointFac', function (dataFac, endpointFac) {
     return {
         restrict: 'A',
         require: 'ngModel',
@@ -54,17 +54,13 @@ app.directive('userUnique', ['dataFac', function (dataFac) {
             element.bind('blur', function (e) {
                 var current = element.val();
                 ctrl.$setValidity('unique', false);
-                dataFac.getNode("api/user", current)
-                    .success(function(data) {
-                        if(data["id"] == current) {
-                            ctrl.$setValidity('unique', false);
-                        } else {
-                            ctrl.$setValidity('unique', true);
-                        }
-                    })
-                    .error(function(error) {
-                        console.log("An error has occurred");
-                    });
+                dataFac.fetch(endpointFac.url_get_node('user', current)).then(function(data){
+                    if(data["id"] == current) {
+                        ctrl.$setValidity('unique', false);
+                    } else {
+                        ctrl.$setValidity('unique', true);
+                    }
+                });
             });
         }
     }
@@ -88,18 +84,17 @@ app.directive("bars", function () {
     return {
         restrict: 'E',
         replace: true,
-        controller: 'explore-controller as exp',
         template: '<div id="chart"></div>',
         link: function (scope) {
-            var unwatch = scope.$watch('exp.data', function(newVal){
-                if (newVal.length > 0) {
+            scope.$watch('exp.data', function(newVal) {
+                if (newVal && newVal.length > 0) {
                     var you = 'you',
                         scp = scope.exp,
                         opinion = scp.opinion,
                         lik = scp.lik,
                         chart = c3.generate({
                             data: {
-                                x:'x',
+                                x: 'x',
                                 columns: scp.data,
                                 type: 'bar',
                                 types: {
@@ -109,7 +104,7 @@ app.directive("bars", function () {
                                 colors: {
                                     'strongly disagree': '#920000',
                                     disagree: '#ec1b1b',
-                                    'no opinion': '#dbd9d9' ,
+                                    'no opinion': '#dbd9d9',
                                     agree: '#0087d8',
                                     'strongly agree': '#095983',
                                     you: '#000000'
@@ -123,10 +118,10 @@ app.directive("bars", function () {
                             },
                             axis: {
                                 rotated: true,
-                                y:{
-                                    max: 4
+                                y: {
+                                    max: scp.xAxisMax
                                 },
-                                x:{
+                                x: {
                                     type: 'categorized'
                                 }
                             },
@@ -137,13 +132,15 @@ app.directive("bars", function () {
                             },
                             legend: {
                                 item: {
-                                    onclick: function (id) { return; }
+                                    onclick: function (id) {
+                                        return;
+                                    }
                                 }
                             },
                             tooltip: {
-                                format:{
+                                format: {
                                     value: function (value, ratio, id, index) {
-                                        if(id === you) {
+                                        if (id === you) {
                                             value = lik[opinion[index]];
                                         }
                                         return value;
@@ -151,7 +148,6 @@ app.directive("bars", function () {
                                 }
                             }
                         });
-                    unwatch();
                 }
             });
         }

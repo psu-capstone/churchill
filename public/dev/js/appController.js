@@ -1,10 +1,21 @@
 /**
- * Main login controller, display a login form and save valid credentials,
- * for now, the only valid credential for testing is admin 1234
+ * Main login controller, display a login form and save valid credentials
  */
-app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac',
-    function($http, $location, accessFac, dataFac) {
-        var self = this;
+app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac', 'endpointFac', 'utilsFac',
+    function($http, $location, $cookies, accessFac, dataFac, endpointFac, utilsFac) {
+        var self = this,
+
+            authCallback = function(response) {
+                if(response["success"] == true) {
+                    accessFac.getPermission();
+                    $cookies.put('currentUser',self.username);
+                    $location.path('/issue');
+                } else {
+                    accessFac.rejectPermission();
+                    self.reject = true;
+                }
+            };
+
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
@@ -14,29 +25,15 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
         self.new_pass = "";
         self.name = "";
         self.city = "";
-        self.authorized = false;
         self.showCreateForm = false;
-        self.getAccess = function(){
 
+        self.getAccess = function(){
             var user_arg = JSON.stringify({
                 username: self.username,
                 password: self.password
             });
 
-            dataFac.authUser(user_arg)
-                .success(function(data) {
-                    if(data["success"] == true) {
-                        accessFac.getPermission();
-                        self.authorized = true;
-                        $location.path('/issue');
-                    } else {
-                        accessFac.rejectPermission();
-                        self.authorized = false;
-                        self.reject = true;
-                    }
-                })
-                .error(function(error) {
-                });
+            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, utilsFac.echo);
         };
 
         self.createAccount = function() {
@@ -52,88 +49,91 @@ app.controller("main-controller", [ '$http', '$location', 'accessFac', 'dataFac'
                 city:     self.city
             });
 
-            dataFac.postUser(user_arg)
-                .success(function(data) {
-                    console.log(data);
-                })
-                .error(function(error) {
-                    console.log("An error has occurred" + error);
-                });
+
+            dataFac.put(endpointFac.url_post_user(), user_arg, utilsFac.echo, utilsFac.echo);
         };
 }]);
 
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', function(dataFac) {
-    var self = this;
-    self.title = "Weigh in on an issue";
-    self.voting = false;
+app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac',
+    function(dataFac, endpointFac) {
+        var self = this;
+        self.title = "Weigh in on an issue";
+        self.voting = false;
+        self.showRank = null;
+        self.issuerows = [];
 
-    self.issuerows = [];
+         self.getIssues = function() {
+             dataFac.fetch(endpointFac.url_get_issues('i1')).then(function(data){
+                 for(var i = 0; i < data['nodes'].length; i++) {
+                     var tempName = data['nodes'][i].name;
+                     var tempDesc = data['nodes'][i].desc;
+                     self.issuerows.push({name: tempName, description: tempDesc, voting: false });
+                 }
+             });
+        };
 
-     self.getIssues = function() {
-        dataFac.getAll('api/community/issue', 'i1')
-            .success(function(data) {
-                for(var i = 0; i < data['nodes'].length; i++) {
-                    var temp = data['nodes'][i].name;
-                    self.issuerows.push({name: temp, description: 'placeholder', voting: false });
-                }
-            })
-            .error(function(data) {
-                console.log(data);
+        self.vote = function() {
+            self.voting = true;
+        };
+
+        self.checkForRank = function() {
+            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
+                self.showRank = data['nodes'].length == 0;
             });
-    };
-    
-    self.vote = function() {
-        self.voting = true;
-    };
-    
-    self.new_title = "";
-    self.new_description = "";
-    self.submitIssue = function() {
-        // For future, this is where user can send an alert to add a new issue to the moderator or dynamically
-        // For now, just clearing on submit button press
-        self.new_title = "";
-        self.new_description = "";
-    }
+        };
 }]);
 
 /**
  * Ranking issues
  */
-app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(utilsFac, dataFac, $scope) {
+app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope', '$cookies',
+    function(endpointFac, utilsFac, dataFac, $scope, $cookies) {
+
     var self = this,
-        endpoints = utilsFac.endpointPfx,
-        fetchContent = function(which) {
-            dataFac.getAll('api/issue/' + which, 'i1')
-                .success(function(data) {
-                    self.srcData[which] = data;
-                })
-                .error(function(error) {
-                    console.log("An error has occurred" + error);
-                });
-        };
+        endpoints = utilsFac.endpointPfx;
 
-    self.buckets = { 1: [[],[],[],[],[]], 2:[[],[],[],[],[]], 3:[[],[],[],[],[]]};
-    self.title = { 1: 'Values', 2 : 'Objectives', 3 : 'Policies'};
-    self.tgtData = self.buckets[1];
-    self.buttonTitle = 'Submit';
-    self.lik = utilsFac.likert;
-    self.srcData = {};
-
-    $scope.$watch('show', function(value) {
-        if(value) {
-            self.showContent(1);
+    $scope.$watch('issue.showRank', function(value) {
+        if(value == true) {
+            self.showContent();
         }
     });
 
-    self.showContent = function(x) {
-        var which = endpoints[x];
-        if( self.srcData[which] === undefined ) {
-            fetchContent(which);
+    self.buckets = [[[],[],[],[],[]], [[],[],[],[],[]],[[],[],[],[],[]]];
+    self.title = ['Values', 'Objectives', 'Policies'];
+    self.tgtData = self.buckets[0];
+    self.buttonTitle = 'Submit';
+    self.lik = utilsFac.likert;
+    self.currentSet = 0;
+    self.srcData = {};
+    self.currentUser = $cookies.name;
+
+    self.sortableOptions = {
+        connectWith: ".sort",
+        scroll: false,
+        stop: function() {self.showSubmitButton()}
+    };
+
+    self.tgtSortableOptions = {
+        connectWith: ".sortSrc",
+        scroll: false
+    };
+
+    self.srcSortableOptions = {
+        connectWith: ".sortTgt",
+        scroll: false
+    };
+
+    self.showContent = function() {
+        var which = endpoints[self.currentSet];
+        if(self.srcData[which] === undefined ) {
+            dataFac.fetch(endpointFac.url_get_issue_items(which, 'i1')).then(function(data) {
+               self.srcData[which] = data;
+            });
         }
-        self.tgtData = self.buckets[x];
+        self.tgtData = self.buckets[self.currentSet];
     };
 
     self.getData = function(x) {
@@ -156,25 +156,26 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
             } else {
                 disable = true;
             }
-        };
-        $('#submitButton').prop('disabled', function(i, v) { return disable; });
+        }
+        $('#submitButton').prop('disabled', function() { return disable; });
     };
 
-    /**
-     * TODO: Wire up button, also will need to flush out recording rankings and posting to the database
-     */
     self.submit = function () {
         var i, j,
+            url,
             rank,
             ready,
+            which,
             bucket,
             ranked,
             rankingSet,
-            userId = 'u1',
+            userId = $cookies.name,
             issueId = 'i1';
 
         for(i in self.buckets) {
             bucket = self.buckets[i];
+            which = utilsFac.endpointPfx[i];
+            url = endpointFac.url_rank_node(which);
             for (j in bucket) {
                 rankingSet = bucket[j];
                 rank = (j - 2);
@@ -186,119 +187,171 @@ app.controller('rank-controller', ['utilsFac', 'dataFac','$scope', function(util
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.rankNode('api/rank/' + utilsFac.endpointPfx[i], ready)
-                        .success(function (data) {
-                            console.log(data);
-                        })
-                        .error(function (error) {
-                            console.log("An error has occurred" + error);
-                        });
+                    dataFac.put(url, ready, utilsFac.echo, utilsFac.echo);
                 }
             }
         }
-    };
-
-    self.sortableOptions = {
-        connectWith: ".sort",
-        scroll: false,
-        stop: function() {self.showSubmitButton()}
-    };
-    
-    self.tgtSortableOptions = {
-        connectWith: ".sortSrc",
-        scroll: false
-    };
-    
-    self.srcSortableOptions = {
-        connectWith: ".sortTgt",
-        scroll: false
     };
 }]);
 
 /**
  * Processing the visualization data
  */
-app.controller("explore-controller", ['utilsFac', 'dataFac' ,function(utilsFac, dataFac) {
-    var self = this;
-    self.title = "Explore the issues";
-    self.opinion = [-2,-1,0,1,2];
-    self.lik = utilsFac.likert;
-    
-    self.data = [];
-    self.apiData = {};
+app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$scope',
+    function(endpointFac, utilsFac, dataFac, $scope) {
 
-    var transpose = function(){
-        var formatted = [[],[],[],[],[]];
-        
-        for(var i in self.apiData){
-            for(var j = 0; j < self.apiData[i].length; j++){
-                formatted[j].push(self.apiData[i][j]);        
+    var self = this,
+        tempData = null,
+        endpoints = utilsFac.endpointPfx,
+
+        parseOpinions = function(which, data) {
+            var temp;
+            self.opinions[which] = [];
+            temp = self.opinions[which];
+            for(var i in data){
+                temp.push(data[i].rank)
             }
-        }
-        self.data = formatted;
-    };
-    
-    var formatData = function() {
-        var length = self.data.length,
-            headers = ['x','Question1','Question2','Question3','Question4','Question5'];
+        },
 
-        for(var i = 0; i < length - 1; ++i) {
-            self.data[i].unshift(self.lik[i - 2]);
-        }
-        self.data[length -1].unshift('you');
-        self.data.unshift(headers);
-    };
+        parseData = function(data) {
 
-    var scatterPositioning = function() {
-        var buffer,
-            opinionRow,
-            centered,
-            data = self.data,
-            opinions = self.opinion,
-            length = opinions.length;
+            for(var i in data){
+                tempData.push(data[i].data);
+            }
+        },
 
-        for(var i = 0; i < length; ++i) {
-             opinionRow = index(opinions[i]);
-             centered = centerOpinionValue(opinionRow, i, data);
-             buffer = sumBuffer(opinionRow - 1, i, data);
-             data[length][i] = centered + buffer;
-        }
-    };
+        transpose = function(){
+            var length,
+                transposed = [];
+                length = tempData[0].length;
+            for(var idx = 0; idx < length; idx++){
+                transposed.push([]);
+            }
 
-    var index = function(x) {
-      return x + 2;
-    };
+            for(var i in tempData){
+                length = tempData[i].length;
+                for(var j = 0; j < length; j++){
+                    transposed[j].push(tempData[i][j]);
+                }
+            }
+            tempData = transposed;
+        },
 
-    var centerOpinionValue = function(x, y, data) {
-        return data[x][y] * .5;
-    };
+        /* This function will compute the sum of each array in data and
+           return the largest.
+         */
+        maxArraySums = function() {
+            var col = tempData.length,
+                rows = tempData[0].length,
+                sums = [];
 
-    var sumBuffer = function(x, y, data) {
-        var sum = 0;
-        for(;x>=0; --x) {
-            sum += data[x][y]
-        }
-        return sum;
-    };
+            for (var i = 0; i < rows; ++i) {
+                sums.push(0);
+                for (var j = 0; j < col; ++j) {
+                    sums[i] += tempData[j][i];
+                }
+            }
+            self.xAxisMax = Math.max.apply(null, sums);
+        },
 
-    /* this is so you can append the user opinion on the fly after
-     * the rest of the data has been fetched
-     */
-    var appendUserData = function() {
-        var temp = [];
-        self.opinion.forEach(function(x){temp.push(x);});
-        self.data.push(temp);
-    };
+        /* this is so you can append the user opinion on the fly after
+         * the rest of the data has been fetched
+         */
+        appendUserData = function() {
+            var temp = [];
+            self.opinion.forEach(function(x){temp.push(x);});
+            tempData.push(temp);
+        },
 
-    dataFac.getStacked('api/summary/value', 'i1')
-        .success(function(data) {
-            self.apiData = data.data;
+        scatterPositioning = function() {
+            var buffer,
+                opinionRow,
+                centered,
+                opinions = self.opinion,
+                length = opinions.length,
+                userColumn = tempData[5];
+
+            for(var i = 0; i < length; ++i) {
+                opinionRow = index(opinions[i]);
+                centered = centerOpinionValue(opinionRow, i, tempData);
+                buffer = sumBuffer(opinionRow - 1, i, tempData);
+                userColumn[i] = centered + buffer;
+            }
+        },
+
+        formatData = function() {
+            var length = tempData.length,
+                headers = ['x','Question1','Question2','Question3','Question4','Question5'];
+
+            if(tempData[0].length == 8 ) {
+                headers.push('Question6');
+                headers.push('Question7');
+                headers.push('Question8');
+            }
+
+
+            for(var i = 0; i < length - 1; ++i) {
+                tempData[i].unshift(self.lik[i - 2]);
+            }
+            tempData[length -1].unshift('you');
+            tempData.unshift(headers);
+        },
+
+        index = function(x) {
+            return x + 2;
+        },
+
+        centerOpinionValue = function(x, y, data) {
+            return data[x][y] * .5;
+        },
+
+        sumBuffer = function(x, y, data) {
+            var sum = 0;
+            for(;x>=0; --x) {
+                sum += data[x][y]
+            }
+            return sum;
+        },
+
+        processData = function(which, rawData) {
+            tempData = [];
+            parseData(rawData.data);
             transpose();
+            maxArraySums();
             appendUserData();
             scatterPositioning();
             formatData();
-        })
-        .error(function(error) {
-            console.log("An error has occurred" + error);
-        });
+            self.srcData[which] = tempData;
+
+        };
+
+    $scope.$watch('issue.showRank', function(value) {
+        if(value == false) {
+            self.showContent();
+        }
+    });
+
+    self.title = "Explore the issues";
+    self.lik = utilsFac.likert;
+    self.srcData = {};
+    self.currentSet = 0;
+    self.opinions = {};
+    self.xAxisMax = null;
+
+    self.showContent = function() {
+        var which = endpoints[self.currentSet];
+        if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
+            dataFac.fetch(endpointFac.url_get_rank(which, 'i1')).then(function(opinionData){
+                parseOpinions(which, opinionData['nodes']);
+                self.opinion = self.opinions[which];
+                dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
+                    processData(which, chartData);
+                    self.data = self.srcData[which];
+                });
+            });
+        } else {
+            self.opinion = self.opinions[which];
+            self.data = self.srcData[which];
+        }
+    };
 }]);
