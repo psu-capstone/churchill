@@ -59,21 +59,25 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, endpointFac) {
+app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac', function(dataFac, endpointFac, utilsFac) {
     var self = this;
     self.title = "Weigh in on an issue";
     self.voting = false;
     self.showRank = null;
-
+    self.val = ["test1", "test2", "test3"];
+    self.obj = ["obj1", "obj2", "obj3"];
+    self.pol = ["pol1", "pol2", "pol3"];
     self.issuerows = [];
 
      self.getIssues = function() {
          dataFac.fetch(endpointFac.url_get_issues('i1')).then(function(data){
              for(var i = 0; i < data['nodes'].length; i++) {
-                 var temp = data['nodes'][i].name;
-                 self.issuerows.push({name: temp, description: 'placeholder', voting: false });
+                 var tempName = data['nodes'][i].name;
+                 var tempDesc = data['nodes'][i].desc;
+                 self.issuerows.push({name: tempName, description: tempDesc, voting: false });
              }
-             self.issuerows.push({name: temp, description: 'placeholder', voting: false });
+             self.issuerows.push({name: 'issue2', description: 'placeholder', voting: false });
+
          });
     };
     
@@ -81,7 +85,11 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, 
         self.voting = true;
     };
 
-    self.choices = [{id: 'choice1'}];
+    self.choices = [
+        {label: "Values"},
+        {label: "Objective"},
+        {label: "Policies"}
+    ];
 
     self.addNewChoice = function() {
         var newItemNo = self.choices.length + 1;
@@ -92,14 +100,18 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, 
         var lastItem = self.choices.length - 1;
         self.choices.splice(lastItem);
     };
-    
-    self.new_title = "";
-    self.new_description = "";
+
     self.submitIssue = function() {
-        // For future, this is where user can send an alert to add a new issue to the moderator or dynamically
-        // For now, just clearing on submit button press
-        self.new_title = "";
-        self.new_description = "";
+
+        var issue_arg = JSON.stringify({
+            issue_name: self.new_title,
+            desc: self.new_description,
+            values: self.choices[0].name,
+            objectives: self.choices[1].name,
+            policies: self.choices[2].name
+        });
+        console.log(issue_arg);
+        dataFac.put(endpointFac.url_post_issue(), issue_arg, utilsFac.echo, utilsFac.echo);
     };
 
     self.checkForRank = function() {
