@@ -393,7 +393,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                     },
                     legend: {
                         item: {
-                            onclick: function (id) {
+                            onclick: function () {
                                 return;
                             }
                         }
@@ -411,14 +411,20 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 });
         },
         initGraph = function(key) {
+            var doInit = true;
             endpoints.forEach(function(x){
                 if(self.srcData[x] !== undefined) {
-                    return;
+                    doInit = false;
                 }
             });
-            charts[key] = graph(key);
+            if(doInit){
+                charts[key] = graph(key);
+            }
         };
 
+    /**
+     * TODO: find a better way to do this
+     */
     //$scope.$watch('issue.showRank', function(value) {
     //    if(value == false) {
     //        self.showContent();

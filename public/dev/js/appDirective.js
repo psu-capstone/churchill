@@ -76,21 +76,3 @@ app.directive("sort", [function () {
         templateUrl: './widgets/rank.html'
     };
 }]);
-
-///**
-// * D3 directive that is embedded in explore-controller.
-// */
-//app.directive("bars", function () {
-//    return {
-//        restrict: 'E',
-//        replace: true,
-//        template: '<div></div>',
-//        link: function (scope) {
-//            scope.$watch('exp.data', function(newVal) {
-//                if (newVal && newVal.length > 0) {
-//
-//                }
-//            });
-//        }
-//    };
-//});
