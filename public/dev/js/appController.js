@@ -301,21 +301,22 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             }
         },
 
-        formatData = function() {
+        formatData = function(data) {
             var length = tempData.length,
-                headers = ['x','Question1','Question2','Question3','Question4','Question5'];
+                headers = ['x'];
 
-            if(tempData[0].length == 8 ) {
-                headers.push('Question6');
-                headers.push('Question7');
-                headers.push('Question8');
+            //Load in header data
+            for(var i in data){
+                headers.push(data[i].name);
             }
 
-
+            //Insert personal data to dataset
             for(var i = 0; i < length - 1; ++i) {
                 tempData[i].unshift(self.lik[i - 2]);
             }
             tempData[length -1].unshift('you');
+
+            //Add header data into charting dataset
             tempData.unshift(headers);
         },
 
@@ -342,7 +343,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             maxArraySums();
             appendUserData();
             scatterPositioning();
-            formatData();
+            formatData(rawData.data);
             self.srcData[which] = tempData;
 
         };
