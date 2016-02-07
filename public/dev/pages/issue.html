@@ -8,7 +8,7 @@
     </div>
 
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
-    <div id="{{ 'object-' + $index }}" class="issue row" ng-repeat="row in issue.issuerows">
+    <div class="issue row" ng-repeat="(rowIdx, row) in issue.issuerows">
         <div class="issue">
             <button ng-click="issue.checkForRank(); row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
         </div>

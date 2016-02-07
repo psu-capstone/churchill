@@ -226,6 +226,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     var self = this,
         tempData = null,
         endpoints = utilsFac.endpointPfx,
+        charts = {},
 
         parseOpinions = function(which, data) {
             var temp;
@@ -346,13 +347,83 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             formatData();
             self.srcData[which] = tempData;
 
+        },
+        graph = function(index) {
+            var you = 'you',
+                opinion = self.opinion,
+                lik = self.lik;
+             return   chart = c3.generate({
+                    bindto: '#chart-' + index.toString(),
+                    data: {
+                        x: 'x',
+                        columns: [],
+                        type: 'bar',
+                        types: {
+                            you: 'scatter'
+                        },
+                        order: null,
+                        colors: {
+                            'strongly disagree': '#920000',
+                            disagree: '#ec1b1b',
+                            'no opinion': '#dbd9d9',
+                            agree: '#0087d8',
+                            'strongly agree': '#095983',
+                            you: '#000000'
+                        },
+                        groups: [
+                            [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
+                        ]
+                    },
+                    point: {
+                        r: 5
+                    },
+                    axis: {
+                        rotated: true,
+                        y: {
+                            max: self.xAxisMax
+                        },
+                        x: {
+                            type: 'categorized'
+                        }
+                    },
+                    onrendered: function () {
+                        d3.selectAll("circle")
+                            .style("opacity", 1)
+                            .style("stroke", "white");
+                    },
+                    legend: {
+                        item: {
+                            onclick: function (id) {
+                                return;
+                            }
+                        }
+                    },
+                    tooltip: {
+                        format: {
+                            value: function (value, ratio, id, index) {
+                                if (id === you) {
+                                    value = lik[opinion[index]];
+                                }
+                                return value;
+                            }
+                        }
+                    }
+                });
+        },
+        initGraph = function(key) {
+            endpoints.forEach(function(x){
+                if(self.srcData[x] !== undefined) {
+                    return;
+                }
+            });
+            charts[key] = graph(key);
         };
 
-    $scope.$watch('issue.showRank', function(value) {
-        if(value == false) {
-            self.showContent();
-        }
-    });
+    //$scope.$watch('issue.showRank', function(value) {
+    //    if(value == false) {
+    //        self.showContent();
+    //    }
+    //});
 
     self.title = "Explore the issues";
     self.lik = utilsFac.likert;
@@ -361,8 +432,9 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.opinions = {};
     self.xAxisMax = null;
 
-    self.showContent = function() {
+    self.showContent = function(chartIdx) {
         var which = endpoints[self.currentSet];
+        initGraph(chartIdx);
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
             dataFac.fetch(endpointFac.url_get_rank(which, 'i1')).then(function(opinionData){
                 parseOpinions(which, opinionData['nodes']);
@@ -370,11 +442,16 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
                     processData(which, chartData);
                     self.data = self.srcData[which];
+                    charts[chartIdx].unload();
+                    charts[chartIdx].load({columns: self.data});
+
                 });
             });
         } else {
             self.opinion = self.opinions[which];
             self.data = self.srcData[which];
+            charts[chartIdx].unload();
+            charts[chartIdx].load({columns: self.data});
         }
     };
 }]);
