@@ -20,27 +20,61 @@
     <div class="issue row add">
         <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
         <p></p>
-        <div class="formWrapper" ng-init = "issue.showform = false" ng-show="issue.showform">
-            <div class="form-group">
-                <label style="font-size: 12px">Title</label>
-                <input type="text" ng-model="issue.new_title" class="form-control">
+        <form role="form" name="createIssueForm">
+            <div id="createIssue" class="formWrapper" ng-init = "issue.showform = false" ng-show="issue.showform">
+                <div class="form-group">
+                    <label for="issueTitle">Title</label>
+                    <input id="issueTitle" ng-model="issue.new_title" type="text" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="issueDesc">Description</label>
+                    <input id="issueDesc" ng-model="issue.new_desc" type="text" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="issueVal">Values</label>
+                    <input id="issueVal" ng-model="issue.new_val" type="text" class="form-control" required placeholder="Faith, Reason, Life, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="issueObj">Objectives</label>
+                    <input id="issueObj" ng-model="issue.new_obj" type="text" class="form-control" required placeholder="Abolish, Free, Maintain, etc.">
+                </div>
+                <div class="form-group">
+                    <label for="issuePol">Policies</label>
+                    <input id="issuePol" ng-model="issue.new_pol" type="text" class="form-control" required placeholder="Constitution, Law Restrictions, etc.">
+                </div>
+                <p></p>
+                <button ng-disabled="createIssueForm.$invalid" ng-click="issue.showform= !issue.showform" id="submitButton" type='button' class='btn btn-success'>Add New Issue</button>
             </div>
-            <div class="form-group">
-                <label style="font-size: 12px">Description</label>
-                <input type="text" ng-model="issue.new_description" class="form-control">
-            </div>
-            <fieldset  data-ng-repeat="choice in issue.choices">
-                <select>
-                    <option>Values</option>
-                    <option>Objective</option>
-                    <option>Policies</option>
-                </select>
-                <input type="text" ng-model="choice.name" name="" placeholder="Enter Value">
-                <button class="remove" ng-show="$last" ng-click="issue.removeChoice()">-</button>
-            </fieldset>
-            <button class="btn btn-info" ng-click="issue.addNewChoice()" style="margin: 0 auto">Add fields</button>
-            <p></p>
-            <button ng-click="issue.submitIssue()" type='button' class='btn btn-success'>Add New Issue</button>
-        </div>
+        </form>
     </div>
 </div>
+
+<!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post
+     So this is what we got for now -->
+<script>
+    var base_url = "http://capdev.meyersj.com:9000";
+    var endpoint = base_url + "/api/issue";
+    $(document).ready(function() {
+
+        $("#submitButton").click(function () {
+            var issue_data = {
+                issue_name: $("#issueTitle").val(),
+                desc: $("#issueDesc").val(),
+                values: $("#issueVal").val().split(","),
+                objectives: $("#issueObj").val().split(","),
+                policies: $("#issuePol").val().split(",")
+            };
+            if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
+                    issue_data['objectives'] == "" || issue_data['policies'] == "") {
+                //Shouldn't happen if disable attribute stays strong
+            } else {
+                $.post(endpoint, issue_data, function(data) {
+                    console.log(data);
+                });
+            }
+            $("#createIssue").find('input:text').val(null);
+            $(this).attr('disabled', 'disabled');
+        });
+    });
+</script>
+

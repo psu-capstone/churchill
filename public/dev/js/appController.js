@@ -1,6 +1,5 @@
 /**
- * Main login controller, display a login form and save valid credentials,
- * for now, the only valid credential for testing is admin 1234
+ * Main login controller, display a login form and save valid credentials
  */
 app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac', 'endpointFac', 'utilsFac',
     function($http, $location, $cookies, accessFac, dataFac, endpointFac, utilsFac) {
@@ -9,8 +8,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             authCallback = function(response) {
                 if(response["success"] == true) {
                     accessFac.getPermission();
-                    $cookies.name = self.username;
-                    console.log($cookies.name);
+                    $cookies.put('currentUser',self.username);
                     $location.path('/issue');
                 } else {
                     accessFac.rejectPermission();
@@ -59,54 +57,33 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, endpointFac) {
-    var self = this;
-    self.title = "Weigh in on an issue";
-    self.voting = false;
-    self.showRank = null;
+app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac',
+    function(dataFac, endpointFac) {
+        var self = this;
+        self.title = "Weigh in on an issue";
+        self.voting = false;
+        self.showRank = null;
+        self.issuerows = [];
 
-    self.issuerows = [];
+         self.getIssues = function() {
+             dataFac.fetch(endpointFac.url_get_issues('i1')).then(function(data){
+                 for(var i = 0; i < data['nodes'].length; i++) {
+                     var tempName = data['nodes'][i].name;
+                     var tempDesc = data['nodes'][i].desc;
+                     self.issuerows.push({name: tempName, description: tempDesc, voting: false });
+                 }
+             });
+        };
 
-     self.getIssues = function() {
-         dataFac.fetch(endpointFac.url_get_issues('i1')).then(function(data){
-             for(var i = 0; i < data['nodes'].length; i++) {
-                 var temp = data['nodes'][i].name;
-                 self.issuerows.push({name: temp, description: 'placeholder', voting: false });
-             }
-             self.issuerows.push({name: temp, description: 'placeholder', voting: false });
-         });
-    };
-    
-    self.vote = function() {
-        self.voting = true;
-    };
+        self.vote = function() {
+            self.voting = true;
+        };
 
-    self.choices = [{id: 'choice1'}];
-
-    self.addNewChoice = function() {
-        var newItemNo = self.choices.length + 1;
-        self.choices.push({'id':'choice'+ newItemNo});
-    };
-
-    self.removeChoice = function() {
-        var lastItem = self.choices.length - 1;
-        self.choices.splice(lastItem);
-    };
-    
-    self.new_title = "";
-    self.new_description = "";
-    self.submitIssue = function() {
-        // For future, this is where user can send an alert to add a new issue to the moderator or dynamically
-        // For now, just clearing on submit button press
-        self.new_title = "";
-        self.new_description = "";
-    };
-
-    self.checkForRank = function() {
-        dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
-            self.showRank = data['nodes'].length == 0;
-        });
-    };
+        self.checkForRank = function() {
+            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
+                self.showRank = data['nodes'].length == 0;
+            });
+        };
 }]);
 
 /**

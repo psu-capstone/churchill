@@ -1,7 +1,7 @@
 /**
  * Factory settings for the login
  */
-app.factory('accessFac',function(){
+app.factory('accessFac', function(){
     var obj = {};
     this.access = false;
     obj.getPermission = function(){    //set the permission to true

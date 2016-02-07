@@ -9,23 +9,42 @@ app.config(function($routeProvider) {
             templateUrl : './pages/login.html',
             controller  : 'main-controller'
         })
+        .when('/logout', {
+            templateUrl : './pages/login.html',
+            controller  : 'main-controller',
+            //resolve: {
+            //    "check": function($cookies) {
+            //        if($cookies.get('currentUser') != null) {
+            //            $cookies.remove('currentUser');
+            //            console.log($cookies.get('currentUser'));
+            //        }
+            //    }
+            //}
+        })
         .when('/home', {
             templateUrl : './pages/login.html',
-            controller  : 'main-controller'
+            controller  : 'main-controller',
+            //resolve: {
+            //    "check":function(accessFac, $location, $cookies) {
+            //        if($cookies.get('currentUser') != null) {
+            //            console.log($cookies.get('currentUser'));
+            //            $location.path('/issue');
+            //        }
+            //    }
+            //}
         })
         .when('/issue', {
             templateUrl : './pages/issue.html',
-            controller  : 'issue-controller'
-            // Commented out for testing/developing
-            /*resolve:{
-                "check":function(accessFac, $location){
-                    if(accessFac.checkPermission()){
-                        $location.path('/issue');
-                    }else{
-                        $location.path('/home');    //redirect user to home.
-                        alert("Please Login");
-                    }
-                }
-            }*/
+            controller  : 'issue-controller',
+            //resolve:{
+            //    "check":function(accessFac, $location, $cookies){
+            //        $cookies.get('currentUser');
+            //        if(accessFac.checkPermission() == true && $cookies.get('currentUser') != null){
+            //            $location.path('/issue');
+            //        } else {
+            //            $location.path('/home');    //redirect user to home.
+            //        }
+            //    }
+            //}
         });
 });
