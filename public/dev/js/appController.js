@@ -417,14 +417,12 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 self.opinion = self.opinions[which];
                 dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
                     processData(which, chartData);
-                    charts[chartIdx].unload();
-                    charts[chartIdx].load({columns: self.srcData[which]});
+                    charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
                 });
             });
         } else {
             self.opinion = self.opinions[which];
-            charts[chartIdx].unload();
-            charts[chartIdx].load({columns: self.srcData[which]});
+            charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
         }
     };
 }]);
