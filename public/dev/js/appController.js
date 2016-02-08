@@ -108,7 +108,6 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.lik = utilsFac.likert;
     self.currentSet = 0;
     self.srcData = {};
-    self.currentUser = $cookies.name;
 
     self.sortableOptions = {
         connectWith: ".sort",
