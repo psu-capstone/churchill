@@ -386,27 +386,13 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                         }
                     }
                 });
-        },
-        initGraph = function(key) {
-            var doInit = true;
-            endpoints.forEach(function(x){
-                if(self.srcData[x] !== undefined) {
-                    doInit = false;
-                }
-            });
-            if(doInit){
-                charts[key] = graph(key);
-            }
         };
 
-    /**
-     * TODO: find a better way to do this
-     */
-    //$scope.$watch('issue.showRank', function(value) {
-    //    if(value == false) {
-    //        self.showContent();
-    //    }
-    //});
+    $scope.$watch('issue.showRank', function(value) {
+        if(value == false) {
+            self.showContent();
+        }
+    });
 
     self.title = "Explore the issues";
     self.lik = utilsFac.likert;
@@ -417,24 +403,24 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
 
     self.showContent = function(chartIdx) {
         var which = endpoints[self.currentSet];
-        initGraph(chartIdx);
+        if(undefined == charts[chartIdx]) {
+            charts[chartIdx] = graph(chartIdx);
+        }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
             dataFac.fetch(endpointFac.url_get_rank(which, 'i1')).then(function(opinionData){
                 parseOpinions(which, opinionData['nodes']);
                 self.opinion = self.opinions[which];
                 dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
                     processData(which, chartData);
-                    self.data = self.srcData[which];
                     charts[chartIdx].unload();
-                    charts[chartIdx].load({columns: self.data});
+                    charts[chartIdx].load({columns:  self.srcData[which]});
 
                 });
             });
         } else {
             self.opinion = self.opinions[which];
-            self.data = self.srcData[which];
             charts[chartIdx].unload();
-            charts[chartIdx].load({columns: self.data});
+            charts[chartIdx].load({columns: self.srcData[which]});
         }
     };
 }]);
