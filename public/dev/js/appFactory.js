@@ -49,7 +49,7 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
             return urlBase + 'api/issue/' + which + '?filter_id=' + filterId;
         },
         url_get_rank: function(which, filterId) {
-            return urlBase + 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $cookies.name;
+            return urlBase + 'api/issue/' + which + '?filter_id=' + filterId + '&user_id=' + $cookies.get('currentUser');
         },
         url_get_stacked: function(which, issueId) {
             return urlBase + 'api/summary/' + which + '?issue_id=' + issueId;
