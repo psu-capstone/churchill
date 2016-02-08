@@ -27,5 +27,9 @@ app.config(function($routeProvider) {
                     }
                 }
             }*/
+        })
+        .when('/help', {
+            templateUrl : './pages/help.html',
+            controller  : 'help-controller'
         });
 });
