@@ -18,10 +18,14 @@
 
     <!-- Adding issues -->
     <div class="issue row add">
-        <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
+        <a href="" class="btn btn-success" ng-click="issue.createIssue()"> Don't see an issue for you? </a>
         <p></p>
+    </div>
+
+    <!-- Issue Modal -->
+    <modal title="Create New Issue" visible="issue.showCreateIssue" id="createModal">
         <form role="form" name="createIssueForm">
-            <div id="createIssue" class="formWrapper" ng-init = "issue.showform = false" ng-show="issue.showform">
+            <div id="createIssue" class="formWrapper">
                 <div class="form-group">
                     <label for="issueTitle">Title</label>
                     <input id="issueTitle" ng-model="issue.new_title" type="text" class="form-control" required>
@@ -43,10 +47,10 @@
                     <input id="issuePol" ng-model="issue.new_pol" type="text" class="form-control" required placeholder="Constitution, Law Restrictions, etc.">
                 </div>
                 <p></p>
-                <button ng-disabled="createIssueForm.$invalid" ng-click="issue.showform= !issue.showform" id="submitButton" type='button' class='btn btn-success'>Add New Issue</button>
+                <button ng-disabled="createIssueForm.$invalid" data-dismiss="modal" id="submitButton" type='button' class='btn btn-success'>Add New Issue</button>
             </div>
         </form>
-    </div>
+    </modal>
 </div>
 
 <!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post

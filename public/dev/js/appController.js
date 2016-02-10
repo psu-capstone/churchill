@@ -64,9 +64,14 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac',
         self.voting = false;
         self.showRank = null;
         self.issuerows = [];
+        self.showCreateIssue = false;
+
+        self.createIssue = function() {
+            self.showCreateIssue = !self.showCreateIssue;
+        };
 
          self.getIssues = function() {
-             dataFac.fetch(endpointFac.url_get_issues('i1')).then(function(data){
+             dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
                  for(var i = 0; i < data['nodes'].length; i++) {
                      var tempName = data['nodes'][i].name;
                      var tempDesc = data['nodes'][i].desc;
@@ -80,7 +85,7 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac',
         };
 
         self.checkForRank = function() {
-            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
+            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){  //todo
                 self.showRank = data['nodes'].length == 0;
             });
         };
@@ -128,7 +133,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.showContent = function() {
         var which = endpoints[self.currentSet];
         if(self.srcData[which] === undefined ) {
-            dataFac.fetch(endpointFac.url_get_issue_items(which, 'i1')).then(function(data) {
+            dataFac.fetch(endpointFac.url_get_issue_items(which, 'i1')).then(function(data) {  //todo
                self.srcData[which] = data;
             });
         }
@@ -169,7 +174,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             ranked,
             rankingSet,
             userId = $cookies.get('currentUser'),
-            issueId = 'i1';
+            issueId = 'i1';   //todo
 
         for(i in self.buckets) {
             bucket = self.buckets[i];
@@ -327,63 +332,63 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         graph = function(index) {
             var you = 'you',
                 lik = self.lik;
-             return   chart = c3.generate({
-                    bindto: '#chart-' + index.toString(),
-                    data: {
-                        x: 'x',
-                        columns: [],
-                        type: 'bar',
-                        types: {
-                            you: 'scatter'
-                        },
-                        order: null,
-                        colors: {
-                            'strongly disagree': '#920000',
-                            disagree: '#ec1b1b',
-                            'no opinion': '#dbd9d9',
-                            agree: '#0087d8',
-                            'strongly agree': '#095983',
-                            you: '#000000'
-                        },
-                        groups: [
-                            [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
-                        ]
+            return chart = c3.generate({
+                bindto: '#chart-' + index.toString(),
+                data: {
+                    x: 'x',
+                    columns: [],
+                    type: 'bar',
+                    types: {
+                        you: 'scatter'
                     },
-                    point: {
-                        r: 5
+                    order: null,
+                    colors: {
+                        'strongly disagree': '#920000',
+                        disagree: '#ec1b1b',
+                        'no opinion': '#dbd9d9',
+                        agree: '#0087d8',
+                        'strongly agree': '#095983',
+                        you: '#000000'
                     },
-                    axis: {
-                        rotated: true,
-                        y: {
-                            max: 100
-                        },
-                        x: {
-                            type: 'categorized'
-                        }
+                    groups: [
+                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
+                    ]
+                },
+                point: {
+                    r: 5
+                },
+                axis: {
+                    rotated: true,
+                    y: {
+                        max: 100
                     },
-                    onrendered: function () {
-                        d3.selectAll("circle")
-                            .style("opacity", 1)
-                            .style("stroke", "white");
-                    },
-                    legend: {
-                        item: {
-                            onclick: function () {
-                                return;
-                            }
-                        }
-                    },
-                    tooltip: {
-                        format: {
-                            value: function (value, ratio, id, index) {
-                                if (id === you) {
-                                    value = lik[self.opinion[index]];
-                                }
-                                return value;
-                            }
+                    x: {
+                        type: 'categorized'
+                    }
+                },
+                onrendered: function () {
+                    d3.selectAll("circle")
+                        .style("opacity", 1)
+                        .style("stroke", "white");
+                },
+                legend: {
+                    item: {
+                        onclick: function () {
+                            return;
                         }
                     }
-                });
+                },
+                tooltip: {
+                    format: {
+                        value: function (value, ratio, id, index) {
+                            if (id === you) {
+                                value = lik[self.opinion[index]];
+                            }
+                            return value;
+                        }
+                    }
+                }
+            });
         };
 
     $scope.$watch('rowIdx', function(value) {
@@ -411,10 +416,10 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             charts[chartIdx] = graph(chartIdx);
         }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
-            dataFac.fetch(endpointFac.url_get_rank(which, 'i1')).then(function(opinionData){
+            dataFac.fetch(endpointFac.url_get_rank(which, 'i1')).then(function(opinionData){   //todo
                 parseOpinions(which, opinionData['nodes']);
                 self.opinion = self.opinions[which];
-                dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
+                dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){  //todo
                     processData(which, chartData);
                     charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
                 });

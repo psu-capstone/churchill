@@ -3,7 +3,7 @@
   "name": "Democracy-Lab",
   "license": "(MIT)",
   "description": "2015-16 Capstone Project",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "homepage": "https://travis-ci.org/psu-capstone/churchill",
   "main": "server.js",
   "repository": {
