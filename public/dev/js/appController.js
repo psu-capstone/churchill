@@ -33,7 +33,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 password: self.password
             });
 
-            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, utilsFac.echo);
+            dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
         self.createAccount = function() {
@@ -50,7 +50,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             });
 
 
-            dataFac.put(endpointFac.url_post_user(), user_arg, utilsFac.echo, utilsFac.echo);
+            dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
 }]);
 
@@ -108,7 +108,6 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.lik = utilsFac.likert;
     self.currentSet = 0;
     self.srcData = {};
-    self.currentUser = $cookies.name;
 
     self.sortableOptions = {
         connectWith: ".sort",
@@ -169,7 +168,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             bucket,
             ranked,
             rankingSet,
-            userId = $cookies.name,
+            userId = $cookies.get('currentUser'),
             issueId = 'i1';
 
         for(i in self.buckets) {
@@ -187,7 +186,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.put(url, ready, utilsFac.echo, utilsFac.echo);
+                    dataFac.put(url, ready).then(function(){});
                 }
             }
         }
@@ -327,7 +326,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         },
         graph = function(index) {
             var you = 'you',
-                opinion = self.opinion,
                 lik = self.lik;
              return   chart = c3.generate({
                     bindto: '#chart-' + index.toString(),
@@ -357,7 +355,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                     axis: {
                         rotated: true,
                         y: {
-                            max: self.xAxisMax
+                            max: 100
                         },
                         x: {
                             type: 'categorized'
@@ -379,7 +377,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                         format: {
                             value: function (value, ratio, id, index) {
                                 if (id === you) {
-                                    value = lik[opinion[index]];
+                                    value = lik[self.opinion[index]];
                                 }
                                 return value;
                             }
@@ -388,11 +386,15 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 });
         };
 
-    $scope.$watch('issue.showRank', function(value) {
-        if(value == false) {
-            self.showContent();
-        }
+    $scope.$watch('rowIdx', function(value) {
+        self.rowIndex = value;
     });
+
+    //$scope.$watch('issue.showRank', function(value) {
+    //    if(value == false) {
+    //        self.showContent();
+    //    }
+    //});
 
     self.title = "Explore the issues";
     self.lik = utilsFac.likert;
@@ -400,8 +402,10 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.currentSet = 0;
     self.opinions = {};
     self.xAxisMax = null;
+    self.rowIndex = null;
 
-    self.showContent = function(chartIdx) {
+    self.showContent = function() {
+        var chartIdx = self.rowIndex;
         var which = endpoints[self.currentSet];
         if(undefined == charts[chartIdx]) {
             charts[chartIdx] = graph(chartIdx);
@@ -412,15 +416,12 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 self.opinion = self.opinions[which];
                 dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
                     processData(which, chartData);
-                    charts[chartIdx].unload();
-                    charts[chartIdx].load({columns:  self.srcData[which]});
-
+                    charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
                 });
             });
         } else {
             self.opinion = self.opinions[which];
-            charts[chartIdx].unload();
-            charts[chartIdx].load({columns: self.srcData[which]});
+            charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
         }
     };
 }]);

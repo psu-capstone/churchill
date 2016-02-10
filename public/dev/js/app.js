@@ -7,7 +7,14 @@ app.config(function($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl : './pages/login.html',
-            controller  : 'main-controller'
+            controller  : 'main-controller',
+            //resolve: {
+            //    "check":function(accessFac, $location, $cookies) {
+            //        if($cookies.get('currentUser') != null) {
+            //            console.log($cookies.get('currentUser'));
+            //        }
+            //    }
+            //}
         })
         .when('/logout', {
             templateUrl : './pages/login.html',
@@ -28,7 +35,6 @@ app.config(function($routeProvider) {
             //    "check":function(accessFac, $location, $cookies) {
             //        if($cookies.get('currentUser') != null) {
             //            console.log($cookies.get('currentUser'));
-            //            $location.path('/issue');
             //        }
             //    }
             //}
@@ -38,8 +44,7 @@ app.config(function($routeProvider) {
             controller  : 'issue-controller',
             //resolve:{
             //    "check":function(accessFac, $location, $cookies){
-            //        $cookies.get('currentUser');
-            //        if(accessFac.checkPermission() == true && $cookies.get('currentUser') != null){
+            //        if($cookies.get('currentUser') != null){
             //            $location.path('/issue');
             //        } else {
             //            $location.path('/home');    //redirect user to home.
