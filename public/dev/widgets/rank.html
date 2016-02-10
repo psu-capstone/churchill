@@ -1,23 +1,24 @@
 <div ng-controller = "rank-controller as rank">
     <div ng-controller = "explore-controller as exp">
         <uib-tabset justified="true" ng-show="row.voting">
-            <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; issue.showRank == true ? rank.showContent() : exp.showContent(rowIdx)" ng-repeat="content in rank.title">
-                <div  ui-sortable="rank.sortableOptions" ng-show="issue.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
-                      style="float:left; min-height: 40px;">
-                    <div id="item-list-src" ng-repeat="item in list">{{item.name}}</div>
+            <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; issue.showRank == true ? rank.showContent() : exp.showContent();" ng-repeat="content in rank.title">
+                <div ui-sortable="rank.sortableOptions" ng-show="issue.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
+                      style="float:left; min-height: 40px; width: 30%;">
+                    <div id="item-list-src" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue">{{item.name}}</div>
                 </div>
                 <div ng-show="issue.showRank" style="overflow: hidden">
-                    <div ng-repeat="list in rank.tgtData">
-                        {{rank.lik[$index-2]}}
+                    <!--The list is being reversed by the true argument to orderBy to sort the buckets with strongly agree at the top-->
+                    <div ng-repeat="(key, list) in rank.tgtData | orderBy:'key':true">
+                        <!--This is being multiplied by -1 to list the titles on the right order-->
+                        <h5 style="font-family: inherit; text-align: center; color: steelblue;">{{rank.lik[(key-2)*-1]}}</h5>
                         <div ui-sortable="rank.sortableOptions" ng-model="list" class="well sort">
-                            <div id="item-list-tgt" ng-repeat="item in list">{{item.name}}</div>
+                            <div id="item-list-tgt" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue;">{{item.name}}</div>
                         </div>
                     </div>
                 </div>
-
             </uib-tab>
-            <button ng-show="issue.showRank" id="submitButton" ng-click="rank.submit(); issue.showRank = false; exp.showContent(rowIdx);" type='button' class='btn btn-success' disabled>{{ rank.buttonTitle }}</button>
             <div id="chart-{{rowIdx}}"ng-show="!issue.showRank"></div>
+            <button ng-show="issue.showRank" id="submitButton" ng-click="rank.submit(); issue.showRank = false; exp.showContent();" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
         </uib-tabset>
     </div>
 </div>

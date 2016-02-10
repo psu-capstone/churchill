@@ -33,7 +33,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 password: self.password
             });
 
-            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, utilsFac.echo);
+            dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
         self.createAccount = function() {
@@ -50,7 +50,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             });
 
 
-            dataFac.put(endpointFac.url_post_user(), user_arg, utilsFac.echo, utilsFac.echo);
+            dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
 }]);
 
@@ -186,7 +186,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.put(url, ready, utilsFac.echo, utilsFac.echo);
+                    dataFac.put(url, ready).then(function(){});
                 }
             }
         }
@@ -390,11 +390,11 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         self.rowIndex = value;
     });
 
-    $scope.$watch('issue.showRank', function(value) {
-        if(value == false) {
-            self.showContent();
-        }
-    });
+    //$scope.$watch('issue.showRank', function(value) {
+    //    if(value == false) {
+    //        self.showContent();
+    //    }
+    //});
 
     self.title = "Explore the issues";
     self.lik = utilsFac.likert;

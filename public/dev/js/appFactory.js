@@ -76,14 +76,16 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
  */
 app.factory('dataFac',['$http', '$q', function($http, $q) {
     return {
-        put: function(url, data, onSuccess, onError) {
+        put: function(url, data) {
+            var dfrd = $q.defer();
             $http.post(url, data)
                 .success(function(response) {
-                    return onSuccess(response);
+                    dfrd.resolve(response);
                 })
                 .error(function(error) {
-                    return onError(error);
+                    dfrd.reject(error);
                 });
+            return dfrd.promise;
         },
         fetch: function(url) {
             var dfrd = $q.defer();
@@ -95,12 +97,6 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
                     dfrd.reject(error);
                 });
             return dfrd.promise;
-        },
-        multiFetch: function(which, model, url_constructor) {
-            var promises = Object.keys(model).map(function (myid) {
-                return dataFactory.fetch(url_constructor(which, myid));
-            });
-            return $q.all(promises);
         }
     };
 }]);
