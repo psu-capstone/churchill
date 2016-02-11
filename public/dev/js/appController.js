@@ -57,18 +57,18 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac',
-    function(dataFac, endpointFac) {
+app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac', '$scope',
+    function(dataFac, endpointFac, utilsFac, $scope) {
         var self = this;
         self.title = "Weigh in on an issue";
         self.voting = false;
-        self.showRank = null;
         self.issuerows = [];
         self.showCreateIssue = false;
-
         self.createIssue = function() {
             self.showCreateIssue = !self.showCreateIssue;
         };
+        self.showRank = null;
+
 
          self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
@@ -85,8 +85,17 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac',
         };
 
         self.checkForRank = function() {
-            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){  //todo
-                self.showRank = data['nodes'].length == 0;
+            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
+                var which;
+                if(data['nodes'].length === 0) {
+                    which = 'showRankContent';
+                    self.showRank = true;
+                } else {
+                    which = 'showGraphContent';
+                    self.showRank = false;
+                }
+
+                $scope.$broadcast(which,{});
             });
         };
 }]);
@@ -98,13 +107,11 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     function(endpointFac, utilsFac, dataFac, $scope, $cookies) {
 
     var self = this,
-        endpoints = utilsFac.endpointPfx;
-
-    $scope.$watch('issue.showRank', function(value) {
-        if(value == true) {
+        endpoints = utilsFac.endpointPfx,
+        unregister = $scope.$on("showRankContent", function(){
+            unregister();
             self.showContent();
-        }
-    });
+        });
 
     self.buckets = [[[],[],[],[],[]], [[],[],[],[],[]],[[],[],[],[],[]]];
     self.title = ['Values', 'Objectives', 'Policies'];
@@ -191,7 +198,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.put(url, ready).then(function(){});
+                    dataFac.put(url, ready).then(function(){ $scope.$broadcast("showGraphContent", {})});
                 }
             }
         }
@@ -208,6 +215,10 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         tempData = null,
         endpoints = utilsFac.endpointPfx,
         charts = {},
+        unregister = $scope.$on("showGraphContent", function(){
+            unregister();
+            self.showContent();
+        }),
 
         parseOpinions = function(which, data) {
             var temp;
@@ -394,12 +405,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     $scope.$watch('rowIdx', function(value) {
         self.rowIndex = value;
     });
-
-    //$scope.$watch('issue.showRank', function(value) {
-    //    if(value == false) {
-    //        self.showContent();
-    //    }
-    //});
 
     self.title = "Explore the issues";
     self.lik = utilsFac.likert;
