@@ -172,8 +172,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     };
 
     self.submit = function () {
-        var i, j,
-            url,
+        var url,
             rank,
             ready,
             which,
@@ -181,13 +180,13 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             ranked,
             rankingSet,
             userId = $cookies.get('currentUser'),
-            issueId = 'i1';   //todo
+            issueId = 'i1';   //todof
 
-        for(i in self.buckets) {
+        for(var i in self.buckets) {
             bucket = self.buckets[i];
             which = utilsFac.endpointPfx[i];
             url = endpointFac.url_rank_node(which);
-            for (j in bucket) {
+            for(var j in bucket) {
                 rankingSet = bucket[j];
                 rank = (j - 2);
                 for (; 0 < rankingSet.length;) {
@@ -256,18 +255,20 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         /* This function will compute the sum of each array in data and
            return the largest.
          */
-        maxArraySums = function() {
-            var col = tempData.length,
-                rows = tempData[0].length,
-                sums = [];
+        maxArraySums = function(data) {
+            var col = data.length - 1,
+                rows = data[0].length,
+                sums = [],
+                buffer = null;
 
-            for (var i = 0; i < rows; ++i) {
+            for (var i = 1; i < rows; ++i) {
                 sums.push(0);
-                for (var j = 0; j < col; ++j) {
-                    sums[i] += tempData[j][i];
+                buffer = i - 1;
+                for (var j = 1; j < col; ++j) {
+                    sums[buffer] += data[j][i];
                 }
             }
-            self.xAxisMax = Math.max.apply(null, sums);
+            return Math.max.apply(null, sums);
         },
 
         /* this is so you can append the user opinion on the fly after
@@ -333,7 +334,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             tempData = [];
             parseData(rawData.data);
             transpose();
-            maxArraySums();
             appendUserData();
             scatterPositioning();
             formatData();
@@ -426,6 +426,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 self.opinion = self.opinions[which];
                 dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){  //todo
                     processData(which, chartData);
+                    charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
                     charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
                 });
             });
