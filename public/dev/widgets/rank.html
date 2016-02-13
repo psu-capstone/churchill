@@ -1,5 +1,6 @@
 <div ng-controller = "rank-controller as rank">
     <div ng-controller = "explore-controller as exp">
+        <div ng-controller = "sankey-controller as sankey">
         <uib-tabset justified="true" ng-show="row.voting">
             <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; issue.showRank == true ? rank.showContent() : exp.showContent(rowIdx)" ng-repeat="content in rank.title">
                 <div  ui-sortable="rank.sortableOptions" ng-show="issue.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
@@ -19,5 +20,6 @@
             <button ng-show="issue.showRank" id="submitButton" ng-click="rank.submit(); issue.showRank = false; exp.showContent(rowIdx);" type='button' class='btn btn-success' disabled>{{ rank.buttonTitle }}</button>
             <div id="chart-{{rowIdx}}"ng-show="!issue.showRank"></div>
         </uib-tabset>
+        </div>
     </div>
 </div>
