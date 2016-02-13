@@ -57,8 +57,8 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac', '$scope',
-    function(dataFac, endpointFac, utilsFac, $scope) {
+app.controller("issue-controller", ['dataFac', 'endpointFac',
+    function(dataFac, endpointFac) {
         var self = this;
         self.title = "Weigh in on an issue";
         self.voting = false;
@@ -75,7 +75,8 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac', '$scop
                  for(var i = 0; i < data['nodes'].length; i++) {
                      var tempName = data['nodes'][i].name;
                      var tempDesc = data['nodes'][i].desc;
-                     self.issuerows.push({name: tempName, description: tempDesc, voting: false });
+                     var tempId   = data['nodes'][i].node_id;
+                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId});
                  }
              });
         };
@@ -84,18 +85,15 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', 'utilsFac', '$scop
             self.voting = true;
         };
 
-        self.checkForRank = function() {
-            dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
-                var which;
-                if(data['nodes'].length === 0) {
-                    which = 'showRankContent';
+        self.checkForRank = function(issueId, showRankContent, showChartContent) {
+            dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
+                if( data['nodes'].length === 0) {
+                    showRankContent(issueId);
                     self.showRank = true;
                 } else {
-                    which = 'showGraphContent';
+                    showChartContent(issueId);
                     self.showRank = false;
                 }
-
-                $scope.$broadcast(which,{});
             });
         };
 }]);
@@ -107,11 +105,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     function(endpointFac, utilsFac, dataFac, $scope, $cookies) {
 
     var self = this,
-        endpoints = utilsFac.endpointPfx,
-        unregister = $scope.$on("showRankContent", function(){
-            unregister();
-            self.showContent();
-        });
+        endpoints = utilsFac.endpointPfx;
 
     self.buckets = [[[],[],[],[],[]], [[],[],[],[],[]],[[],[],[],[],[]]];
     self.title = ['Values', 'Objectives', 'Policies'];
@@ -137,10 +131,10 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
         scroll: false
     };
 
-    self.showContent = function() {
+    self.showContent = function(issueId) {
         var which = endpoints[self.currentSet];
         if(self.srcData[which] === undefined ) {
-            dataFac.fetch(endpointFac.url_get_issue_items(which, 'i1')).then(function(data) {  //todo
+            dataFac.fetch(endpointFac.url_get_issue_items(which, issueId)).then(function(data) {
                self.srcData[which] = data;
             });
         }
@@ -171,7 +165,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
         $('#submitButton').prop('disabled', function() { return disable; });
     };
 
-    self.submit = function () {
+    self.submit = function (issueId, showGraphContent) {
         var url,
             rank,
             ready,
@@ -179,8 +173,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             bucket,
             ranked,
             rankingSet,
-            userId = $cookies.get('currentUser'),
-            issueId = 'i1';   //todof
+            userId = $cookies.get('currentUser');
 
         for(var i in self.buckets) {
             bucket = self.buckets[i];
@@ -197,7 +190,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.put(url, ready).then(function(){ $scope.$broadcast("showGraphContent", {})});
+                    dataFac.put(url, ready).then(function(){showGraphContent();});
                 }
             }
         }
@@ -214,10 +207,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         tempData = null,
         endpoints = utilsFac.endpointPfx,
         charts = {},
-        unregister = $scope.$on("showGraphContent", function(){
-            unregister();
-            self.showContent();
-        }),
 
         parseOpinions = function(which, data) {
             var temp;
@@ -414,17 +403,17 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.xAxisMax = null;
     self.rowIndex = null;
 
-    self.showContent = function() {
+    self.showContent = function(issueId) {
         var chartIdx = self.rowIndex;
         var which = endpoints[self.currentSet];
         if(undefined == charts[chartIdx]) {
             charts[chartIdx] = graph(chartIdx);
         }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
-            dataFac.fetch(endpointFac.url_get_rank(which, 'i1')).then(function(opinionData){   //todo
+            dataFac.fetch(endpointFac.url_get_rank(which, issueId)).then(function(opinionData){
                 parseOpinions(which, opinionData['nodes']);
                 self.opinion = self.opinions[which];
-                dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){  //todo
+                dataFac.fetch(endpointFac.url_get_stacked(which, issueId)).then(function(chartData){
                     processData(which, chartData);
                     charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
                     charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});

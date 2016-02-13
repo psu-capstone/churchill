@@ -55,14 +55,3 @@ app.directive('userUnique', ['dataFac', 'endpointFac', function (dataFac, endpoi
         }
     }
 }]);
-
-/**
- * drag and drop likert scale ranking directive
- */
-app.directive("sort", [function () {
-    return {
-        restrict: 'E',
-        replace: true,
-        templateUrl: './widgets/rank.html'
-    };
-}]);
