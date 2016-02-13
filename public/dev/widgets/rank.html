@@ -19,6 +19,7 @@
             </uib-tab>
             <button ng-show="issue.showRank" id="submitButton" ng-click="rank.submit(); issue.showRank = false; exp.showContent(rowIdx);" type='button' class='btn btn-success' disabled>{{ rank.buttonTitle }}</button>
             <div id="chart-{{rowIdx}}"ng-show="!issue.showRank"></div>
+            <div id="chart-sankey"ng-show="!issue.showRank"></div>
         </uib-tabset>
         </div>
     </div>
