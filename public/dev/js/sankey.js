@@ -1,3 +1,6 @@
+//Plugin Source https://github.com/soxofaan/d3-plugin-captain-sankey
+//Had to be included due to MIME problem
+
 d3.sankey = function() {
   var sankey = {},
       nodeWidth = 24,
