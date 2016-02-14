@@ -73,35 +73,33 @@
                 <button ng-disabled="createIssueForm.$invalid" data-dismiss="modal" id="submitIssueButton" type='button' class='btn btn-success'>Add New Issue</button>
             </div>
         </form>
+        <!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post
+             So this is what we got for now -->
+        <script>
+            var base_url = "http://capdev.meyersj.com:9000";
+            var endpoint = base_url + "/api/issue";
+            $(document).ready(function() {
+
+                $("#submitIssueButton").click(function () {
+                    var issue_data = {
+                        issue_name: $("#issueTitle").val(),
+                        desc: $("#issueDesc").val(),
+                        values: $("#issueVal").val().split(","),
+                        objectives: $("#issueObj").val().split(","),
+                        policies: $("#issuePol").val().split(",")
+                    };
+                    if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
+                            issue_data['objectives'] == "" || issue_data['policies'] == "") {
+                        //Shouldn't happen if disable attribute stays strong
+                    } else {
+                        $.post(endpoint, issue_data, function(data) {
+                            console.log(data);
+                        });
+                    }
+                    $("#createIssue").find('input:text').val(null);
+                    $(this).attr('disabled', 'disabled');
+                });
+            });
+        </script>
     </modal>
 </div>
-
-<!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post
-     So this is what we got for now -->
-<script>
-    var base_url = "http://capdev.meyersj.com:9000";
-    var endpoint = base_url + "/api/issue";
-    $(document).ready(function() {
-
-        $("#submitIssueButton").click(function () {
-            var issue_data = {
-                issue_name: $("#issueTitle").val(),
-                desc: $("#issueDesc").val(),
-                values: $("#issueVal").val().split(","),
-                objectives: $("#issueObj").val().split(","),
-                policies: $("#issuePol").val().split(",")
-            };
-            if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
-                    issue_data['objectives'] == "" || issue_data['policies'] == "") {
-                //Shouldn't happen if disable attribute stays strong
-            } else {
-                $.post(endpoint, issue_data, function(data) {
-                    console.log(data);
-                });
-            }
-            $("#createIssue").find('input:text').val(null);
-            $(this).attr('disabled', 'disabled');
-        });
-    });
-</script>
-
