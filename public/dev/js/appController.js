@@ -114,6 +114,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.lik = utilsFac.likert;
     self.currentSet = 0;
     self.srcData = {};
+    self.index = 0;
 
     self.sortableOptions = {
         connectWith: ".sort",
@@ -162,23 +163,24 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                 disable = true;
             }
         }
-        $('#submitButton').prop('disabled', function() { return disable; });
+        $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
     };
 
     self.submit = function (issueId, showGraphContent) {
-        var url,
+        var url = [],
             rank,
             ready,
             which,
             bucket,
             ranked,
             rankingSet,
+            model = [[],[],[]],
             userId = $cookies.get('currentUser');
 
         for(var i in self.buckets) {
             bucket = self.buckets[i];
             which = utilsFac.endpointPfx[i];
-            url = endpointFac.url_rank_node(which);
+            url.push(endpointFac.url_rank_node(which));
             for(var j in bucket) {
                 rankingSet = bucket[j];
                 rank = (j - 2);
@@ -190,10 +192,17 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.put(url, ready).then(function(){showGraphContent();});
+                    model[i].push(ready);
                 }
             }
         }
+        dataFac.multiPut(url[0], model[0]).then(function() {
+            dataFac.multiPut(url[1], model[1]).then(function() {
+                dataFac.multiPut(url[2], model[2]).then(function() {
+                    showGraphContent(issueId);
+                })
+            })
+        });
     };
 }]);
 
@@ -216,9 +225,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 temp.push(data[i].rank)
             }
         },
-
+    //TODO, work with raw data, not against it
         parseData = function(data) {
-
             for(var i in data){
                 tempData.push(data[i].data);
             }
@@ -287,14 +295,11 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
 
         formatData = function() {
             var length = tempData.length,
-                headers = ['x','Question1','Question2','Question3','Question4','Question5'];
+                headers = ['x'];
 
-            if(tempData[0].length == 8 ) {
-                headers.push('Question6');
-                headers.push('Question7');
-                headers.push('Question8');
+            for(var i in tempData){
+                headers.push('Question ' + i.toString());
             }
-
 
             for(var i = 0; i < length - 1; ++i) {
                 tempData[i].unshift(self.lik[i - 2]);

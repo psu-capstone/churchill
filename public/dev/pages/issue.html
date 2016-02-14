@@ -12,10 +12,9 @@
         <div ng-controller = "rank-controller as rank">
             <div ng-controller = "explore-controller as exp">
                 <div class="issue">
-                    <button ng-click="issue.checkForRank(row.node_id,rank.showContent, exp.showContent); row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+                    <button ng-click="issue.checkForRank(row.node_id,rank.showContent, exp.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
                 </div>
                 <h5>{{row.description}}</h5>
-
                 <uib-tabset justified="true" ng-show="row.voting">
                     <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; issue.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
                         <div ui-sortable="rank.sortableOptions" ng-show="issue.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
@@ -33,8 +32,8 @@
                             </div>
                         </div>
                     </uib-tab>
-                    <div id="chart-{{rowIdx}}"ng-show="!issue.showRank"></div>
-                    <button ng-show="issue.showRank" id="submitButton" ng-click="rank.submit(row.node_id, exp.showContent); issue.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
+                    <div id="chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
+                    <button ng-show="issue.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent); issue.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
                 </uib-tabset>
             </div>
         </div>

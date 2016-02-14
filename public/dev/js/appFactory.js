@@ -75,8 +75,17 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
  * or check for the same file in api/ which is in the top level directory for churchill
  */
 app.factory('dataFac',['$http', '$q', function($http, $q) {
-    return {
-        put: function(url, data) {
+    var dataFactory = {};
+
+        dataFactory.multiPut = function(url, model) {
+            var promises = []
+            model.forEach(function(data) {
+                promises.push(dataFactory.put(url, data));
+            });
+            return $q.all(promises);
+        };
+
+        dataFactory.put = function(url, data) {
             var dfrd = $q.defer();
             $http.post(url, data)
                 .success(function(response) {
@@ -86,8 +95,9 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
                     dfrd.reject(error);
                 });
             return dfrd.promise;
-        },
-        fetch: function(url) {
+        };
+
+        dataFactory.fetch = function(url) {
             var dfrd = $q.defer();
             $http.get(url)
                 .success(function(data) {
@@ -97,6 +107,7 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
                     dfrd.reject(error);
                 });
             return dfrd.promise;
-        }
-    };
+        };
+
+    return dataFactory;
 }]);
