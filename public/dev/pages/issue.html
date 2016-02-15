@@ -13,7 +13,7 @@
             <div ng-controller = "sankey-controller as sankey">
                 <div ng-controller = "explore-controller as exp">
                     <div class="issue">
-                        <button ng-click="issue.checkForRank(row.node_id,rank.showContent, exp.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+                        <button ng-click="issue.checkForRank(row.node_id,rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
                     </div>
                     <h5>{{row.description}}</h5>
                     <uib-tabset justified="true" ng-show="row.voting">
@@ -34,7 +34,7 @@
                             </div>
                         </uib-tab>
                         <div id="chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
-                        <div id="chart-sankey" ng-show="!issue.showRank"></div>
+                        <div id="chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
                         <button ng-show="issue.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent); issue.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
                     </uib-tabset>
                 </div>

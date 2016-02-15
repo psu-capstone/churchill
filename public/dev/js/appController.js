@@ -85,13 +85,14 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
             self.voting = true;
         };
 
-        self.checkForRank = function(issueId, showRankContent, showChartContent) {
+        self.checkForRank = function(issueId, showRankContent, showChartContent, showSankeyContent) {
             dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
                 if( data['nodes'].length === 0) {
                     showRankContent(issueId);
                     self.showRank = true;
                 } else {
                     showChartContent(issueId);
+                    showSankeyContent(issueId);
                     self.showRank = false;
                 }
             });
@@ -209,15 +210,11 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
 app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
     function(dataFac, endpointFac, $scope) {
 
-    var data;
+    var self = this,
+    rowIndex,
+    data;
 
-    $scope.$watch('issue.showRank', function(value) {
-        if(value == false) {
-            self.showContent();
-        }
-    });
-
-    self.constructSankey = function() {
+    self.constructSankey = function(idx) {
 
          //need to get rid of this since we're supporting mobile
          var margin = {top: 1, right: 1, bottom: 6, left: 1};
@@ -226,7 +223,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
          var color = d3.scale.category20();
 
          // SVG (group) to draw in.
-         var svg = d3.select("#chart-sankey").append("svg")
+         var svg = d3.select('#chart-' + idx.toString()).append("svg")
             .attr({
                 width: width + margin.left + margin.right,
                 height: height + margin.top + margin.bottom
@@ -308,14 +305,18 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             });
     };
 
-    self.showContent = function() {
-        dataFac.fetch(endpointFac.url_get_sankey('i1')).then(function(fetchdata){
+    $scope.$watch('rowIdx', function(value) {
+        self.rowIndex = value;
+    });
+
+    self.showContent = function(issueId) {
+        dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function(fetchdata){
             //hacky fix to stop multiple charts needs to be moved once multiple issues is implemented
-            if(data === undefined)
-            {
+            //if(data === undefined)
+            //{
                 data = fetchdata;
-                self.constructSankey();
-            }
+                self.constructSankey(self.rowIndex);
+            //}
     })};
 
 }]);
