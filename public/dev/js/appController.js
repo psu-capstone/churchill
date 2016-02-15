@@ -297,7 +297,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             var length = tempData.length,
                 headers = ['x'];
 
-            for(var i in tempData){
+            for(var i in tempData[0]){
                 headers.push('Question ' + i.toString());
             }
 
@@ -426,6 +426,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             });
         } else {
             self.opinion = self.opinions[which];
+            charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
             charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
         }
     };
