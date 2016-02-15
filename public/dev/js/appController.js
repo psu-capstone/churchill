@@ -223,7 +223,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
          var color = d3.scale.category20();
 
          // SVG (group) to draw in.
-         var svg = d3.select('#chart-' + idx.toString()).append("svg")
+         var svg = d3.select('#sankey-chart-' + idx.toString()).append("svg")
             .attr({
                 width: width + margin.left + margin.right,
                 height: height + margin.top + margin.bottom
