@@ -17,7 +17,7 @@
                     </div>
                     <h5>{{row.description}}</h5>
                     <uib-tabset justified="true" ng-show="row.voting">
-                        <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; issue.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id) sankey.showContent();" ng-repeat="content in rank.title">
+                        <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; issue.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
                             <div ui-sortable="rank.sortableOptions" ng-show="issue.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
                                  style="float:left; min-height: 40px; width: 30%;">
                                 <div id="item-list-src" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue">{{item.name}}</div>
