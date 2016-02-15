@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/psu-capstone/churchill.svg)](https://travis-ci.org/psu-capstone/churchill)
 # **Churchill**
 
-## **Version 0.4**
+## **Version 1.0**
 
 ___
 

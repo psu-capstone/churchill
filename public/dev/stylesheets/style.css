@@ -27,6 +27,10 @@ p{clear: both;}
     background: #eee;
     margin: 5px;
     cursor: move;
+    word-break: break-all;
+    hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
 }
 
 #item-list-tgt {
@@ -35,6 +39,7 @@ p{clear: both;}
     background: #eee;
     margin: 5px;
     cursor: move;
+    word-break: break-all;
 }
 
 .sort, .sortSrc, .sortTgt {

@@ -1,6 +1,5 @@
 /**
- * Main login controller, display a login form and save valid credentials,
- * for now, the only valid credential for testing is admin 1234
+ * Main login controller, display a login form and save valid credentials
  */
 app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac', 'dataFac', 'endpointFac', 'utilsFac',
     function($http, $location, $cookies, accessFac, dataFac, endpointFac, utilsFac) {
@@ -9,8 +8,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             authCallback = function(response) {
                 if(response["success"] == true) {
                     accessFac.getPermission();
-                    $cookies.name = self.username;
-                    console.log($cookies.name);
+                    $cookies.put('currentUser',self.username);
                     $location.path('/issue');
                 } else {
                     accessFac.rejectPermission();
@@ -35,7 +33,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 password: self.password
             });
 
-            dataFac.put(endpointFac.url_auth_user(), user_arg, authCallback, utilsFac.echo);
+            dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
         self.createAccount = function() {
@@ -52,60 +50,52 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             });
 
 
-            dataFac.put(endpointFac.url_post_user(), user_arg, utilsFac.echo, utilsFac.echo);
+            dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
 }]);
 
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac', function(dataFac, endpointFac) {
-    var self = this;
-    self.title = "Weigh in on an issue";
-    self.voting = false;
-    self.showRank = null;
+app.controller("issue-controller", ['dataFac', 'endpointFac',
+    function(dataFac, endpointFac) {
+        var self = this;
+        self.title = "Weigh in on an issue";
+        self.voting = false;
+        self.issuerows = [];
+        self.showCreateIssue = false;
+        self.createIssue = function() {
+            self.showCreateIssue = !self.showCreateIssue;
+        };
+        self.showRank = null;
 
-    self.issuerows = [];
 
-     self.getIssues = function() {
-         dataFac.fetch(endpointFac.url_get_issues('i1')).then(function(data){
-             for(var i = 0; i < data['nodes'].length; i++) {
-                 var temp = data['nodes'][i].name;
-                 self.issuerows.push({name: temp, description: 'placeholder', voting: false });
-             }
-         });
-    };
-    
-    self.vote = function() {
-        self.voting = true;
-    };
+         self.getIssues = function() {
+             dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
+                 for(var i = 0; i < data['nodes'].length; i++) {
+                     var tempName = data['nodes'][i].name;
+                     var tempDesc = data['nodes'][i].desc;
+                     var tempId   = data['nodes'][i].node_id;
+                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId});
+                 }
+             });
+        };
 
-    self.choices = [{id: 'choice1'}];
+        self.vote = function() {
+            self.voting = true;
+        };
 
-    self.addNewChoice = function() {
-        var newItemNo = self.choices.length + 1;
-        self.choices.push({'id':'choice'+ newItemNo});
-    };
-
-    self.removeChoice = function() {
-        var lastItem = self.choices.length - 1;
-        self.choices.splice(lastItem);
-    };
-    
-    self.new_title = "";
-    self.new_description = "";
-    self.submitIssue = function() {
-        // For future, this is where user can send an alert to add a new issue to the moderator or dynamically
-        // For now, just clearing on submit button press
-        self.new_title = "";
-        self.new_description = "";
-    };
-
-    self.checkForRank = function() {
-        dataFac.fetch(endpointFac.url_get_rank('value','i1')).then(function(data){
-            self.showRank = data['nodes'].length == 0;
-        });
-    };
+        self.checkForRank = function(issueId, showRankContent, showChartContent) {
+            dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
+                if( data['nodes'].length === 0) {
+                    showRankContent(issueId);
+                    self.showRank = true;
+                } else {
+                    showChartContent(issueId);
+                    self.showRank = false;
+                }
+            });
+        };
 }]);
 
 /**
@@ -117,12 +107,6 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     var self = this,
         endpoints = utilsFac.endpointPfx;
 
-    $scope.$watch('issue.showRank', function(value) {
-        if(value == true) {
-            self.showContent();
-        }
-    });
-
     self.buckets = [[[],[],[],[],[]], [[],[],[],[],[]],[[],[],[],[],[]]];
     self.title = ['Values', 'Objectives', 'Policies'];
     self.tgtData = self.buckets[0];
@@ -130,7 +114,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.lik = utilsFac.likert;
     self.currentSet = 0;
     self.srcData = {};
-    self.currentUser = $cookies.name;
+    self.index = 0;
 
     self.sortableOptions = {
         connectWith: ".sort",
@@ -148,10 +132,10 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
         scroll: false
     };
 
-    self.showContent = function() {
+    self.showContent = function(issueId) {
         var which = endpoints[self.currentSet];
         if(self.srcData[which] === undefined ) {
-            dataFac.fetch(endpointFac.url_get_issue_items(which, 'i1')).then(function(data) {
+            dataFac.fetch(endpointFac.url_get_issue_items(which, issueId)).then(function(data) {
                self.srcData[which] = data;
             });
         }
@@ -179,26 +163,25 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                 disable = true;
             }
         }
-        $('#submitButton').prop('disabled', function() { return disable; });
+        $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
     };
 
-    self.submit = function () {
-        var i, j,
-            url,
+    self.submit = function (issueId, showGraphContent) {
+        var url = [],
             rank,
             ready,
             which,
             bucket,
             ranked,
             rankingSet,
-            userId = $cookies.name,
-            issueId = 'i1';
+            model = [[],[],[]],
+            userId = $cookies.get('currentUser');
 
-        for(i in self.buckets) {
+        for(var i in self.buckets) {
             bucket = self.buckets[i];
             which = utilsFac.endpointPfx[i];
-            url = endpointFac.url_rank_node(which);
-            for (j in bucket) {
+            url.push(endpointFac.url_rank_node(which));
+            for(var j in bucket) {
                 rankingSet = bucket[j];
                 rank = (j - 2);
                 for (; 0 < rankingSet.length;) {
@@ -209,10 +192,17 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
                         issue_id: issueId,
                         rank: rank
                     });
-                    dataFac.put(url, ready, utilsFac.echo, utilsFac.echo);
+                    model[i].push(ready);
                 }
             }
         }
+        dataFac.multiPut(url[0], model[0]).then(function() {
+            dataFac.multiPut(url[1], model[1]).then(function() {
+                dataFac.multiPut(url[2], model[2]).then(function() {
+                    showGraphContent(issueId);
+                })
+            })
+        });
     };
 }]);
 
@@ -225,6 +215,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     var self = this,
         tempData = null,
         endpoints = utilsFac.endpointPfx,
+        charts = {},
 
         parseOpinions = function(which, data) {
             var temp;
@@ -234,9 +225,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 temp.push(data[i].rank)
             }
         },
-
+    //TODO, work with raw data, not against it
         parseData = function(data) {
-
             for(var i in data){
                 tempData.push(data[i].data);
             }
@@ -262,18 +252,20 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         /* This function will compute the sum of each array in data and
            return the largest.
          */
-        maxArraySums = function() {
-            var col = tempData.length,
-                rows = tempData[0].length,
-                sums = [];
+        maxArraySums = function(data) {
+            var col = data.length - 1,
+                rows = data[0].length,
+                sums = [],
+                buffer = null;
 
-            for (var i = 0; i < rows; ++i) {
+            for (var i = 1; i < rows; ++i) {
                 sums.push(0);
-                for (var j = 0; j < col; ++j) {
-                    sums[i] += tempData[j][i];
+                buffer = i - 1;
+                for (var j = 1; j < col; ++j) {
+                    sums[buffer] += data[j][i];
                 }
             }
-            self.xAxisMax = Math.max.apply(null, sums);
+            return Math.max.apply(null, sums);
         },
 
         /* this is so you can append the user opinion on the fly after
@@ -303,14 +295,11 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
 
         formatData = function() {
             var length = tempData.length,
-                headers = ['x','Question1','Question2','Question3','Question4','Question5'];
+                headers = ['x'];
 
-            if(tempData[0].length == 8 ) {
-                headers.push('Question6');
-                headers.push('Question7');
-                headers.push('Question8');
+            for(var i in tempData[0]){
+                headers.push('Question ' + i.toString());
             }
-
 
             for(var i = 0; i < length - 1; ++i) {
                 tempData[i].unshift(self.lik[i - 2]);
@@ -339,18 +328,76 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             tempData = [];
             parseData(rawData.data);
             transpose();
-            maxArraySums();
             appendUserData();
             scatterPositioning();
             formatData();
             self.srcData[which] = tempData;
 
+        },
+        graph = function(index) {
+            var you = 'you',
+                lik = self.lik;
+            return chart = c3.generate({
+                bindto: '#chart-' + index.toString(),
+                data: {
+                    x: 'x',
+                    columns: [],
+                    type: 'bar',
+                    types: {
+                        you: 'scatter'
+                    },
+                    order: null,
+                    colors: {
+                        'strongly disagree': '#920000',
+                        disagree: '#ec1b1b',
+                        'no opinion': '#dbd9d9',
+                        agree: '#0087d8',
+                        'strongly agree': '#095983',
+                        you: '#000000'
+                    },
+                    groups: [
+                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
+                    ]
+                },
+                point: {
+                    r: 5
+                },
+                axis: {
+                    rotated: true,
+                    y: {
+                        max: 100
+                    },
+                    x: {
+                        type: 'categorized'
+                    }
+                },
+                onrendered: function () {
+                    d3.selectAll("circle")
+                        .style("opacity", 1)
+                        .style("stroke", "white");
+                },
+                legend: {
+                    item: {
+                        onclick: function () {
+                            return;
+                        }
+                    }
+                },
+                tooltip: {
+                    format: {
+                        value: function (value, ratio, id, index) {
+                            if (id === you) {
+                                value = lik[self.opinion[index]];
+                            }
+                            return value;
+                        }
+                    }
+                }
+            });
         };
 
-    $scope.$watch('issue.showRank', function(value) {
-        if(value == false) {
-            self.showContent();
-        }
+    $scope.$watch('rowIdx', function(value) {
+        self.rowIndex = value;
     });
 
     self.title = "Explore the issues";
@@ -359,21 +406,28 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.currentSet = 0;
     self.opinions = {};
     self.xAxisMax = null;
+    self.rowIndex = null;
 
-    self.showContent = function() {
+    self.showContent = function(issueId) {
+        var chartIdx = self.rowIndex;
         var which = endpoints[self.currentSet];
+        if(undefined == charts[chartIdx]) {
+            charts[chartIdx] = graph(chartIdx);
+        }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
-            dataFac.fetch(endpointFac.url_get_rank(which, 'i1')).then(function(opinionData){
+            dataFac.fetch(endpointFac.url_get_rank(which, issueId)).then(function(opinionData){
                 parseOpinions(which, opinionData['nodes']);
                 self.opinion = self.opinions[which];
-                dataFac.fetch(endpointFac.url_get_stacked(which, 'i1')).then(function(chartData){
+                dataFac.fetch(endpointFac.url_get_stacked(which, issueId)).then(function(chartData){
                     processData(which, chartData);
-                    self.data = self.srcData[which];
+                    charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
+                    charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
                 });
             });
         } else {
             self.opinion = self.opinions[which];
-            self.data = self.srcData[which];
+            charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
+            charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
         }
     };
 }]);
