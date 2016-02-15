@@ -9,19 +9,46 @@
 
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
     <div class="issue row" ng-repeat="(rowIdx, row) in issue.issuerows">
-        <div class="issue">
-            <button ng-click="issue.checkForRank(); row.voting = !row.voting" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+        <div ng-controller = "rank-controller as rank">
+            <div ng-controller = "explore-controller as exp">
+                <div class="issue">
+                    <button ng-click="issue.checkForRank(row.node_id,rank.showContent, exp.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+                </div>
+                <h5>{{row.description}}</h5>
+                <uib-tabset justified="true" ng-show="row.voting">
+                    <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; issue.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
+                        <div ui-sortable="rank.sortableOptions" ng-show="issue.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
+                             style="float:left; min-height: 40px; width: 30%;">
+                            <div id="item-list-src" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue">{{item.name}}</div>
+                        </div>
+                        <div ng-show="issue.showRank" style="overflow: hidden">
+                            <!--The list is being reversed by the true argument to orderBy to sort the buckets with strongly agree at the top-->
+                            <div ng-repeat="(key, list) in rank.tgtData | orderBy:'key':true">
+                                <!--This is being multiplied by -1 to list the titles on the right order-->
+                                <h5 style="font-family: inherit; text-align: center; color: steelblue;">{{rank.lik[(key-2)*-1]}}</h5>
+                                <div ui-sortable="rank.sortableOptions" ng-model="list" class="well sort">
+                                    <div id="item-list-tgt" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue;">{{item.name}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </uib-tab>
+                    <div id="chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
+                    <button ng-show="issue.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent); issue.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
+                </uib-tabset>
+            </div>
         </div>
-        <h5>{{row.description}}</h5>
-        <sort></sort>
     </div>
 
     <!-- Adding issues -->
     <div class="issue row add">
-        <a href="" ng-click="issue.showform= !issue.showform"> Don't see an issue for you? </a>
+        <a href="" class="btn btn-success" ng-click="issue.createIssue()"> Don't see an issue for you? </a>
         <p></p>
+    </div>
+
+    <!-- Issue Modal -->
+    <modal title="Create New Issue" visible="issue.showCreateIssue" id="createModal">
         <form role="form" name="createIssueForm">
-            <div id="createIssue" class="formWrapper" ng-init = "issue.showform = false" ng-show="issue.showform">
+            <div id="createIssue" class="formWrapper">
                 <div class="form-group">
                     <label for="issueTitle">Title</label>
                     <input id="issueTitle" ng-model="issue.new_title" type="text" class="form-control" required>
@@ -43,38 +70,36 @@
                     <input id="issuePol" ng-model="issue.new_pol" type="text" class="form-control" required placeholder="Constitution, Law Restrictions, etc.">
                 </div>
                 <p></p>
-                <button ng-disabled="createIssueForm.$invalid" ng-click="issue.showform= !issue.showform" id="submitButton" type='button' class='btn btn-success'>Add New Issue</button>
+                <button ng-disabled="createIssueForm.$invalid" data-dismiss="modal" id="submitIssueButton" type='button' class='btn btn-success'>Add New Issue</button>
             </div>
         </form>
-    </div>
-</div>
+        <!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post
+             So this is what we got for now -->
+        <script>
+            var base_url = "http://capdev.meyersj.com:9000";
+            var endpoint = base_url + "/api/issue";
+            $(document).ready(function() {
 
-<!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post
-     So this is what we got for now -->
-<script>
-    var base_url = "http://capdev.meyersj.com:9000";
-    var endpoint = base_url + "/api/issue";
-    $(document).ready(function() {
-
-        $("#submitButton").click(function () {
-            var issue_data = {
-                issue_name: $("#issueTitle").val(),
-                desc: $("#issueDesc").val(),
-                values: $("#issueVal").val().split(","),
-                objectives: $("#issueObj").val().split(","),
-                policies: $("#issuePol").val().split(",")
-            };
-            if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
-                    issue_data['objectives'] == "" || issue_data['policies'] == "") {
-                //Shouldn't happen if disable attribute stays strong
-            } else {
-                $.post(endpoint, issue_data, function(data) {
-                    console.log(data);
+                $("#submitIssueButton").click(function () {
+                    var issue_data = {
+                        issue_name: $("#issueTitle").val(),
+                        desc: $("#issueDesc").val(),
+                        values: $("#issueVal").val().split(","),
+                        objectives: $("#issueObj").val().split(","),
+                        policies: $("#issuePol").val().split(",")
+                    };
+                    if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
+                            issue_data['objectives'] == "" || issue_data['policies'] == "") {
+                        //Shouldn't happen if disable attribute stays strong
+                    } else {
+                        $.post(endpoint, issue_data, function(data) {
+                            console.log(data);
+                        });
+                    }
+                    $("#createIssue").find('input:text').val(null);
+                    $(this).attr('disabled', 'disabled');
                 });
-            }
-            $("#createIssue").find('input:text').val(null);
-            $(this).attr('disabled', 'disabled');
-        });
-    });
-</script>
-
+            });
+        </script>
+    </modal>
+</div>

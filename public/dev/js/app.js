@@ -19,14 +19,14 @@ app.config(function($routeProvider) {
         .when('/logout', {
             templateUrl : './pages/login.html',
             controller  : 'main-controller',
-            //resolve: {
-            //    "check": function($cookies) {
-            //        if($cookies.get('currentUser') != null) {
-            //            $cookies.remove('currentUser');
-            //            console.log($cookies.get('currentUser'));
-            //        }
-            //    }
-            //}
+            resolve: {
+                "check": function($cookies) {
+                    if($cookies.get('currentUser') != null) {
+                        $cookies.remove('currentUser');
+                        console.log($cookies.get('currentUser'));
+                    }
+                }
+            }
         })
         .when('/home', {
             templateUrl : './pages/login.html',

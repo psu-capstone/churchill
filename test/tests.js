@@ -24,6 +24,10 @@ describe('Unit: Routing', function () {
             expect($route.routes['/issue'].controller).toBe('issue-controller');
             expect($route.routes['/issue'].templateUrl).
                 toEqual('./pages/issue.html');
+
+            expect($route.routes['/logout'].controller).toBe('main-controller');
+            expect($route.routes['/logout'].templateUrl).
+                toEqual('./pages/login.html');
         });
     });
 });
@@ -52,7 +56,6 @@ describe('Unit: main-controller', function() {
         expect(ctrl.showCreateForm).toEqual(true);
     });
 
-    // TODO fix later
     it('Verify User already in DB', function() {
         ctrl.new_user = "rta";
         fact.put(end.url_post_user(),ctrl.new_user, ctrl.echo, ctrl.echo);
@@ -72,10 +75,8 @@ describe('Unit: issue-controller', function() {
         ctrl = $controller('issue-controller');
     }));
 
-    it('Verify Form Clears on Press', function() {
-        ctrl.submitIssue();
-        expect(ctrl.new_title = "");
-        expect(ctrl.new_description = "");
+    it('Verify voting initializes in false', function() {
+        expect(ctrl.voting).toEqual(false);
     });
 
     it('Verify vote changes voting to true', function() {
@@ -83,6 +84,22 @@ describe('Unit: issue-controller', function() {
         expect(ctrl.voting).toEqual(true);
     });
 
+    it('Verify issues get pulled from DB', function() {
+        ctrl.getIssues();
+        expect(ctrl.issuerows).not.toBe(true);
+    });
+
+});
+
+describe('Unit: rank-controller', function() {
+   beforeEach(module('democracy-lab-app'));
+
+    var ctrl;
+
+    beforeEach(inject(function($controller) {
+        // Create the controller
+        ctrl = $controller('rank-controller');
+    }));
 });
 
 describe('Unit: explore-controller', function() {
