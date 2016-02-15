@@ -54,6 +54,9 @@ app.factory('endpointFac', ['$cookies', function($cookies) {
         url_get_stacked: function(which, issueId) {
             return urlBase + 'api/summary/' + which + '?issue_id=' + issueId;
         },
+        url_get_sankey: function(issueId) {
+            return urlBase + 'api/sankey?issue_id=' + issueId;
+        },
         url_get_node: function(which, id){
             return urlBase + 'api/' + which + '?id=' + id.toString();
         },

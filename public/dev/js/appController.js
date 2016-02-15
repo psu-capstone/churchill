@@ -193,31 +193,10 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     };
 }]);
 
-app.controller("sankey-controller", ['$scope',
-    function($scope) {
-      var data = {
-        'nodes': [
-          {name: "a"},
-          {name: "b"},
-          {name: "c"},
-          {name: "d"},
-          {name: "e"},
-          {name: "f"},
-          {name: "g"}
-        ],
-        'links': [
-          {source: 0, target: 2, value: 10},
-          {source: 0, target: 3, value: 4},
-          {source: 1, target: 2, value: 9},
-          {source: 1, target: 3, value: 8},
-          {source: 2, target: 4, value: 2},
-          {source: 2, target: 5, value: 6},
-          {source: 2, target: 6, value: 7},
-          {source: 3, target: 4, value: 8},
-          {source: 3, target: 5, value: 4},
-          {source: 3, target: 6, value: 2}
-        ]
-      };
+app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
+    function(dataFac, endpointFac, $scope) {
+
+    var data;
 
     $scope.$watch('issue.showRank', function(value) {
         if(value == false) {
@@ -225,96 +204,107 @@ app.controller("sankey-controller", ['$scope',
         }
     });
 
-    self.showContent = function() {
+    self.constructSankey = function() {
 
-      var margin = {top: 1, right: 1, bottom: 6, left: 1};
-      var width = 960 - margin.left - margin.right;
-      var height = 500 - margin.top - margin.bottom;
-      var color = d3.scale.category20();
+         //need to get rid of this since we're supporting mobile
+         var margin = {top: 1, right: 1, bottom: 6, left: 1};
+         var width = 900 - margin.left - margin.right;
+         var height = 500 - margin.top - margin.bottom;
+         var color = d3.scale.category20();
 
-      // SVG (group) to draw in.
-      var svg = d3.select("#chart-sankey").append("svg")
-              .attr({
+         // SVG (group) to draw in.
+         var svg = d3.select("#chart-sankey").append("svg")
+            .attr({
                 width: width + margin.left + margin.right,
                 height: height + margin.top + margin.bottom
-              })
-              .append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+            })
+                .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      // Set up Sankey object.
-      var sankey = d3.sankey()
-              .nodeWidth(30)
-              .nodePadding(10)
-              .size([width, height])
-              .nodes(data.nodes)
-              .links(data.links)
-              .layout(32);
+         // Set up Sankey object.
+         var sankey = d3.sankey()
+            .nodeWidth(30)
+            .nodePadding(10)
+            .size([width, height])
+            .nodes(data.nodes)
+            .links(data.links)
+            .layout(32);
 
-      // Path data generator.
-      var path = sankey.link();
+         // Path data generator.
+         var path = sankey.link();
 
-      // Draw the links.
-      var links = svg.append("g").selectAll(".link")
-              .data(data.links)
-              .enter()
-              .append("path")
-              .attr({
+         // Draw the links.
+         var links = svg.append("g").selectAll(".link")
+            .data(data.links)
+            .enter()
+            .append("path")
+            .attr({
                 "class": "link",
                 d: path
-              })
-              .style("stroke-width", function (d) {
+            })
+            .style("stroke-width", function (d) {
                 return Math.max(1, d.dy);
-              })
-      links.append("title")
-              .text(function (d) {
+            })
+         links.append("title")
+            .text(function (d) {
                 return d.source.name + " to " + d.target.name + " = " + d.value;
-              });
+            });
 
-      // Draw the nodes.
-      var nodes = svg.append("g").selectAll(".node")
-              .data(data.nodes)
-              .enter()
-              .append("g")
-              .attr({
+         // Draw the nodes.
+         var nodes = svg.append("g").selectAll(".node")
+            .data(data.nodes)
+            .enter()
+            .append("g")
+            .attr({
                 "class": "node",
                 transform: function (d) {
-                  return "translate(" + d.x + "," + d.y + ")";
+                    return "translate(" + d.x + "," + d.y + ")";
                 }
-              });
-      nodes.append("rect")
-              .attr({
+            });
+         nodes.append("rect")
+            .attr({
                 height: function (d) {
-                  return d.dy;
+                    return d.dy;
                 },
                 width: sankey.nodeWidth()
-              })
-              .style({
+            })
+            .style({
                 fill: function (d) {
-                  return d.color = color(d.name.replace(/ .*/, ""));
+                    return d.color = color(d.name.replace(/ .*/, ""));
                 },
                 stroke: function (d) {
-                  return d3.rgb(d.color).darker(2);
+                    return d3.rgb(d.color).darker(2);
                 }
-              })
-              .append("title")
-              .text(function (d) {
+            })
+            .append("title")
+            .text(function (d) {
                 return d.name;
-              });
-      nodes.append("text")
-              .attr({
+            });
+         nodes.append("text")
+            .attr({
                 x: sankey.nodeWidth() / 2,
                 y: function (d) {
-                  return d.dy / 2;
+                    return d.dy / 2;
                 },
                 dy: ".35em",
-                "text-anchor": "middle",
-                transform: null
-              })
-              .text(function (d) {
+                    "text-anchor": "middle",
+                    transform: null
+            })
+            .text(function (d) {
                 return d.name;
-              });
-
+            });
     };
+
+    self.showContent = function() {
+        dataFac.fetch(endpointFac.url_get_sankey('i1')).then(function(fetchdata){
+            //hacky fix to stop multiple charts needs to be moved once multiple issues is implemented
+            if(data === undefined)
+            {
+                data = fetchdata;
+                self.constructSankey();
+            }
+    })};
+
 }]);
 
 /**
