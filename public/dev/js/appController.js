@@ -226,10 +226,12 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
          var svg = d3.select('#sankey-chart-' + idx.toString()).append("svg")
             .attr({
                 width: width + margin.left + margin.right,
-                height: height + margin.top + margin.bottom
+                height: height + margin.top + margin.bottom,
+                display: "block",
+                style: "margin-left:auto; margin-right:auto;"
             })
                 .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+                //.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 
          // Set up Sankey object.
          var sankey = d3.sankey()
@@ -253,7 +255,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
                 d: path
             })
             .style("stroke-width", function (d) {
-                return Math.max(1, d.dy);
+                return Math.max(1, Math.abs(d.dy));
             })
          links.append("title")
             .text(function (d) {
@@ -297,7 +299,14 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
                     return d.dy / 2;
                 },
                 dy: ".35em",
-                    "text-anchor": "middle",
+                    "text-anchor":
+                    function(d) {
+                    if(d.x < 50)
+                        { return "start"}
+                    if(d.x < 700)
+                        {return "middle"}
+                    return "end"
+                    },
                     transform: null
             })
             .text(function (d) {
@@ -311,12 +320,8 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
 
     self.showContent = function(issueId) {
         dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function(fetchdata){
-            //hacky fix to stop multiple charts needs to be moved once multiple issues is implemented
-            //if(data === undefined)
-            //{
                 data = fetchdata;
                 self.constructSankey(self.rowIndex);
-            //}
     })};
 
 }]);
