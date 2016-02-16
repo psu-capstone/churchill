@@ -67,16 +67,14 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
         self.createIssue = function() {
             self.showCreateIssue = !self.showCreateIssue;
         };
-        self.showRank = null;
 
-
-         self.getIssues = function() {
+        self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
                  for(var i = 0; i < data['nodes'].length; i++) {
                      var tempName = data['nodes'][i].name;
                      var tempDesc = data['nodes'][i].desc;
                      var tempId   = data['nodes'][i].node_id;
-                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId});
+                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId, showRank: false});
                  }
              });
         };
@@ -85,14 +83,14 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
             self.voting = true;
         };
 
-        self.checkForRank = function(issueId, showRankContent, showChartContent) {
-            dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
+        self.checkForRank = function(row, showRankContent, showChartContent) {
+            dataFac.fetch(endpointFac.url_get_rank('value', row.node_id)).then(function(data){
                 if( data['nodes'].length === 0) {
-                    showRankContent(issueId);
-                    self.showRank = true;
+                    showRankContent(row.node_id);
+                    row.showRank = true;
                 } else {
-                    showChartContent(issueId);
-                    self.showRank = false;
+                    showChartContent(row.node_id);
+                    row.showRank = false;
                 }
             });
         };
@@ -115,6 +113,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.currentSet = 0;
     self.srcData = {};
     self.index = 0;
+    self.showRank = null;
 
     self.sortableOptions = {
         connectWith: ".sort",
@@ -164,6 +163,18 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             }
         }
         $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
+    };
+
+    self.checkForRank = function(showChartContent) {
+        dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
+            if( data['nodes'].length === 0) {
+                self.showContent(issueId);
+                self.showRank = true;
+            } else {
+                showChartContent(issueId);
+                self.showRank = false;
+            }
+        });
     };
 
     self.submit = function (issueId, showGraphContent) {
