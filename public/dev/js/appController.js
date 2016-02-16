@@ -337,6 +337,9 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         graph = function(index) {
             var you = 'you',
                 lik = self.lik;
+            //For local library and for gulp
+            //Comment in for production deployment before build script is ran
+            var c3 = require('c3');
             return chart = c3.generate({
                 bindto: '#chart-' + index.toString(),
                 data: {

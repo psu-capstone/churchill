@@ -1,6 +1,9 @@
 # Ignore IntelliJ directory
 .idea/
 
+# Ignore giant library
+lib/c3
+
 # More ignoring for IDE stuff
 *.iml
 

@@ -7,14 +7,10 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 script:
    - './node_modules/.bin/gulp'
-   - './node_modules/.bin/karma start --browsers Firefox --single-run'
 branches:
   only:
     - master
     - develop
 notifications:
-  email:
-  - mds6@pdx.edu
-  - rta@pdx.edu
   slack:
     secure: h6PNYXKeWcgWRGvFCkqo88ZKpcgcREkB09+HRztpiDY5lYuq1wbDUFIO6N3ng25cywzs0RtPt0OzZ8Skyf8sMi/vnBsPmMqUsVKiCF0jt9WwouQcJ1gEdBRdvk8vG6RXhj3XnP5szCQp1whACZVYthLvHjQGK45nvSpd9fh5ZaAvBvDnwuI3ut1RW7kgGIKbAl3BP2Zr/675HW7vv23D2znXWCDvRpOdZo5orbq0IWPr9T1dK56PCDI01uB7e+RTW5nbm78G/qoGljfcaNhu4zf1Z99b9uPHz2Tru5hIHjFHnI8CSCXUAr1Tv8dzl3EDQ9fXxyp5HcrD48MCiT3HBxC03Sgf5IjdHbsMLEJetNZ3QKkXr3wcIQ5ESIdI0CSULAcmtWHU9xQkqYLdiTLwMyprU6ntoKBVF0z5doBCJcVcAyk9uJkXsdfRUtythwdQsY2gBHA1Kg1wDiEJWGUi27lfHuR7vWGbnKCbIKKhVadlZfJtZ/vkTqAsviWJTBsCG4K/SEVB7cMaduMQvvUOtakAscEi444R6bo+BCwDKWoqZ9Zs8F4s2EZjloAdHsbkZ7TJToSNl6W7yhpfljJ+6gXhKJP65UhTzGK/njMc0zcT6DaqF0sOIxmaCuN3YLoK+aehoEOW00eAQto22T8k2hwlsUqNE52L8yNvYhlEj+8=
