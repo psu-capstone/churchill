@@ -386,8 +386,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 });
             });
         } else {
-            mapTooltip(self.chartData[which]);
-            charts[chartIdx].axis.max(maxArraySums(self.chartData[which], self. opinions[which]));
+            mapTooltip(self.srcData[which], self.opinions[which]);
+            charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
             charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
         }
     };
