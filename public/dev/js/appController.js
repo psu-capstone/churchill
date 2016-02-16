@@ -233,13 +233,12 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 userRank,
                 barData;
             for(var id in opinions) {
-                userRank = opinions[id].rank;
-                barData = data[opinions[id].node_id].data;
+                userRank = opinions[id];
+                barData = data[id].data;
                 //append scatter positioning value
                 barData.push(scatterPositioning(barData, userRank));
-                self.tooltipStrings.push(self.lik[userRank]);
                 //prepend the item title
-                barData.unshift(data[opinions[id].node_id].name);
+                barData.unshift(data[id].name);
             }
             for(var i in data){
                 chart.push(data[i].data);
@@ -282,6 +281,14 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             parseData(which, tempData);
             self.chartData[which] = tempData;
         },
+
+        mapTooltip = function(data, opinions) {
+            self.tooltipStrings = [];
+            for(var id in data) {
+                self.tooltipStrings.push(self.lik[opinions[id]]);
+            }
+        },
+
         graph = function(index) {
             var lik = self.lik;
             return chart = c3.generate({
@@ -365,16 +372,23 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
             dataFac.fetch(endpointFac.url_get_rank(which, issueId)).then(function(opinionData){
-                self.opinions[which] = opinionData['nodes'];
+                var array = opinionData['nodes'],
+                    length = array.length;
+                self.opinions[which] = {};
+                for(var i = 0; i < length; i++) {
+                    self.opinions[which][array[i].node_id] = array[i].rank;
+                }
                 dataFac.fetch(endpointFac.url_get_stacked(which, issueId)).then(function(chartData){
                     self.srcData[which] = chartData.data;
                     processData(which);
-                   // charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+                    mapTooltip(chartData.data, self.opinions[which]);
+                    charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
                     charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
                 });
             });
         } else {
-            charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+            mapTooltip(self.chartData[which]);
+            charts[chartIdx].axis.max(maxArraySums(self.chartData[which], self. opinions[which]));
             charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
         }
     };
