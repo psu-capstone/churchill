@@ -224,40 +224,27 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     function(endpointFac, utilsFac, dataFac, $scope) {
 
     var self = this,
-        tempData = null,
         endpoints = utilsFac.endpointPfx,
         charts = {},
 
-        parseOpinions = function(which, data) {
-            var temp;
-            self.opinions[which] = [];
-            temp = self.opinions[which];
+        parseData = function(which, chart) {
+            var opinions = self.opinions[which],
+                data = self.srcData[which],
+                userRank,
+                barData;
+            for(var id in opinions) {
+                userRank = opinions[id].rank;
+                barData = data[opinions[id].node_id].data;
+                //append scatter positioning value
+                barData.push(scatterPositioning(barData, userRank));
+                self.tooltipStrings.push(self.lik[userRank]);
+                //prepend the item title
+                barData.unshift(data[opinions[id].node_id].name);
+            }
             for(var i in data){
-                temp.push(data[i].rank)
+                chart.push(data[i].data);
             }
-        },
-    //TODO, work with raw data, not against it
-        parseData = function(data) {
-            for(var i in data){
-                tempData.push(data[i].data);
-            }
-        },
-
-        transpose = function(){
-            var length,
-                transposed = [];
-                length = tempData[0].length;
-            for(var idx = 0; idx < length; idx++){
-                transposed.push([]);
-            }
-
-            for(var i in tempData){
-                length = tempData[i].length;
-                for(var j = 0; j < length; j++){
-                    transposed[j].push(tempData[i][j]);
-                }
-            }
-            tempData = transposed;
+            chart.unshift(['x','strongly disagree', 'disagree', 'no opinion','agree', 'strongly agree', 'you']);
         },
 
         /* This function will compute the sum of each array in data and
@@ -279,80 +266,29 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             return Math.max.apply(null, sums);
         },
 
-        /* this is so you can append the user opinion on the fly after
-         * the rest of the data has been fetched
-         */
-        appendUserData = function() {
-            var temp = [];
-            self.opinion.forEach(function(x){temp.push(x);});
-            tempData.push(temp);
-        },
+        scatterPositioning = function(row, rank) {
+            var buffer = 0,
+                index = rank + 2,
+                centered = row[index] * 0.5;
 
-        scatterPositioning = function() {
-            var buffer,
-                opinionRow,
-                centered,
-                opinions = self.opinion,
-                length = opinions.length,
-                userColumn = tempData[5];
-
-            for(var i = 0; i < length; ++i) {
-                opinionRow = index(opinions[i]);
-                centered = centerOpinionValue(opinionRow, i, tempData);
-                buffer = sumBuffer(opinionRow - 1, i, tempData);
-                userColumn[i] = centered + buffer;
+            for(var i = 0; i < index; i++) {
+                buffer += row[i];
             }
+            return buffer + centered;
         },
 
-        formatData = function() {
-            var length = tempData.length,
-                headers = ['x'];
-
-            for(var i in tempData[0]){
-                headers.push('Question ' + i.toString());
-            }
-
-            for(var i = 0; i < length - 1; ++i) {
-                tempData[i].unshift(self.lik[i - 2]);
-            }
-            tempData[length -1].unshift('you');
-            tempData.unshift(headers);
-        },
-
-        index = function(x) {
-            return x + 2;
-        },
-
-        centerOpinionValue = function(x, y, data) {
-            return data[x][y] * .5;
-        },
-
-        sumBuffer = function(x, y, data) {
-            var sum = 0;
-            for(;x>=0; --x) {
-                sum += data[x][y]
-            }
-            return sum;
-        },
-
-        processData = function(which, rawData) {
-            tempData = [];
-            parseData(rawData.data);
-            transpose();
-            appendUserData();
-            scatterPositioning();
-            formatData();
-            self.srcData[which] = tempData;
-
+        processData = function(which) {
+            var tempData = [];
+            parseData(which, tempData);
+            self.chartData[which] = tempData;
         },
         graph = function(index) {
-            var you = 'you',
-                lik = self.lik;
+            var lik = self.lik;
             return chart = c3.generate({
                 bindto: '#chart-' + index.toString(),
                 data: {
                     x: 'x',
-                    columns: [],
+                    rows: [],
                     type: 'bar',
                     types: {
                         you: 'scatter'
@@ -367,7 +303,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                         you: '#000000'
                     },
                     groups: [
-                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
+                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], 'you']
                     ]
                 },
                 point: {
@@ -376,7 +312,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 axis: {
                     rotated: true,
                     y: {
-                        max: 100
+                        max: 160
                     },
                     x: {
                         type: 'categorized'
@@ -397,8 +333,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 tooltip: {
                     format: {
                         value: function (value, ratio, id, index) {
-                            if (id === you) {
-                                value = lik[self.opinion[index]];
+                            if (id === 'you') {
+                                value = self.tooltipStrings[index];
                             }
                             return value;
                         }
@@ -418,6 +354,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.opinions = {};
     self.xAxisMax = null;
     self.rowIndex = null;
+    self.chartData = {};
+    self.tooltipStrings = [];
 
     self.showContent = function(issueId) {
         var chartIdx = self.rowIndex;
@@ -427,18 +365,17 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
             dataFac.fetch(endpointFac.url_get_rank(which, issueId)).then(function(opinionData){
-                parseOpinions(which, opinionData['nodes']);
-                self.opinion = self.opinions[which];
+                self.opinions[which] = opinionData['nodes'];
                 dataFac.fetch(endpointFac.url_get_stacked(which, issueId)).then(function(chartData){
-                    processData(which, chartData);
-                    charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
-                    charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
+                    self.srcData[which] = chartData.data;
+                    processData(which);
+                   // charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+                    charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
                 });
             });
         } else {
-            self.opinion = self.opinions[which];
-            charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
-            charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
+            charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+            charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
         }
     };
 }]);
