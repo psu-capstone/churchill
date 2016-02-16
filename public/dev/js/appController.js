@@ -250,16 +250,15 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
            return the largest.
          */
         maxArraySums = function(data) {
-            var col = data.length - 1,
-                rows = data[0].length,
-                sums = [],
-                buffer = null;
-
-            for (var i = 1; i < rows; ++i) {
+            var sums = [],
+                index,
+                colLen = data.length,
+                rowLen = data[0].length - 1;
+            for(var i = 1; i < colLen; i++){
                 sums.push(0);
-                buffer = i - 1;
-                for (var j = 1; j < col; ++j) {
-                    sums[buffer] += data[j][i];
+                index = i-1;
+                for(var j = 1; j < rowLen; j++){
+                    sums[index] += data[i][j];
                 }
             }
             return Math.max.apply(null, sums);
