@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 echo "Gulp Files"
-gulp
+./node_modules/.bin/gulp
 echo "Building bundle.js"
-gulp package
+./node_modules/.bin/gulp package
 echo "Browserify"
-gulp browserify
+./node_modules/.bin/gulp browserify
 echo "Start localhost"
-gulp connect
+./node_modules/.bin/gulp connect
