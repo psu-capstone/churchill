@@ -83,7 +83,7 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
             self.voting = true;
         };
 
-        self.checkForRank = function(issueId, showRankContent, showChartContent, showSankeyContent) {
+        self.checkForRank = function(row, showRankContent, showChartContent, showSankeyContent) {
             dataFac.fetch(endpointFac.url_get_rank('value', row.node_id)).then(function(data){
                 if( data['nodes'].length === 0) {
                     showRankContent(row.node_id);
