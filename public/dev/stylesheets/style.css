@@ -81,7 +81,6 @@ select{
 }
 
 .formWrapper {
-    border: solid darkslategrey 2px;
     border-radius: 5px;
     padding: 5px;
 }

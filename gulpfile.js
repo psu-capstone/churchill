@@ -8,6 +8,10 @@ var image = require('gulp-image');
 var minifyCss = require('gulp-minify-css');
 var imageop = require('gulp-image-optimization');
 var minifyHTML = require('gulp-minify-html');
+var connect = require('gulp-connect');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
+var merge = require('merge-stream');
 
 // Minify index.html
 gulp.task('html-index', function() {
@@ -16,7 +20,7 @@ gulp.task('html-index', function() {
         spare:true
     };
 
-    return gulp.src('public/dev/*.html')
+    return gulp.src('public/dev/index.html')
         .pipe(minifyHTML(opts))
         .pipe(gulp.dest('public/build'));
 });
@@ -31,6 +35,18 @@ gulp.task('html-pages', function() {
     return gulp.src('public/dev/pages/*.html')
         .pipe(minifyHTML(opts))
         .pipe(gulp.dest('public/build/pages'));
+});
+
+// Minify widgets folder
+gulp.task('html-widgets', function() {
+    var opts = {
+        conditionals: true,
+        spare:true
+    };
+
+    return gulp.src('public/dev/widgets/*.html')
+        .pipe(minifyHTML(opts))
+        .pipe(gulp.dest('public/build/widgets'));
 });
 
 // Image Task
@@ -66,10 +82,41 @@ gulp.task('jshint', function() {
 
 // Concatenate JS
 gulp.task('scripts', function() {
-    return gulp.src('public/dev/*.js')
-        .pipe(concat('app.js'))
-        .pipe(gulp.dest('public/build'))
+    var js = gulp.src('public/dev/js/*.js')
+        .pipe(gulp.dest('public/build/js'));
+
+    var index = gulp.src('public/dev/index.js')
+        .pipe(gulp.dest('public/build/js'));
+
+    return merge(index, js);
+});
+
+// Concatenate final bundle
+gulp.task('package', function() {
+    return gulp.src(['public/build/js/index.js', 'public/build/js/app.js', 'public/build/js/appController.js',
+        'public/build/js/appDirective.js', 'public/build/js/appFactory.js'])
+        .pipe(concat('main.js'))
+        .pipe(gulp.dest('public/build'));
+});
+
+// Browserify js files
+gulp.task('browserify', function() {
+    // Grabs the app.js file
+    return browserify('public/build/main.js')
+        // bundles it and creates a file called main.js
+        .bundle()
+        .pipe(source('bundle.js'))
+        // saves it the public/js/ directory
+        .pipe(gulp.dest('public/build/'));
+});
+
+// Make localhost
+gulp.task('connect', function () {
+    connect.server({
+        root: 'public/build/',
+        port: 3000
+    })
 });
 
 // Default Task
-gulp.task('default', ['html-index', 'html-pages', 'css', 'image', 'lint', 'jshint', 'scripts']);
+gulp.task('default', ['html-index', 'html-pages', 'html-widgets', 'css', 'image', 'lint', 'jshint', 'scripts']);

@@ -67,16 +67,14 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
         self.createIssue = function() {
             self.showCreateIssue = !self.showCreateIssue;
         };
-        self.showRank = null;
 
-
-         self.getIssues = function() {
+        self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
                  for(var i = 0; i < data['nodes'].length; i++) {
                      var tempName = data['nodes'][i].name;
                      var tempDesc = data['nodes'][i].desc;
                      var tempId   = data['nodes'][i].node_id;
-                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId});
+                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId, showRank: false});
                  }
              });
         };
@@ -86,13 +84,13 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
         };
 
         self.checkForRank = function(issueId, showRankContent, showChartContent, showSankeyContent) {
-            dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
+            dataFac.fetch(endpointFac.url_get_rank('value', row.node_id)).then(function(data){
                 if( data['nodes'].length === 0) {
-                    showRankContent(issueId);
-                    self.showRank = true;
+                    showRankContent(row.node_id);
+                    row.showRank = true;
                 } else {
-                    showChartContent(issueId);
-                    showSankeyContent(issueId);
+                    showChartContent(row.node_id);
+                    showSankeyContent(row.node_id);
                     self.showRank = false;
                 }
             });
@@ -116,6 +114,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.currentSet = 0;
     self.srcData = {};
     self.index = 0;
+    self.showRank = null;
 
     self.sortableOptions = {
         connectWith: ".sort",
@@ -165,6 +164,18 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             }
         }
         $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
+    };
+
+    self.checkForRank = function(showChartContent) {
+        dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
+            if( data['nodes'].length === 0) {
+                self.showContent(issueId);
+                self.showRank = true;
+            } else {
+                showChartContent(issueId);
+                self.showRank = false;
+            }
+        });
     };
 
     self.submit = function (issueId, showGraphContent) {
@@ -334,135 +345,80 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     function(endpointFac, utilsFac, dataFac, $scope) {
 
     var self = this,
-        tempData = null,
         endpoints = utilsFac.endpointPfx,
         charts = {},
 
-        parseOpinions = function(which, data) {
-            var temp;
-            self.opinions[which] = [];
-            temp = self.opinions[which];
+        parseData = function(which, chart) {
+            var opinions = self.opinions[which],
+                data = self.srcData[which],
+                userRank,
+                barData;
+            for(var id in opinions) {
+                userRank = opinions[id];
+                barData = data[id].data;
+                //append scatter positioning value
+                barData.push(scatterPositioning(barData, userRank));
+                //prepend the item title
+                barData.unshift(data[id].name);
+            }
             for(var i in data){
-                temp.push(data[i].rank)
+                chart.push(data[i].data);
             }
-        },
-    //TODO, work with raw data, not against it
-        parseData = function(data) {
-            for(var i in data){
-                tempData.push(data[i].data);
-            }
-        },
-
-        transpose = function(){
-            var length,
-                transposed = [];
-                length = tempData[0].length;
-            for(var idx = 0; idx < length; idx++){
-                transposed.push([]);
-            }
-
-            for(var i in tempData){
-                length = tempData[i].length;
-                for(var j = 0; j < length; j++){
-                    transposed[j].push(tempData[i][j]);
-                }
-            }
-            tempData = transposed;
+            chart.unshift(['x','strongly disagree', 'disagree', 'no opinion','agree', 'strongly agree', 'you']);
         },
 
         /* This function will compute the sum of each array in data and
            return the largest.
          */
         maxArraySums = function(data) {
-            var col = data.length - 1,
-                rows = data[0].length,
-                sums = [],
-                buffer = null;
-
-            for (var i = 1; i < rows; ++i) {
+            var sums = [],
+                index,
+                colLen = data.length,
+                rowLen = data[0].length - 1;
+            for(var i = 1; i < colLen; i++){
                 sums.push(0);
-                buffer = i - 1;
-                for (var j = 1; j < col; ++j) {
-                    sums[buffer] += data[j][i];
+                index = i-1;
+                for(var j = 1; j < rowLen; j++){
+                    sums[index] += data[i][j];
                 }
             }
             return Math.max.apply(null, sums);
         },
 
-        /* this is so you can append the user opinion on the fly after
-         * the rest of the data has been fetched
-         */
-        appendUserData = function() {
-            var temp = [];
-            self.opinion.forEach(function(x){temp.push(x);});
-            tempData.push(temp);
+        scatterPositioning = function(row, rank) {
+            var buffer = 0,
+                index = rank + 2,
+                centered = row[index] * 0.5;
+
+            for(var i = 0; i < index; i++) {
+                buffer += row[i];
+            }
+            return buffer + centered;
         },
 
-        scatterPositioning = function() {
-            var buffer,
-                opinionRow,
-                centered,
-                opinions = self.opinion,
-                length = opinions.length,
-                userColumn = tempData[5];
+        processData = function(which) {
+            var tempData = [];
+            parseData(which, tempData);
+            self.chartData[which] = tempData;
+        },
 
-            for(var i = 0; i < length; ++i) {
-                opinionRow = index(opinions[i]);
-                centered = centerOpinionValue(opinionRow, i, tempData);
-                buffer = sumBuffer(opinionRow - 1, i, tempData);
-                userColumn[i] = centered + buffer;
+        mapTooltip = function(data, opinions) {
+            self.tooltipStrings = [];
+            for(var id in data) {
+                self.tooltipStrings.push(self.lik[opinions[id]]);
             }
         },
 
-        formatData = function() {
-            var length = tempData.length,
-                headers = ['x'];
-
-            for(var i in tempData[0]){
-                headers.push('Question ' + i.toString());
-            }
-
-            for(var i = 0; i < length - 1; ++i) {
-                tempData[i].unshift(self.lik[i - 2]);
-            }
-            tempData[length -1].unshift('you');
-            tempData.unshift(headers);
-        },
-
-        index = function(x) {
-            return x + 2;
-        },
-
-        centerOpinionValue = function(x, y, data) {
-            return data[x][y] * .5;
-        },
-
-        sumBuffer = function(x, y, data) {
-            var sum = 0;
-            for(;x>=0; --x) {
-                sum += data[x][y]
-            }
-            return sum;
-        },
-
-        processData = function(which, rawData) {
-            tempData = [];
-            parseData(rawData.data);
-            transpose();
-            appendUserData();
-            scatterPositioning();
-            formatData();
-            self.srcData[which] = tempData;
-
-        },
         graph = function(index) {
-            var you = 'you',
-                lik = self.lik;
+            var lik = self.lik;
+            //For local library and for gulp
+            //Comment in for production deployment before build script is ran
+            var c3 = require('c3');
             return chart = c3.generate({
                 bindto: '#chart-' + index.toString(),
                 data: {
                     x: 'x',
-                    columns: [],
+                    rows: [],
                     type: 'bar',
                     types: {
                         you: 'scatter'
@@ -477,7 +433,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                         you: '#000000'
                     },
                     groups: [
-                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
+                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], 'you']
                     ]
                 },
                 point: {
@@ -486,7 +442,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 axis: {
                     rotated: true,
                     y: {
-                        max: 100
+                        max: 160
                     },
                     x: {
                         type: 'categorized'
@@ -507,8 +463,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 tooltip: {
                     format: {
                         value: function (value, ratio, id, index) {
-                            if (id === you) {
-                                value = lik[self.opinion[index]];
+                            if (id === 'you') {
+                                value = self.tooltipStrings[index];
                             }
                             return value;
                         }
@@ -528,6 +484,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.opinions = {};
     self.xAxisMax = null;
     self.rowIndex = null;
+    self.chartData = {};
+    self.tooltipStrings = [];
 
     self.showContent = function(issueId) {
         var chartIdx = self.rowIndex;
@@ -537,18 +495,24 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
             dataFac.fetch(endpointFac.url_get_rank(which, issueId)).then(function(opinionData){
-                parseOpinions(which, opinionData['nodes']);
-                self.opinion = self.opinions[which];
+                var array = opinionData['nodes'],
+                    length = array.length;
+                self.opinions[which] = {};
+                for(var i = 0; i < length; i++) {
+                    self.opinions[which][array[i].node_id] = array[i].rank;
+                }
                 dataFac.fetch(endpointFac.url_get_stacked(which, issueId)).then(function(chartData){
-                    processData(which, chartData);
-                    charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
-                    charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
+                    self.srcData[which] = chartData.data;
+                    processData(which);
+                    mapTooltip(chartData.data, self.opinions[which]);
+                    charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+                    charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
                 });
             });
         } else {
-            self.opinion = self.opinions[which];
-            charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
-            charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
+            mapTooltip(self.srcData[which], self.opinions[which]);
+            charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+            charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
         }
     };
 }]);
