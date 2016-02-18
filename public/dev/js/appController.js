@@ -19,12 +19,6 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
-        self.username = "";
-        self.password = "";
-        self.new_user = "";
-        self.new_pass = "";
-        self.name = "";
-        self.city = "";
         self.showCreateForm = false;
 
         self.getAccess = function(){
@@ -32,7 +26,6 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 username: self.username,
                 password: self.password
             });
-
             dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
@@ -48,8 +41,6 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 name:     self.name,
                 city:     self.city
             });
-
-
             dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
 }]);
@@ -57,15 +48,23 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac',
-    function(dataFac, endpointFac) {
+app.controller("issue-controller", ['dataFac', 'endpointFac', '$cookies',
+    function(dataFac, endpointFac, $cookies) {
         var self = this;
-        self.title = "Weigh in on an issue";
+        self.title = "Weigh In On An Issue";
+        self.image = "./images/user.png";
         self.voting = false;
         self.issuerows = [];
         self.showCreateIssue = false;
+        self.showCreateButton = false;
+        self.user = $cookies.get('currentUser');
+
         self.createIssue = function() {
             self.showCreateIssue = !self.showCreateIssue;
+        };
+
+        self.checkAdmin = function() {
+            return $cookies.get('currentUser') === "rta";
         };
 
         self.getIssues = function() {
@@ -292,7 +291,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             var lik = self.lik;
             //For local library and for gulp
             //Comment in for production deployment before build script is ran
-            var c3 = require('c3');
+            //var c3 = require('c3');
             return chart = c3.generate({
                 bindto: '#chart-' + index.toString(),
                 data: {

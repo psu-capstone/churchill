@@ -1,6 +1,8 @@
 <div ng-controller = "issue-controller as issue" ng-init="issue.getIssues()">
     <div class="row">
       <div class=col-sm-12>
+          <h4 style="color: steelblue; font: sans-serif; font-style: bold;"> <img ng-src="{{issue.image}}">Welcome {{ issue.user }}!</h4>
+          <p></p>
           <h2>{{ issue.title }}</h2>
           <p></p>
           <br>
@@ -40,7 +42,7 @@
     </div>
 
     <!-- Adding issues -->
-    <div class="issue row add">
+    <div class="issue row add" ng-show = "issue.checkAdmin() == true">
         <a href="" class="btn btn-success" ng-click="issue.createIssue()"> Don't see an issue for you? </a>
         <p></p>
     </div>
@@ -70,8 +72,8 @@
             </div>
             <button ng-disabled="createIssueForm.$invalid" id="submitIssueButton" type="submit" class="btn btn-success" data-dismiss="modal">Add New Issue</button>
         </form>
-        <!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post
-             So this is what we got for now -->
+        <!-- Inline script is not good practice for this, but there was an issue posting new issues to the db using
+             angular http.post so this is what we got for now -->
         <script>
             var base_url = "http://capdev.meyersj.com:9000";
             var endpoint = base_url + "/api/issue";
@@ -100,4 +102,11 @@
             });
         </script>
     </modal>
+    <script>
+        $(document).ready(function() {
+            // Drag & Drop policies/obj/vals
+            $("#item-list-src").draggable();
+            $("#item-list-tgt").draggable();
+        });
+    </script>
 </div>
