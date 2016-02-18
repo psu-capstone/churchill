@@ -301,6 +301,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
                 dy: ".35em",
                     "text-anchor":
                     function(d) {
+                    //Need to make this a percentage of width instead of hard coded widths
                     if(d.x < 50)
                         { return "start"}
                     if(d.x < 700)
