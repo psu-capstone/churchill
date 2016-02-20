@@ -165,18 +165,6 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
         $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
     };
 
-    self.checkForRank = function(showChartContent) {
-        dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
-            if( data['nodes'].length === 0) {
-                self.showContent(issueId);
-                self.showRank = true;
-            } else {
-                showChartContent(issueId);
-                self.showRank = false;
-            }
-        });
-    };
-
     self.submit = function (issueId, showGraphContent) {
         var url = [],
             rank,

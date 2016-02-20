@@ -29,8 +29,6 @@ p{clear: both;}
     cursor: move;
     word-break: break-all;
     hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
 }
 
 #item-list-tgt {
