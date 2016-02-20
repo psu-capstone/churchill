@@ -56,7 +56,7 @@
                 <label for="issueDesc">Description</label>
                 <input id="issueDesc" ng-model="issue.new_desc" type="text" class="form-control" required>
             </div>
-            <label>Eight items maximum per category. Each item must be thirty characters or less.</label>
+            <label>Seven items maximum per category. Each item must be thirty characters or less.</label>
             <div class="form-group">
                 <label for="issueVal">Values</label>
                 <input id="issueVal" ng-model="issue.new_val" type="text" class="form-control" required placeholder="Faith, Reason, Life, etc.">
@@ -76,6 +76,7 @@
         <script>
             var base_url = "http://capdev.meyersj.com:9000";
             var endpoint = base_url + "/api/issue";
+
             var itemOverThirty = function(array){
                 var length = array.length;
               for(var i = 0; i < length; i++) {
@@ -88,21 +89,21 @@
 
             var validateFields = function(issues) {
               var valid = true;
-              if(issues['values'].length > 5 || itemOverThirty(issues['values'])) {
+              if(issues['values'].length > 7 || itemOverThirty(issues['values'])) {
                   $("#issueVal").closest('.form-group').removeClass('has-success').addClass('has-error');
                   valid = false;
               } else {
                   $("#issueVal").closest('.form-group').removeClass('has-error').addClass('has-success');
               }
 
-              if(issues['objectives'].length > 5 || itemOverThirty(issues['objectives'])) {
+              if(issues['objectives'].length > 7 || itemOverThirty(issues['objectives'])) {
                   $("#issueObj").closest('.form-group').removeClass('has-success').addClass('has-error');
                   valid = false;
               } else {
                   $("#issueObj").closest('.form-group').removeClass('has-error').addClass('has-success');
               }
 
-              if(issues['policies'].length > 5 || itemOverThirty(issues['policies'])) {
+              if(issues['policies'].length > 7 || itemOverThirty(issues['policies'])) {
                 $("#issuePol").closest('.form-group').removeClass('has-success').addClass('has-error');
                   valid = false;
               } else {
