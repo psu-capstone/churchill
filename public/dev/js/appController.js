@@ -20,6 +20,8 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
         self.showCreateForm = false;
+        self.image_user = "./images/user.png";
+        self.user = $cookies.get('currentUser');
 
         self.getAccess = function(){
             var user_arg = JSON.stringify({
@@ -43,6 +45,15 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             });
             dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
+
+        self.loggedStatus = function() {
+            if($cookies.get('currentUser')) {
+                self.user = $cookies.get('currentUser');
+                return true;
+            } else {
+                return false;
+            }
+        }
 }]);
 
 /**
@@ -52,19 +63,28 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', '$cookies',
     function(dataFac, endpointFac, $cookies) {
         var self = this;
         self.title = "Weigh In On An Issue";
-        self.image = "./images/user.png";
         self.voting = false;
         self.issuerows = [];
         self.showCreateIssue = false;
         self.showCreateButton = false;
-        self.user = $cookies.get('currentUser');
 
         self.createIssue = function() {
             self.showCreateIssue = !self.showCreateIssue;
         };
 
+        // Just a test until changes submitted on backend, see commented out for
+        // what this will actually be doing.
         self.checkAdmin = function() {
-            return $cookies.get('currentUser') === "rta";
+            return self.user === "admin";
+            /**
+             * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
+              *     if(data["is_admin"]) {
+              *        return true;
+              *     } else {
+              *        return false;
+              *     }
+              * });
+             */
         };
 
         self.getIssues = function() {

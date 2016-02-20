@@ -1,8 +1,6 @@
 <div ng-controller = "issue-controller as issue" ng-init="issue.getIssues()">
     <div class="row">
       <div class=col-sm-12>
-          <h4 style="color: steelblue; font: sans-serif; font-style: bold;"> <img ng-src="{{issue.image}}">Welcome {{ issue.user }}!</h4>
-          <p></p>
           <h2>{{ issue.title }}</h2>
           <p></p>
           <br>
@@ -14,10 +12,11 @@
         <div ng-controller = "rank-controller as rank">
             <div ng-controller = "explore-controller as exp">
                 <div class="issue">
-                    <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+                    <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block"
+                            style="width: 80%; position: relative; margin: auto;">{{row.name}}</button>
                 </div>
-                <h5>{{row.description}}</h5>
-                <uib-tabset justified="true" ng-show="row.voting">
+                <h5 style="width: 80%; position: relative; margin: auto; padding-top: 5px; padding-bottom: 5px">{{row.description}}</h5>
+                <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
                     <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
                         <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
                              style="float:left; min-height: 40px; width: 30%;">

@@ -55,6 +55,7 @@
             <div class="uib-collapse navbar-collapse" uib-collapse="isCollapsed"
                  ng-click="isCollapsed = !isCollapsed" ng-class="!isCollapsed && 'in'">
                 <ul class="nav navbar-nav navbar-right">
+                    <li ng-show="ctrl.loggedStatus() == true"><a><i class="glyphicon glyphicon-user"></i> Welcome {{ctrl.user}}</a></li>
                     <li><a href="#home"><i class="fa fa-home"></i> Home</a></li>
                     <li><a href="#issue"><i class="fa fa-commenting"></i> Weigh In</a></li>
                     <li><a href="#logout"><i class="glyphicon glyphicon-log-out">Logout</i></a></li>
