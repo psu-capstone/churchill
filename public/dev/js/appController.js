@@ -29,7 +29,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         // Just a test until changes submitted on backend, see commented out for
         // what this will actually be doing.
         self.checkAdmin = function() {
-            return $cookies.get('currentUser') === "rta";
+            return $cookies.get('currentUser') === "pepe";
             /**
              * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
               *     if(data["is_admin"]) {
@@ -308,7 +308,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             var lik = self.lik;
             //For local library and for gulp
             //Comment in for production deployment before build script is ran
-            //var c3 = require('c3');
+            var c3 = require('c3');
             return chart = c3.generate({
                 bindto: '#chart-' + index.toString(),
                 data: {
