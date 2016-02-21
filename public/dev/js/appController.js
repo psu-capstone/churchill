@@ -20,8 +20,26 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
         self.showCreateForm = false;
-        self.image_user = "./images/user.png";
-        self.user = $cookies.get('currentUser');
+        self.showCreateIssue = false;
+
+        self.createIssue = function() {
+            self.showCreateIssue = !self.showCreateIssue;
+        };
+
+        // Just a test until changes submitted on backend, see commented out for
+        // what this will actually be doing.
+        self.checkAdmin = function() {
+            return $cookies.get('currentUser') === "rta";
+            /**
+             * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
+              *     if(data["is_admin"]) {
+              *        return true;
+              *     } else {
+              *        return false;
+              *     }
+              * });
+             */
+        };
 
         self.getAccess = function(){
             var user_arg = JSON.stringify({
@@ -65,27 +83,6 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', '$cookies',
         self.title = "Weigh In On An Issue";
         self.voting = false;
         self.issuerows = [];
-        self.showCreateIssue = false;
-        self.showCreateButton = false;
-
-        self.createIssue = function() {
-            self.showCreateIssue = !self.showCreateIssue;
-        };
-
-        // Just a test until changes submitted on backend, see commented out for
-        // what this will actually be doing.
-        self.checkAdmin = function() {
-            return self.user === "admin";
-            /**
-             * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
-              *     if(data["is_admin"]) {
-              *        return true;
-              *     } else {
-              *        return false;
-              *     }
-              * });
-             */
-        };
 
         self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){

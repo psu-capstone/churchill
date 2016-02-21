@@ -39,68 +39,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Adding issues -->
-    <div class="issue row add" ng-show = "issue.checkAdmin() == true">
-        <a href="" class="btn btn-success" ng-click="issue.createIssue()"> Don't see an issue for you? </a>
-        <p></p>
-    </div>
-
-    <!-- Issue Modal -->
-    <modal title="Create New Issue" visible="issue.showCreateIssue" id="createModal">
-        <form role="form" name="createIssueForm" id="createIssue">
-            <div class="form-group">
-                <label for="issueTitle">Title</label>
-                <input id="issueTitle" ng-model="issue.new_title" type="text" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="issueDesc">Description</label>
-                <input id="issueDesc" ng-model="issue.new_desc" type="text" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="issueVal">Values</label>
-                <input id="issueVal" ng-model="issue.new_val" type="text" class="form-control" required placeholder="Faith, Reason, Life, etc.">
-            </div>
-            <div class="form-group">
-                <label for="issueObj">Objectives</label>
-                <input id="issueObj" ng-model="issue.new_obj" type="text" class="form-control" required placeholder="Abolish, Free, Maintain, etc.">
-            </div>
-            <div class="form-group">
-                <label for="issuePol">Policies</label>
-                <input id="issuePol" ng-model="issue.new_pol" type="text" class="form-control" required placeholder="Constitution, Law Restrictions, etc.">
-            </div>
-            <button ng-disabled="createIssueForm.$invalid" id="submitIssueButton" type="submit" class="btn btn-success" data-dismiss="modal">Add New Issue</button>
-        </form>
-        <!-- Inline script is not good practice for this, but there was an issue posting new issues to the db using
-             angular http.post so this is what we got for now -->
-        <script>
-            var base_url = "http://capdev.meyersj.com:9000";
-            var endpoint = base_url + "/api/issue";
-            $(document).ready(function() {
-
-                $("#submitIssueButton").click(function () {
-                    var issue_data = {
-                        issue_name: $("#issueTitle").val(),
-                        desc: $("#issueDesc").val(),
-                        values: $("#issueVal").val().split(","),
-                        objectives: $("#issueObj").val().split(","),
-                        policies: $("#issuePol").val().split(",")
-                    };
-                    if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
-                            issue_data['objectives'] == "" || issue_data['policies'] == "") {
-                        //Shouldn't happen if disable attribute stays strong
-                    } else {
-                        $.post(endpoint, issue_data, function(data) {
-                            console.log(data);
-                        });
-                    }
-                    $("#createIssue").find('input:text').val(null);
-                    $(this).attr('disabled', 'disabled');
-                    $("#createModal").modal('hide');
-                });
-            });
-        </script>
-    </modal>
     <script>
         $(document).ready(function() {
             // Drag & Drop policies/obj/vals
