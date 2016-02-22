@@ -26,7 +26,7 @@ Development folders, do normal work here. <br/>
 It's certainly easier to see your changes if you use `index_dev.html` instead
 of running the build script every time.  In this case, just click your desired browser icon in the upper right of
 `index_dev.html`.  You will just see the popup error in Chrome again since you're using the c3 CDN again.  You will
-also have to comment in `var c3 = require('c3);` in `appController.js`.
+also have to comment out `var c3 = require('c3);` in `appController.js`.
 
 
 **Miscellanous Files:**

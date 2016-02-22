@@ -19,20 +19,33 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
-        self.username = "";
-        self.password = "";
-        self.new_user = "";
-        self.new_pass = "";
-        self.name = "";
-        self.city = "";
         self.showCreateForm = false;
+        self.showCreateIssue = false;
+
+        self.createIssue = function() {
+            self.showCreateIssue = !self.showCreateIssue;
+        };
+
+        // Just a test until changes submitted on backend, see commented out for
+        // what this will actually be doing.
+        self.checkAdmin = function() {
+            return $cookies.get('currentUser') === "pepe";
+            /**
+             * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
+              *     if(data["is_admin"]) {
+              *        return true;
+              *     } else {
+              *        return false;
+              *     }
+              * });
+             */
+        };
 
         self.getAccess = function(){
             var user_arg = JSON.stringify({
                 username: self.username,
                 password: self.password
             });
-
             dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
@@ -48,25 +61,28 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 name:     self.name,
                 city:     self.city
             });
-
-
             dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
+
+        self.loggedStatus = function() {
+            if($cookies.get('currentUser')) {
+                self.user = $cookies.get('currentUser');
+                return true;
+            } else {
+                return false;
+            }
+        }
 }]);
 
 /**
  * Voting for issues and setting values will be done here
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac',
-    function(dataFac, endpointFac) {
+app.controller("issue-controller", ['dataFac', 'endpointFac', '$cookies',
+    function(dataFac, endpointFac, $cookies) {
         var self = this;
-        self.title = "Weigh in on an issue";
+        self.title = "Weigh In On An Issue";
         self.voting = false;
         self.issuerows = [];
-        self.showCreateIssue = false;
-        self.createIssue = function() {
-            self.showCreateIssue = !self.showCreateIssue;
-        };
 
         self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
