@@ -78,7 +78,7 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
     var dataFactory = {};
 
         dataFactory.multiPut = function(url, model) {
-            var promises = []
+            var promises = [];
             model.forEach(function(data) {
                 promises.push(dataFactory.put(url, data));
             });
