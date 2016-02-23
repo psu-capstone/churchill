@@ -40,7 +40,7 @@ app.factory('utilsFac', function(){
 });
 
 app.factory('endpointFac', ['$cookies', function($cookies) {
-    var urlBase = 'http://capdev.meyersj.com:9000/';
+    var urlBase = 'http://capprod.meyersj.com:9000/';
     return {
         url_get_issues: function(filterId) {
             return urlBase + 'api/community/issue' + '?filter_id=' + filterId;
