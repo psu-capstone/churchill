@@ -2,28 +2,30 @@ var app = angular.module("democracy-lab-app", ['ngRoute', 'ngCookies', 'ui.boots
 
 /**
  * Configure the routes taken on the web page here
+ * Check for a valid cookie on the home page, or redirect the user back to the login page
+ * to verify credentials
  */
 app.config(function($routeProvider) {
     $routeProvider
         .when('/', {
             templateUrl : './pages/login.html',
-            controller  : 'main-controller',
+            controller  : 'main-controller'
         })
         .when('/logout', {
             templateUrl : './pages/login.html',
             controller  : 'main-controller',
             resolve: {
                 "check": function($cookies) {
+                    // remove cookie when log out is selected, otherwise it stays
                     if($cookies.get('currentUser') != null) {
                         $cookies.remove('currentUser');
-                        console.log($cookies.get('currentUser'));
                     }
                 }
             }
         })
         .when('/home', {
             templateUrl : './pages/login.html',
-            controller  : 'main-controller',
+            controller  : 'main-controller'
         })
         .when('/issue', {
             templateUrl : './pages/issue.html',
@@ -33,7 +35,8 @@ app.config(function($routeProvider) {
                     if($cookies.get('currentUser') != null){
                         $location.path('/issue');
                     } else {
-                        $location.path('/home');    //redirect user to home.
+                        //redirect user to home
+                        $location.path('/home');
                     }
                 }
             }

@@ -1,5 +1,5 @@
 /**
- * Creating a user on Login Page
+ * Modal directive we're using for issue and user creation
  */
 app.directive('modal', function () {
     return {
