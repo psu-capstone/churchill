@@ -29,8 +29,6 @@ p{clear: both;}
     cursor: move;
     word-break: break-all;
     hyphens: auto;
-    -moz-hyphens: auto;
-    -webkit-hyphens: auto;
 }
 
 #item-list-tgt {
@@ -113,4 +111,9 @@ body.ng-scope {
 
 .link:hover {
   stroke-opacity: .5;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+    margin-top: 0;
 }

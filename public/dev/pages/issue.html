@@ -13,10 +13,11 @@
             <div ng-controller = "sankey-controller as sankey">
                 <div ng-controller = "explore-controller as exp">
                     <div class="issue">
-                        <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+                        <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block"
+                                style="width: 80%; position: relative; margin: auto;">{{row.name}}</button>
                     </div>
-                    <h5>{{row.description}}</h5>
-                    <uib-tabset justified="true" ng-show="row.voting">
+                    <h5 style="width: 80%; position: relative; margin: auto; padding-top: 5px; padding-bottom: 5px">{{row.description}}</h5>
+                    <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
                         <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
                             <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
                                  style="float:left; min-height: 40px; width: 30%;">
@@ -32,75 +33,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </uib-tab>
-                        <div id="chart-{{rowIdx}}" ng-show="!row.showRank"></div>
-                        <div id="sankey-chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
-                        <button ng-show="row.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent); row.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
+                            </uib-tab>
+                            <div id="chart-{{rowIdx}}" ng-show="!row.showRank"></div>
+                            <div id="sankey-chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
+                            <button ng-show="row.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent); row.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
                     </uib-tabset>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Adding issues -->
-    <div class="issue row add">
-        <a href="" class="btn btn-success" ng-click="issue.createIssue()"> Don't see an issue for you? </a>
-        <p></p>
-    </div>
-
-    <!-- Issue Modal -->
-    <modal title="Create New Issue" visible="issue.showCreateIssue" id="createModal">
-        <form role="form" name="createIssueForm" id="createIssue">
-            <div class="form-group">
-                <label for="issueTitle">Title</label>
-                <input id="issueTitle" ng-model="issue.new_title" type="text" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="issueDesc">Description</label>
-                <input id="issueDesc" ng-model="issue.new_desc" type="text" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="issueVal">Values</label>
-                <input id="issueVal" ng-model="issue.new_val" type="text" class="form-control" required placeholder="Faith, Reason, Life, etc.">
-            </div>
-            <div class="form-group">
-                <label for="issueObj">Objectives</label>
-                <input id="issueObj" ng-model="issue.new_obj" type="text" class="form-control" required placeholder="Abolish, Free, Maintain, etc.">
-            </div>
-            <div class="form-group">
-                <label for="issuePol">Policies</label>
-                <input id="issuePol" ng-model="issue.new_pol" type="text" class="form-control" required placeholder="Constitution, Law Restrictions, etc.">
-            </div>
-            <button ng-disabled="createIssueForm.$invalid" id="submitIssueButton" type="submit" class="btn btn-success" data-dismiss="modal">Add New Issue</button>
-        </form>
-        <!-- Inline script is not good practice, but there was an issue posting new issues to the db using angular http.post
-             So this is what we got for now -->
-        <script>
-            var base_url = "http://capdev.meyersj.com:9000";
-            var endpoint = base_url + "/api/issue";
-            $(document).ready(function() {
-
-                $("#submitIssueButton").click(function () {
-                    var issue_data = {
-                        issue_name: $("#issueTitle").val(),
-                        desc: $("#issueDesc").val(),
-                        values: $("#issueVal").val().split(","),
-                        objectives: $("#issueObj").val().split(","),
-                        policies: $("#issuePol").val().split(",")
-                    };
-                    if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
-                            issue_data['objectives'] == "" || issue_data['policies'] == "") {
-                        //Shouldn't happen if disable attribute stays strong
-                    } else {
-                        $.post(endpoint, issue_data, function(data) {
-                            console.log(data);
-                        });
-                    }
-                    $("#createIssue").find('input:text').val(null);
-                    $(this).attr('disabled', 'disabled');
-                    $("#createModal").modal('hide');
-                });
-            });
-        </script>
-    </modal>
 </div>

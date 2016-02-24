@@ -26,13 +26,28 @@ Development folders, do normal work here. <br/>
 It's certainly easier to see your changes if you use `index_dev.html` instead
 of running the build script every time.  In this case, just click your desired browser icon in the upper right of
 `index_dev.html`.  You will just see the popup error in Chrome again since you're using the c3 CDN again.  You will
-also have to comment in `var c3 = require('c3);` in `appController.js`.
-
-
-**Miscellanous Files:**
+also have to comment out `var c3 = require('c3);` in `appController.js`.
 
 ___
 
+**Deploy:** <br/>
+
+**deploy/build.sh**
+Production build script that executes the relevant production gulp tasks.
+
+**deploy/run.sh**
+Script to start production web server
+
+**deploy/build_dev.sh** <br/>
+Development build script that tackles all the necessary gulp tasks and leaves you with a localhost:3000 server where you can
+directly view the application.  Run with `sh deploy/build_dev.sh`.
+
+___
+
+**Miscellanous Files:**
+
+**package.json** <br/>
+The necessary packages for this project.  After cloning the repo `npm install` will pull the dependencies listed here.
 
 **gulpfile.js** <br/>
 Probably doesn't need to be modified but if you find something else cool gulp can do to make the code more
@@ -41,17 +56,3 @@ this basically replaced the old server.js file that is no longer in the repo.
 
 **travis.yml** <br/>
 Continuous integration. [Travis Churchill Page](https://travis-ci.org/psu-capstone/churchill)
-
-**build.sh** <br/>
-Build script that tackles all the necessary gulp tasks and leaves you with a localhost:3000 server where you can 
-directly view the application.  Run with `sh build.sh`.
-
-**package.json** <br/>
-The necessary packages for this project.  After cloning the repo `npm install` will pull the dependencies listed here.
-
-___
-
-
-**Deploy:** <br/>
-As mentioned with the build.sh section, you only need to run the build script to have the web app start on 
-localhost:3000.

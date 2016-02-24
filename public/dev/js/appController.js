@@ -19,55 +19,76 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
-        self.username = "";
-        self.password = "";
-        self.new_user = "";
-        self.new_pass = "";
-        self.name = "";
-        self.city = "";
         self.showCreateForm = false;
+        self.showCreateIssue = false;
 
+        // Show Issue creation modal
+        self.createIssue = function() {
+            self.showCreateIssue = !self.showCreateIssue;
+        };
+
+        // Show User creation modal
+        self.createAccount = function() {
+            self.showCreateForm = !self.showCreateForm;
+        };
+
+        // Just a test until changes submitted on backend, see commented out for
+        // what this will actually be doing.
+        self.checkAdmin = function() {
+            return $cookies.get('currentUser') === "mark@democracylab.org";
+            /**
+             * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
+              *     if(data["is_admin"]) {
+              *        return true;
+              *     } else {
+              *        return false;
+              *     }
+              * });
+             */
+        };
+
+        // Gain access if user+pass is valid
         self.getAccess = function(){
             var user_arg = JSON.stringify({
                 username: self.username,
                 password: self.password
             });
-
             dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
-        self.createAccount = function() {
-            self.showCreateForm = !self.showCreateForm;
-        };
-
+        // Sending to API to save user data
         self.addUser = function () {
-            //Sending to API to save user data
             var user_arg = JSON.stringify({
                 username: self.new_user,
                 password: self.new_pass,
                 name:     self.name,
                 city:     self.city
             });
-
-
             dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
+
+        // Handle the top nav bar name
+        self.loggedStatus = function() {
+            if($cookies.get('currentUser')) {
+                self.user = $cookies.get('currentUser');
+                return true;
+            } else {
+                return false;
+            }
+        }
 }]);
 
 /**
- * Voting for issues and setting values will be done here
+ * Getting issues from the database and populate the page
  */
 app.controller("issue-controller", ['dataFac', 'endpointFac',
     function(dataFac, endpointFac) {
         var self = this;
-        self.title = "Weigh in on an issue";
+        self.title = "Weigh In On An Issue";
         self.voting = false;
         self.issuerows = [];
-        self.showCreateIssue = false;
-        self.createIssue = function() {
-            self.showCreateIssue = !self.showCreateIssue;
-        };
 
+        // Grab issues from the database
         self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
                  for(var i = 0; i < data['nodes'].length; i++) {
@@ -79,10 +100,12 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
              });
         };
 
+        // All issues are initialized to false, aka buttons are not opened up on page load
         self.vote = function() {
             self.voting = true;
         };
 
+        // Check to see if any of these issues have been ranked already and display the graph instead of ranking buckets
         self.checkForRank = function(row, showRankContent, showChartContent, showSankeyContent) {
             dataFac.fetch(endpointFac.url_get_rank('value', row.node_id)).then(function(data){
                 if( data['nodes'].length === 0) {
@@ -164,18 +187,6 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             }
         }
         $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
-    };
-
-    self.checkForRank = function(showChartContent) {
-        dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
-            if( data['nodes'].length === 0) {
-                self.showContent(issueId);
-                self.showRank = true;
-            } else {
-                showChartContent(issueId);
-                self.showRank = false;
-            }
-        });
     };
 
     self.submit = function (issueId, showGraphContent) {
@@ -281,13 +292,13 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             .attr({
                 "class": "node",
                 transform: function (d) {
-                    return "translate(" + d.x + "," + d.y + ")";
+                    return "translate(" + d.x + "," + Math.abs(d.y) + ")";
                 }
             });
          nodes.append("rect")
             .attr({
                 height: function (d) {
-                    return d.dy;
+                    return Math.abs(d.dy);
                 },
                 width: sankey.nodeWidth()
             })
@@ -307,7 +318,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             .attr({
                 x: sankey.nodeWidth() / 2,
                 y: function (d) {
-                    return d.dy / 2;
+                    return Math.abs(d.dy) / 2;
                 },
                 dy: ".35em",
                     "text-anchor":

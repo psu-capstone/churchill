@@ -9,6 +9,7 @@
     <!--[if lt IE 9]>
     <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <script src="../../lib/touchpunch.js"></script>
     <![endif]-->
     <!-- JQUERY -->
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
@@ -42,6 +43,13 @@
         <div class="uib-collapse navbar-collapse" uib-collapse="isCollapsed"
              ng-click="isCollapsed = !isCollapsed" ng-class="!isCollapsed && 'in'">
           <ul class="nav navbar-nav navbar-right">
+            <li ng-show="ctrl.loggedStatus() == true"><a><i class="glyphicon glyphicon-user"></i> Welcome {{ctrl.user}}</a></li>
+            <li class="dropdown" ng-show="ctrl.checkAdmin() == true"><a class="dropdown-toggle" data-toggle="dropdown"><i class="glyphicon glyphicon-cog"></i> Admin</a>
+              <ul class="dropdown-menu">
+                <!-- Add more here such as removing issues, users, communities, etc. -->
+                <li><a ng-click="ctrl.createIssue()">Create New Issue</a></li>
+              </ul>
+            </li>
             <li><a href="#home"><i class="fa fa-home"></i> Home</a></li>
             <li><a href="#issue"><i class="fa fa-commenting"></i> Weigh In</a></li>
             <li><a href="#logout"><i class="glyphicon glyphicon-log-out">Logout</i></a></li>
@@ -50,6 +58,100 @@
       </div>
     </nav>
   </header>
+  <!-- Issue Modal -->
+  <modal title="Create New Issue" visible="ctrl.showCreateIssue" id="createModal">
+    <form role="form" name="createIssueForm" id="createIssue">
+      <div class="form-group">
+        <label for="issueTitle">Title</label>
+        <input id="issueTitle" ng-model="ctrl.new_title" type="text" class="form-control" required>
+      </div>
+      <div class="form-group">
+        <label for="issueDesc">Description</label>
+        <input id="issueDesc" ng-model="ctrl.new_desc" type="text" class="form-control" required>
+      </div>
+      <label>No more than 7 items per category. Each item must be thirty characters or less.</label>
+      <div class="form-group">
+        <label for="issueVal">Values</label>
+        <input id="issueVal" ng-model="ctrl.new_val" type="text" class="form-control" required placeholder="Faith, Reason, Life, etc.">
+      </div>
+      <div class="form-group">
+        <label for="issueObj">Objectives</label>
+        <input id="issueObj" ng-model="ctrl.new_obj" type="text" class="form-control" required placeholder="Abolish, Free, Maintain, etc.">
+      </div>
+      <div class="form-group">
+        <label for="issuePol">Policies</label>
+        <input id="issuePol" ng-model="ctrl.new_pol" type="text" class="form-control" required placeholder="Constitution, Law Restrictions, etc.">
+      </div>
+      <button ng-disabled="createIssueForm.$invalid" id="submitIssueButton" type="submit" class="btn btn-success" data-dismiss="modal">Add New Issue</button>
+    </form>
+    <!-- Inline script is not good practice for this, but there was an issue posting new issues to the db using
+         angular http.post so this is what we got for now -->
+    <script>
+      var base_url = "http://capprod.meyersj.com:9000";
+      var endpoint = base_url + "/api/issue";
+
+      var itemOverThirty = function(array){
+        var length = array.length;
+        for(var i = 0; i < length; i++) {
+          if(array[i].length > 30){
+            return true;
+          }
+        }
+        return false;
+      };
+
+      var validateFields = function(issues) {
+        var valid = true;
+        if(issues['values'].length > 7 || itemOverThirty(issues['values'])) {
+          $("#issueVal").closest('.form-group').removeClass('has-success').addClass('has-error');
+          valid = false;
+        } else {
+          $("#issueVal").closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+
+        if(issues['objectives'].length > 7 || itemOverThirty(issues['objectives'])) {
+          $("#issueObj").closest('.form-group').removeClass('has-success').addClass('has-error');
+          valid = false;
+        } else {
+          $("#issueObj").closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+
+        if(issues['policies'].length > 7 || itemOverThirty(issues['policies'])) {
+          $("#issuePol").closest('.form-group').removeClass('has-success').addClass('has-error');
+          valid = false;
+        } else {
+          $("#issuePol").closest('.form-group').removeClass('has-error').addClass('has-success');
+        }
+        return valid;
+      };
+
+      $(document).ready(function() {
+
+        $("#submitIssueButton").click(function () {
+          var issue_data = {
+            issue_name: $("#issueTitle").val(),
+            desc: $("#issueDesc").val(),
+            values: $("#issueVal").val().split(","),
+            objectives: $("#issueObj").val().split(","),
+            policies: $("#issuePol").val().split(",")
+          };
+          if(!validateFields(issue_data)) {
+            return false;
+          } else if(issue_data['issue_name'] == "" || issue_data['desc'] == "" || issue_data['values'] == "" ||
+                  issue_data['objectives'] == "" || issue_data['policies'] == "") {
+            //Shouldn't happen if disable attribute stays strong
+          } else {
+            $.post(endpoint, issue_data, function(data) {
+              console.log(data);
+            });
+          }
+          $("#createIssue").find('input:text').val(null);
+          $(this).attr('disabled', 'disabled');
+          $("#createModal").modal('hide');
+        });
+      });
+    </script>
+  </modal>
   <div id="main" class="container">
     <!-- inject content here using angular routing -->
     <div ng-view></div>

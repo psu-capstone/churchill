@@ -1,5 +1,5 @@
 /**
- * Creating a user on Login Page
+ * Modal directive we're using for issue and user creation
  */
 app.directive('modal', function () {
     return {
@@ -41,7 +41,7 @@ app.directive('userUnique', ['dataFac', 'endpointFac', function (dataFac, endpoi
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, element, attrs, ctrl) {
-            element.bind('blur', function (e) {
+            element.bind('blur', function () {
                 var current = element.val();
                 ctrl.$setValidity('unique', false);
                 dataFac.fetch(endpointFac.url_get_node('user', current)).then(function(data){

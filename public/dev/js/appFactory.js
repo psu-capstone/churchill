@@ -1,5 +1,5 @@
 /**
- * Factory settings for the login
+ * Get or reject permission to travel through the application
  */
 app.factory('accessFac', function(){
     var obj = {};
@@ -40,7 +40,7 @@ app.factory('utilsFac', function(){
 });
 
 app.factory('endpointFac', ['$cookies', function($cookies) {
-    var urlBase = 'http://capdev.meyersj.com:9000/';
+    var urlBase = 'http://capprod.meyersj.com:9000/';
     return {
         url_get_issues: function(filterId) {
             return urlBase + 'api/community/issue' + '?filter_id=' + filterId;
@@ -81,7 +81,7 @@ app.factory('dataFac',['$http', '$q', function($http, $q) {
     var dataFactory = {};
 
         dataFactory.multiPut = function(url, model) {
-            var promises = []
+            var promises = [];
             model.forEach(function(data) {
                 promises.push(dataFactory.put(url, data));
             });
