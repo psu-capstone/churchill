@@ -287,7 +287,8 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             });
          links.append("title")
             .text(function (d) {
-                return d.source.name + " to " + d.target.name + " = " + d.value;
+                var value = d.isNeg?(d.value * -1):d.value;
+                return d.source.name + " to " + d.target.name + " = " + value;
             });
 
          // Draw the nodes.
