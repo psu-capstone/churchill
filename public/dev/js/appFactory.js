@@ -1,5 +1,5 @@
 /**
- * Factory settings for the login
+ * Get or reject permission to travel through the application
  */
 app.factory('accessFac', function(){
     var obj = {};

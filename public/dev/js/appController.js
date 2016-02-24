@@ -22,8 +22,14 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.showCreateForm = false;
         self.showCreateIssue = false;
 
+        // Show Issue creation modal
         self.createIssue = function() {
             self.showCreateIssue = !self.showCreateIssue;
+        };
+
+        // Show User creation modal
+        self.createAccount = function() {
+            self.showCreateForm = !self.showCreateForm;
         };
 
         // Just a test until changes submitted on backend, see commented out for
@@ -41,6 +47,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
              */
         };
 
+        // Gain access if user+pass is valid
         self.getAccess = function(){
             var user_arg = JSON.stringify({
                 username: self.username,
@@ -49,12 +56,8 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
-        self.createAccount = function() {
-            self.showCreateForm = !self.showCreateForm;
-        };
-
+        // Sending to API to save user data
         self.addUser = function () {
-            //Sending to API to save user data
             var user_arg = JSON.stringify({
                 username: self.new_user,
                 password: self.new_pass,
@@ -64,6 +67,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
 
+        // Handle the top nav bar name
         self.loggedStatus = function() {
             if($cookies.get('currentUser')) {
                 self.user = $cookies.get('currentUser');
@@ -75,15 +79,16 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
 }]);
 
 /**
- * Voting for issues and setting values will be done here
+ * Getting issues from the database and populate the page
  */
-app.controller("issue-controller", ['dataFac', 'endpointFac', '$cookies',
-    function(dataFac, endpointFac, $cookies) {
+app.controller("issue-controller", ['dataFac', 'endpointFac',
+    function(dataFac, endpointFac) {
         var self = this;
         self.title = "Weigh In On An Issue";
         self.voting = false;
         self.issuerows = [];
 
+        // Grab issues from the database
         self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
                  for(var i = 0; i < data['nodes'].length; i++) {
@@ -95,10 +100,12 @@ app.controller("issue-controller", ['dataFac', 'endpointFac', '$cookies',
              });
         };
 
+        // All issues are initialized to false, aka buttons are not opened up on page load
         self.vote = function() {
             self.voting = true;
         };
 
+        // Check to see if any of these issues have been ranked already and display the graph instead of ranking buckets
         self.checkForRank = function(row, showRankContent, showChartContent) {
             dataFac.fetch(endpointFac.url_get_rank('value', row.node_id)).then(function(data){
                 if( data['nodes'].length === 0) {
