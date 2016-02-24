@@ -279,6 +279,12 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             .style("stroke-width", function (d) {
                 return Math.max(1, d.dy);
             })
+            .style("opacity", function(d) {
+                if(d.isNeg === 1)
+                    return 0.3;
+
+                return 1;
+            });
          links.append("title")
             .text(function (d) {
                 return d.source.name + " to " + d.target.name + " = " + d.value;
