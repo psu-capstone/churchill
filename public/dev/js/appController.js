@@ -277,7 +277,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
                 d: path
             })
             .style("stroke-width", function (d) {
-                return Math.max(1, Math.abs(d.dy));
+                return Math.max(1, d.dy);
             })
          links.append("title")
             .text(function (d) {
@@ -292,13 +292,13 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             .attr({
                 "class": "node",
                 transform: function (d) {
-                    return "translate(" + d.x + "," + Math.abs(d.y) + ")";
+                    return "translate(" + d.x + "," + d.y + ")";
                 }
             });
          nodes.append("rect")
             .attr({
                 height: function (d) {
-                    return Math.abs(d.dy);
+                    return d.dy;
                 },
                 width: sankey.nodeWidth()
             })
@@ -318,7 +318,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             .attr({
                 x: sankey.nodeWidth() / 2,
                 y: function (d) {
-                    return Math.abs(d.dy) / 2;
+                    return d.dy / 2;
                 },
                 dy: ".35em",
                     "text-anchor":
@@ -344,6 +344,14 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
     self.showContent = function(issueId) {
         dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function(fetchdata){
                 data = fetchdata;
+                data.links.forEach(function(link){
+                    if(link.value < 0){
+                        link.isNeg = 1;
+                        link.value = Math.abs(link.value);
+                    }
+                    else
+                        link.isNeg = 0;
+                });
                 self.constructSankey(self.rowIndex);
     })};
 
