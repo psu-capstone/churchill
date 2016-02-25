@@ -6,4 +6,5 @@ require('angular-route');
 require('angular-ui-bootstrap');
 require('angular-ui-sortable');
 require('bootstrap');
-require('d3');
+var d3 = require('d3');
+var c3 = require('c3');

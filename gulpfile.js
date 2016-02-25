@@ -94,7 +94,7 @@ gulp.task('scripts', function() {
 // Concatenate final bundle
 gulp.task('package', function() {
     return gulp.src(['public/build/js/index.js', 'public/build/js/app.js', 'public/build/js/appController.js',
-        'public/build/js/appDirective.js', 'public/build/js/appFactory.js'])
+        'public/build/js/appDirective.js', 'public/build/js/appFactory.js', 'public/build/js/sankey.js'])
         .pipe(concat('main.js'))
         .pipe(gulp.dest('public/build'));
 });
