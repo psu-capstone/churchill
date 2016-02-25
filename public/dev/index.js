@@ -1,5 +1,4 @@
 // Depenedencies from package.json
-// c3 is referenced inline with its controller
 require('angular');
 require('angular-cookies');
 require('angular-route');
