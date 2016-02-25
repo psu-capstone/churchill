@@ -10,32 +10,35 @@
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
     <div class="issue row" ng-repeat="(rowIdx, row) in issue.issuerows">
         <div ng-controller = "rank-controller as rank">
-            <div ng-controller = "explore-controller as exp">
-                <div class="issue">
-                    <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block"
-                            style="width: 80%; position: relative; margin: auto;">{{row.name}}</button>
-                </div>
-                <h5 style="width: 80%; position: relative; margin: auto; padding-top: 5px; padding-bottom: 5px">{{row.description}}</h5>
-                <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
-                    <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
-                        <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
-                             style="float:left; min-height: 40px; width: 30%;">
-                            <div id="item-list-src" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue">{{item.name}}</div>
-                        </div>
-                        <div ng-show="row.showRank" style="overflow: hidden">
-                            <!--The list is being reversed by the true argument to orderBy to sort the buckets with strongly agree at the top-->
-                            <div ng-repeat="(key, list) in rank.tgtData | orderBy:'key':true">
-                                <!--This is being multiplied by -1 to list the titles on the right order-->
-                                <h5 style="font-family: inherit; text-align: center; color: steelblue;">{{rank.lik[(key-2)*-1]}}</h5>
-                                <div ui-sortable="rank.sortableOptions" ng-model="list" class="well sort">
-                                    <div id="item-list-tgt" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue;">{{item.name}}</div>
+            <div ng-controller = "sankey-controller as sankey">
+                <div ng-controller = "explore-controller as exp">
+                    <div class="issue">
+                        <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block"
+                                style="width: 80%; position: relative; margin: auto;">{{row.name}}</button>
+                    </div>
+                    <h5 style="width: 80%; position: relative; margin: auto; padding-top: 5px; padding-bottom: 5px">{{row.description}}</h5>
+                    <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
+                        <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
+                            <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
+                                 style="float:left; min-height: 40px; width: 30%;">
+                                <div id="item-list-src" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue">{{item.name}}</div>
+                            </div>
+                            <div ng-show="row.showRank" style="overflow: hidden">
+                                <!--The list is being reversed by the true argument to orderBy to sort the buckets with strongly agree at the top-->
+                                <div ng-repeat="(key, list) in rank.tgtData | orderBy:'key':true">
+                                    <!--This is being multiplied by -1 to list the titles on the right order-->
+                                    <h5 style="font-family: inherit; text-align: center; color: steelblue;">{{rank.lik[(key-2)*-1]}}</h5>
+                                    <div ui-sortable="rank.sortableOptions" ng-model="list" class="well sort">
+                                        <div id="item-list-tgt" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue;">{{item.name}}</div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </uib-tab>
-                    <div id="chart-{{rowIdx}}" ng-show="!row.showRank"></div>
-                    <button ng-show="row.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent); row.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
-                </uib-tabset>
+                            </uib-tab>
+                            <div id="chart-{{rowIdx}}" ng-show="!row.showRank"></div>
+                            <div id="sankey-chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
+                            <button ng-show="row.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent, sankey.showContent); row.showRank = false;" type='button' class='btn btn-success' style="width: 100%;"  disabled>{{ rank.buttonTitle }}</button>
+                    </uib-tabset>
+                </div>
             </div>
         </div>
     </div>

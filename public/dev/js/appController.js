@@ -106,14 +106,15 @@ app.controller("issue-controller", ['dataFac', 'endpointFac',
         };
 
         // Check to see if any of these issues have been ranked already and display the graph instead of ranking buckets
-        self.checkForRank = function(row, showRankContent, showChartContent) {
+        self.checkForRank = function(row, showRankContent, showChartContent, showSankeyContent) {
             dataFac.fetch(endpointFac.url_get_rank('value', row.node_id)).then(function(data){
                 if( data['nodes'].length === 0) {
                     showRankContent(row.node_id);
                     row.showRank = true;
                 } else {
                     showChartContent(row.node_id);
-                    row.showRank = false;
+                    showSankeyContent(row.node_id);
+                    self.showRank = false;
                 }
             });
         };
@@ -188,7 +189,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
         $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
     };
 
-    self.submit = function (issueId, showGraphContent) {
+    self.submit = function (issueId, showGraphContent, showSankeyContent) {
         var url = [],
             rank,
             ready,
@@ -222,10 +223,146 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             dataFac.multiPut(url[1], model[1]).then(function() {
                 dataFac.multiPut(url[2], model[2]).then(function() {
                     showGraphContent(issueId);
+                    showSankeyContent(issueId);
                 })
             })
         });
     };
+}]);
+
+app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
+    function(dataFac, endpointFac, $scope) {
+
+    var self = this,
+    rowIndex,
+    data;
+
+    self.constructSankey = function(idx) {
+
+         //need to get rid of this since we're supporting mobile
+         var margin = {top: 1, right: 1, bottom: 6, left: 1};
+         var width = 900 - margin.left - margin.right;
+         var height = 500 - margin.top - margin.bottom;
+         var color = d3.scale.category20();
+
+         // SVG (group) to draw in.
+         var svg = d3.select('#sankey-chart-' + idx.toString()).append("svg")
+            .attr({
+                width: width + margin.left + margin.right,
+                height: height + margin.top + margin.bottom,
+                display: "block",
+                style: "margin-left:auto; margin-right:auto;"
+            })
+                .append("g")
+                //.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+         // Set up Sankey object.
+         var sankey = d3.sankey()
+            .nodeWidth(30)
+            .nodePadding(10)
+            .size([width, height])
+            .nodes(data.nodes)
+            .links(data.links)
+            .layout(32);
+
+         // Path data generator.
+         var path = sankey.link();
+
+         // Draw the links.
+         var links = svg.append("g").selectAll(".link")
+            .data(data.links)
+            .enter()
+            .append("path")
+            .attr({
+                "class": "link",
+                d: path
+            })
+            .style("stroke-width", function (d) {
+                return Math.max(1, d.dy);
+            })
+            .style("opacity", function(d) {
+                if(d.isNeg === 1)
+                    return 0.3;
+
+                return 1;
+            });
+         links.append("title")
+            .text(function (d) {
+                var value = d.isNeg?(d.value * -1):d.value;
+                return d.source.name + " to " + d.target.name + " = " + value;
+            });
+
+         // Draw the nodes.
+         var nodes = svg.append("g").selectAll(".node")
+            .data(data.nodes)
+            .enter()
+            .append("g")
+            .attr({
+                "class": "node",
+                transform: function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                }
+            });
+         nodes.append("rect")
+            .attr({
+                height: function (d) {
+                    return d.dy;
+                },
+                width: sankey.nodeWidth()
+            })
+            .style({
+                fill: function (d) {
+                    return d.color = color(d.name.replace(/ .*/, ""));
+                },
+                stroke: function (d) {
+                    return d3.rgb(d.color).darker(2);
+                }
+            })
+            .append("title")
+            .text(function (d) {
+                return d.name;
+            });
+         nodes.append("text")
+            .attr({
+                x: sankey.nodeWidth() / 2,
+                y: function (d) {
+                    return d.dy / 2;
+                },
+                dy: ".35em",
+                    "text-anchor":
+                    function(d) {
+                    //Need to make this a percentage of width instead of hard coded widths
+                    if(d.x < 50)
+                        { return "start"}
+                    if(d.x < 700)
+                        {return "middle"}
+                    return "end"
+                    },
+                    transform: null
+            })
+            .text(function (d) {
+                return d.name;
+            });
+    };
+
+    $scope.$watch('rowIdx', function(value) {
+        self.rowIndex = value;
+    });
+
+    self.showContent = function(issueId) {
+        dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function(fetchdata){
+                data = fetchdata;
+                data.links.forEach(function(link){
+                    if(link.value < 0){
+                        link.isNeg = 1;
+                        link.value = Math.abs(link.value);
+                    }
+                    else
+                        link.isNeg = 0;
+                });
+                self.constructSankey(self.rowIndex);
+    })};
+
 }]);
 
 /**
@@ -303,7 +440,6 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
             var lik = self.lik;
             //For local library and for gulp
             //Comment in for production deployment before build script is ran
-            var c3 = require('c3');
             return chart = c3.generate({
                 bindto: '#chart-' + index.toString(),
                 data: {
