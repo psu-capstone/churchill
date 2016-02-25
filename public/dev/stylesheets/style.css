@@ -117,3 +117,7 @@ body.ng-scope {
     display: block;
     margin-top: 0;
 }
+
+[ng\:cloak], [ng-cloak], .ng-cloak {
+    display: none !important;
+}
