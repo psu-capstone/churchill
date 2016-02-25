@@ -189,7 +189,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
         $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
     };
 
-    self.submit = function (issueId, showGraphContent) {
+    self.submit = function (issueId, showGraphContent, showSankeyContent) {
         var url = [],
             rank,
             ready,
@@ -223,6 +223,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             dataFac.multiPut(url[1], model[1]).then(function() {
                 dataFac.multiPut(url[2], model[2]).then(function() {
                     showGraphContent(issueId);
+                    showSankeyContent(issueId);
                 })
             })
         });
