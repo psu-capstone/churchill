@@ -1,14 +1,15 @@
 # Ignore IntelliJ directory
 .idea/
 
+node_modules
+
+lib/c3
+
 # More ignoring for IDE stuff
 *.iml
 
 # Ignore gulp build folder
 public/build
-
-# Ignore Karma test results
-test/results.html
 
 # Ignore Mac File System files
 .DS_Store

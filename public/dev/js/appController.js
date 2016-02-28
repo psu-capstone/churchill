@@ -19,79 +19,101 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         self.image = "./images/demoLab_logo.png";
         self.title = "Login or Create Account";
         self.unsuccessful = "Username or Password is incorrect";
-        self.username = "";
-        self.password = "";
-        self.new_user = "";
-        self.new_pass = "";
-        self.name = "";
-        self.city = "";
         self.showCreateForm = false;
+        self.showCreateIssue = false;
 
+        // Show Issue creation modal
+        self.createIssue = function() {
+            self.showCreateIssue = !self.showCreateIssue;
+        };
+
+        // Show User creation modal
+        self.createAccount = function() {
+            self.showCreateForm = !self.showCreateForm;
+        };
+
+        // Just a test until changes submitted on backend, see commented out for
+        // what this will actually be doing.
+        self.checkAdmin = function() {
+            return $cookies.get('currentUser') === "mark@democracylab.org";
+            /**
+             * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
+              *     if(data["is_admin"]) {
+              *        return true;
+              *     } else {
+              *        return false;
+              *     }
+              * });
+             */
+        };
+
+        // Gain access if user+pass is valid
         self.getAccess = function(){
             var user_arg = JSON.stringify({
                 username: self.username,
                 password: self.password
             });
-
             dataFac.put(endpointFac.url_auth_user(), user_arg).then(function(data){authCallback(data);});
         };
 
-        self.createAccount = function() {
-            self.showCreateForm = !self.showCreateForm;
-        };
-
+        // Sending to API to save user data
         self.addUser = function () {
-            //Sending to API to save user data
             var user_arg = JSON.stringify({
                 username: self.new_user,
                 password: self.new_pass,
                 name:     self.name,
                 city:     self.city
             });
-
-
             dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
         };
+
+        // Handle the top nav bar name
+        self.loggedStatus = function() {
+            if($cookies.get('currentUser')) {
+                self.user = $cookies.get('currentUser');
+                return true;
+            } else {
+                return false;
+            }
+        }
 }]);
 
 /**
- * Voting for issues and setting values will be done here
+ * Getting issues from the database and populate the page
  */
 app.controller("issue-controller", ['dataFac', 'endpointFac',
     function(dataFac, endpointFac) {
         var self = this;
-        self.title = "Weigh in on an issue";
+        self.title = "Weigh In On An Issue";
         self.voting = false;
         self.issuerows = [];
-        self.showCreateIssue = false;
-        self.createIssue = function() {
-            self.showCreateIssue = !self.showCreateIssue;
-        };
-        self.showRank = null;
 
-
-         self.getIssues = function() {
+        // Grab issues from the database
+        self.getIssues = function() {
              dataFac.fetch(endpointFac.url_get_issues('')).then(function(data){
                  for(var i = 0; i < data['nodes'].length; i++) {
                      var tempName = data['nodes'][i].name;
                      var tempDesc = data['nodes'][i].desc;
                      var tempId   = data['nodes'][i].node_id;
-                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId});
+                     self.issuerows.push({name: tempName, description: tempDesc, voting: false, node_id:tempId, showRank: false});
                  }
              });
         };
 
+        // All issues are initialized to false, aka buttons are not opened up on page load
         self.vote = function() {
             self.voting = true;
         };
 
-        self.checkForRank = function(issueId, showRankContent, showChartContent) {
-            dataFac.fetch(endpointFac.url_get_rank('value', issueId)).then(function(data){
+        // Check to see if any of these issues have been ranked already and display the graph instead of ranking buckets
+        self.checkForRank = function(row, showRankContent, showChartContent, showSankeyContent) {
+            dataFac.fetch(endpointFac.url_get_rank('value', row.node_id)).then(function(data){
                 if( data['nodes'].length === 0) {
-                    showRankContent(issueId);
-                    self.showRank = true;
+                    showRankContent(row.node_id);
+                    row.showRank = true;
                 } else {
-                    showChartContent(issueId);
+                    showChartContent(row.node_id);
+                    showSankeyContent(row.node_id);
                     self.showRank = false;
                 }
             });
@@ -115,6 +137,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
     self.currentSet = 0;
     self.srcData = {};
     self.index = 0;
+    self.showRank = null;
 
     self.sortableOptions = {
         connectWith: ".sort",
@@ -166,7 +189,7 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
         $('#submitButton-' + self.index.toString()).prop('disabled', function() { return disable; });
     };
 
-    self.submit = function (issueId, showGraphContent) {
+    self.submit = function (issueId, showGraphContent, showSankeyContent) {
         var url = [],
             rank,
             ready,
@@ -200,10 +223,146 @@ app.controller('rank-controller', ['endpointFac','utilsFac', 'dataFac','$scope',
             dataFac.multiPut(url[1], model[1]).then(function() {
                 dataFac.multiPut(url[2], model[2]).then(function() {
                     showGraphContent(issueId);
+                    showSankeyContent(issueId);
                 })
             })
         });
     };
+}]);
+
+app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
+    function(dataFac, endpointFac, $scope) {
+
+    var self = this,
+    rowIndex,
+    data;
+
+    self.constructSankey = function(idx) {
+
+         //need to get rid of this since we're supporting mobile
+         var margin = {top: 1, right: 1, bottom: 6, left: 1};
+         var width = 900 - margin.left - margin.right;
+         var height = 500 - margin.top - margin.bottom;
+         var color = d3.scale.category20();
+
+         // SVG (group) to draw in.
+         var svg = d3.select('#sankey-chart-' + idx.toString()).append("svg")
+            .attr({
+                width: width + margin.left + margin.right,
+                height: height + margin.top + margin.bottom,
+                display: "block",
+                style: "margin-left:auto; margin-right:auto;"
+            })
+                .append("g")
+                //.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+
+         // Set up Sankey object.
+         var sankey = d3.sankey()
+            .nodeWidth(30)
+            .nodePadding(10)
+            .size([width, height])
+            .nodes(data.nodes)
+            .links(data.links)
+            .layout(32);
+
+         // Path data generator.
+         var path = sankey.link();
+
+         // Draw the links.
+         var links = svg.append("g").selectAll(".link")
+            .data(data.links)
+            .enter()
+            .append("path")
+            .attr({
+                "class": "link",
+                d: path
+            })
+            .style("stroke-width", function (d) {
+                return Math.max(1, d.dy);
+            })
+            .style("opacity", function(d) {
+                if(d.isNeg === 1)
+                    return 0.3;
+
+                return 1;
+            });
+         links.append("title")
+            .text(function (d) {
+                var value = d.isNeg?(d.value * -1):d.value;
+                return d.source.name + " to " + d.target.name + " = " + value;
+            });
+
+         // Draw the nodes.
+         var nodes = svg.append("g").selectAll(".node")
+            .data(data.nodes)
+            .enter()
+            .append("g")
+            .attr({
+                "class": "node",
+                transform: function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                }
+            });
+         nodes.append("rect")
+            .attr({
+                height: function (d) {
+                    return d.dy;
+                },
+                width: sankey.nodeWidth()
+            })
+            .style({
+                fill: function (d) {
+                    return d.color = color(d.name.replace(/ .*/, ""));
+                },
+                stroke: function (d) {
+                    return d3.rgb(d.color).darker(2);
+                }
+            })
+            .append("title")
+            .text(function (d) {
+                return d.name;
+            });
+         nodes.append("text")
+            .attr({
+                x: sankey.nodeWidth() / 2,
+                y: function (d) {
+                    return d.dy / 2;
+                },
+                dy: ".35em",
+                    "text-anchor":
+                    function(d) {
+                    //Need to make this a percentage of width instead of hard coded widths
+                    if(d.x < 50)
+                        { return "start"}
+                    if(d.x < 700)
+                        {return "middle"}
+                    return "end"
+                    },
+                    transform: null
+            })
+            .text(function (d) {
+                return d.name;
+            });
+    };
+
+    $scope.$watch('rowIdx', function(value) {
+        self.rowIndex = value;
+    });
+
+    self.showContent = function(issueId) {
+        dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function(fetchdata){
+                data = fetchdata;
+                data.links.forEach(function(link){
+                    if(link.value < 0){
+                        link.isNeg = 1;
+                        link.value = Math.abs(link.value);
+                    }
+                    else
+                        link.isNeg = 0;
+                });
+                self.constructSankey(self.rowIndex);
+    })};
+
 }]);
 
 /**
@@ -213,135 +372,77 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     function(endpointFac, utilsFac, dataFac, $scope) {
 
     var self = this,
-        tempData = null,
         endpoints = utilsFac.endpointPfx,
         charts = {},
 
-        parseOpinions = function(which, data) {
-            var temp;
-            self.opinions[which] = [];
-            temp = self.opinions[which];
+        parseData = function(which, chart) {
+            var opinions = self.opinions[which],
+                data = self.srcData[which],
+                userRank,
+                barData;
+            for(var id in opinions) {
+                userRank = opinions[id];
+                barData = data[id].data;
+                //append scatter positioning value
+                barData.push(scatterPositioning(barData, userRank));
+                //prepend the item title
+                barData.unshift(data[id].name);
+            }
             for(var i in data){
-                temp.push(data[i].rank)
+                chart.push(data[i].data);
             }
-        },
-    //TODO, work with raw data, not against it
-        parseData = function(data) {
-            for(var i in data){
-                tempData.push(data[i].data);
-            }
-        },
-
-        transpose = function(){
-            var length,
-                transposed = [];
-                length = tempData[0].length;
-            for(var idx = 0; idx < length; idx++){
-                transposed.push([]);
-            }
-
-            for(var i in tempData){
-                length = tempData[i].length;
-                for(var j = 0; j < length; j++){
-                    transposed[j].push(tempData[i][j]);
-                }
-            }
-            tempData = transposed;
+            chart.unshift(['x','strongly disagree', 'disagree', 'no opinion','agree', 'strongly agree', 'you']);
         },
 
         /* This function will compute the sum of each array in data and
            return the largest.
          */
         maxArraySums = function(data) {
-            var col = data.length - 1,
-                rows = data[0].length,
-                sums = [],
-                buffer = null;
-
-            for (var i = 1; i < rows; ++i) {
+            var sums = [],
+                index,
+                colLen = data.length,
+                rowLen = data[0].length - 1;
+            for(var i = 1; i < colLen; i++){
                 sums.push(0);
-                buffer = i - 1;
-                for (var j = 1; j < col; ++j) {
-                    sums[buffer] += data[j][i];
+                index = i-1;
+                for(var j = 1; j < rowLen; j++){
+                    sums[index] += data[i][j];
                 }
             }
             return Math.max.apply(null, sums);
         },
 
-        /* this is so you can append the user opinion on the fly after
-         * the rest of the data has been fetched
-         */
-        appendUserData = function() {
-            var temp = [];
-            self.opinion.forEach(function(x){temp.push(x);});
-            tempData.push(temp);
+        scatterPositioning = function(row, rank) {
+            var buffer = 0,
+                index = rank + 2,
+                centered = row[index] * 0.5;
+
+            for(var i = 0; i < index; i++) {
+                buffer += row[i];
+            }
+            return buffer + centered;
         },
 
-        scatterPositioning = function() {
-            var buffer,
-                opinionRow,
-                centered,
-                opinions = self.opinion,
-                length = opinions.length,
-                userColumn = tempData[5];
+        processData = function(which) {
+            var tempData = [];
+            parseData(which, tempData);
+            self.chartData[which] = tempData;
+        },
 
-            for(var i = 0; i < length; ++i) {
-                opinionRow = index(opinions[i]);
-                centered = centerOpinionValue(opinionRow, i, tempData);
-                buffer = sumBuffer(opinionRow - 1, i, tempData);
-                userColumn[i] = centered + buffer;
+        mapTooltip = function(data, opinions) {
+            self.tooltipStrings = [];
+            for(var id in data) {
+                self.tooltipStrings.push(self.lik[opinions[id]]);
             }
         },
 
-        formatData = function() {
-            var length = tempData.length,
-                headers = ['x'];
-
-            for(var i in tempData[0]){
-                headers.push('Question ' + i.toString());
-            }
-
-            for(var i = 0; i < length - 1; ++i) {
-                tempData[i].unshift(self.lik[i - 2]);
-            }
-            tempData[length -1].unshift('you');
-            tempData.unshift(headers);
-        },
-
-        index = function(x) {
-            return x + 2;
-        },
-
-        centerOpinionValue = function(x, y, data) {
-            return data[x][y] * .5;
-        },
-
-        sumBuffer = function(x, y, data) {
-            var sum = 0;
-            for(;x>=0; --x) {
-                sum += data[x][y]
-            }
-            return sum;
-        },
-
-        processData = function(which, rawData) {
-            tempData = [];
-            parseData(rawData.data);
-            transpose();
-            appendUserData();
-            scatterPositioning();
-            formatData();
-            self.srcData[which] = tempData;
-
-        },
         graph = function(index) {
-            var you = 'you',
-                lik = self.lik;
+            var lik = self.lik;
             return chart = c3.generate({
                 bindto: '#chart-' + index.toString(),
                 data: {
                     x: 'x',
-                    columns: [],
+                    rows: [],
                     type: 'bar',
                     types: {
                         you: 'scatter'
@@ -356,7 +457,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                         you: '#000000'
                     },
                     groups: [
-                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
+                        [lik[-2], lik[-1], lik[0], lik[1], lik[2], 'you']
                     ]
                 },
                 point: {
@@ -365,7 +466,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 axis: {
                     rotated: true,
                     y: {
-                        max: 100
+                        max: 160
                     },
                     x: {
                         type: 'categorized'
@@ -386,8 +487,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
                 tooltip: {
                     format: {
                         value: function (value, ratio, id, index) {
-                            if (id === you) {
-                                value = lik[self.opinion[index]];
+                            if (id === 'you') {
+                                value = self.tooltipStrings[index];
                             }
                             return value;
                         }
@@ -407,6 +508,8 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
     self.opinions = {};
     self.xAxisMax = null;
     self.rowIndex = null;
+    self.chartData = {};
+    self.tooltipStrings = [];
 
     self.showContent = function(issueId) {
         var chartIdx = self.rowIndex;
@@ -416,18 +519,24 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         }
         if(self.opinions[which] === undefined || self.srcData[which] === undefined) {
             dataFac.fetch(endpointFac.url_get_rank(which, issueId)).then(function(opinionData){
-                parseOpinions(which, opinionData['nodes']);
-                self.opinion = self.opinions[which];
+                var array = opinionData['nodes'],
+                    length = array.length;
+                self.opinions[which] = {};
+                for(var i = 0; i < length; i++) {
+                    self.opinions[which][array[i].node_id] = array[i].rank;
+                }
                 dataFac.fetch(endpointFac.url_get_stacked(which, issueId)).then(function(chartData){
-                    processData(which, chartData);
-                    charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
-                    charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
+                    self.srcData[which] = chartData.data;
+                    processData(which);
+                    mapTooltip(chartData.data, self.opinions[which]);
+                    charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+                    charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
                 });
             });
         } else {
-            self.opinion = self.opinions[which];
-            charts[chartIdx].axis.max(maxArraySums(self.srcData[which]));
-            charts[chartIdx].load({columns: self.srcData[which], unload: charts[chartIdx].columns});
+            mapTooltip(self.srcData[which], self.opinions[which]);
+            charts[chartIdx].axis.max(maxArraySums(self.chartData[which]));
+            charts[chartIdx].load({rows: self.chartData[which], unload: charts[chartIdx].rows});
         }
     };
 }]);
