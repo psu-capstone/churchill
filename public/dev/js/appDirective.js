@@ -1,19 +1,9 @@
 /**
- * Creating a user on Login Page
+ * Modal directive we're using for issue and user creation
  */
 app.directive('modal', function () {
     return {
-        template: '<div class="modal fade">' +
-            '<div class="modal-dialog">' +
-                '<div class="modal-content">' +
-                    '<div class="modal-header">' +
-                        '<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>' +
-                        '<h4 class="modal-title">{{ title }}</h4>' +
-                    '</div>' +
-                    '<div class="modal-body" ng-transclude></div>' +
-                '</div>' +
-                '</div>' +
-            '</div>',
+        templateUrl: './widgets/modal.html',
         restrict: 'E',
         transclude: true,
         replace:true,
@@ -51,7 +41,7 @@ app.directive('userUnique', ['dataFac', 'endpointFac', function (dataFac, endpoi
         restrict: 'A',
         require: 'ngModel',
         link: function (scope, element, attrs, ctrl) {
-            element.bind('blur', function (e) {
+            element.bind('blur', function () {
                 var current = element.val();
                 ctrl.$setValidity('unique', false);
                 dataFac.fetch(endpointFac.url_get_node('user', current)).then(function(data){
@@ -65,91 +55,3 @@ app.directive('userUnique', ['dataFac', 'endpointFac', function (dataFac, endpoi
         }
     }
 }]);
-
-/**
- * drag and drop likert scale ranking directive
- */
-app.directive("sort", [function () {
-    return {
-        restrict: 'E',
-        replace: true,
-        templateUrl: './widgets/rank.html'
-    };
-}]);
-
-/**
- * D3 directive that is embedded in explore-controller.
- */
-app.directive("bars", function () {
-    return {
-        restrict: 'E',
-        replace: true,
-        template: '<div id="chart"></div>',
-        link: function (scope) {
-            scope.$watch('exp.data', function(newVal) {
-                if (newVal && newVal.length > 0) {
-                    var you = 'you',
-                        scp = scope.exp,
-                        opinion = scp.opinion,
-                        lik = scp.lik,
-                        chart = c3.generate({
-                            data: {
-                                x: 'x',
-                                columns: scp.data,
-                                type: 'bar',
-                                types: {
-                                    you: 'scatter'
-                                },
-                                order: null,
-                                colors: {
-                                    'strongly disagree': '#920000',
-                                    disagree: '#ec1b1b',
-                                    'no opinion': '#dbd9d9',
-                                    agree: '#0087d8',
-                                    'strongly agree': '#095983',
-                                    you: '#000000'
-                                },
-                                groups: [
-                                    [lik[-2], lik[-1], lik[0], lik[1], lik[2], you]
-                                ]
-                            },
-                            point: {
-                                r: 5
-                            },
-                            axis: {
-                                rotated: true,
-                                y: {
-                                    max: scp.xAxisMax
-                                },
-                                x: {
-                                    type: 'categorized'
-                                }
-                            },
-                            onrendered: function () {
-                                d3.selectAll("circle")
-                                    .style("opacity", 1)
-                                    .style("stroke", "white");
-                            },
-                            legend: {
-                                item: {
-                                    onclick: function (id) {
-                                        return;
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                format: {
-                                    value: function (value, ratio, id, index) {
-                                        if (id === you) {
-                                            value = lik[opinion[index]];
-                                        }
-                                        return value;
-                                    }
-                                }
-                            }
-                        });
-                }
-            });
-        }
-    };
-});
