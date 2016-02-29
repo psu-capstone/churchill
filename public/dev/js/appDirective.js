@@ -55,3 +55,33 @@ app.directive('userUnique', ['dataFac', 'endpointFac', function (dataFac, endpoi
         }
     }
 }]);
+
+/**
+ * Read more for long descriptions
+ */
+app.directive('hmRead', function () {
+    return {
+        restrict:'AE',
+        scope:{
+            hmtext : '@',
+            hmlimit : '@',
+            hmfulltext:'@',
+            hmMoreText:'@',
+            hmLessText:'@',
+            hmMoreClass:'@',
+            hmLessClass:'@'
+        },
+        templateUrl: './widgets/template.html',
+        controller : function($scope){
+            $scope.toggleValue=function(){
+
+                if($scope.hmfulltext == true)
+                    $scope.hmfulltext=false;
+                else if($scope.hmfulltext == false)
+                    $scope.hmfulltext=true;
+                else
+                    $scope.hmfulltext=true;
+            }
+        }
+    };
+});

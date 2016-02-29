@@ -121,3 +121,8 @@ body.ng-scope {
 [ng\:cloak], [ng-cloak], .ng-cloak {
     display: none !important;
 }
+
+hm-read {
+    -ms-word-break: break-all;
+    word-break: break-all;
+}

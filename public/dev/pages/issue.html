@@ -13,10 +13,9 @@
             <div ng-controller = "sankey-controller as sankey">
                 <div ng-controller = "explore-controller as exp">
                     <div class="issue">
-                        <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block"
-                                style="width: 80%; position: relative; margin: auto;">{{row.name}}</button>
+                        <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block">{{row.name}}</button>
+                        <hm-read hmtext="{{ row.description }}" hmlimit="100" hm-more-text="read more" hm-less-text="read less"></hm-read>
                     </div>
-                    <h5 style="width: 80%; position: relative; margin: auto; padding-top: 5px; padding-bottom: 5px">{{row.description}}</h5>
                     <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
                         <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
                             <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
