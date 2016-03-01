@@ -235,7 +235,8 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
 
     var self = this,
     rowIndex,
-    data;
+    data,
+    charts = {};
 
     self.constructSankey = function(idx) {
 
@@ -343,6 +344,8 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             .text(function (d) {
                 return d.name;
             });
+
+        return svg;
     };
 
     $scope.$watch('rowIdx', function(value) {
@@ -350,19 +353,22 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
     });
 
     self.showContent = function(issueId) {
-        dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function(fetchdata){
+        if(undefined === charts[self.rowIndex]) {
+            dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function (fetchdata) {
                 data = fetchdata;
-                data.links.forEach(function(link){
-                    if(link.value < 0){
+                data.links.forEach(function (link) {
+                    if (link.value < 0) {
                         link.isNeg = 1;
                         link.value = Math.abs(link.value);
                     }
-                    else
+                    else {
                         link.isNeg = 0;
+                    }
                 });
-                self.constructSankey(self.rowIndex);
-    })};
-
+                charts[self.rowIndex] = self.constructSankey(self.rowIndex);
+            });
+        }
+    };
 }]);
 
 /**
