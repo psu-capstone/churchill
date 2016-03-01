@@ -122,7 +122,13 @@ body.ng-scope {
     display: none !important;
 }
 
-hm-read {
+.hm-read {
     -ms-word-break: break-all;
     word-break: break-all;
+}
+
+.sidebar{
+    position: relative;
+    float:right;
+    width:20%;
 }

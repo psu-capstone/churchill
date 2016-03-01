@@ -241,7 +241,7 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
 
          //need to get rid of this since we're supporting mobile
          var margin = {top: 1, right: 1, bottom: 6, left: 1};
-         var width = 900 - margin.left - margin.right;
+         var width = $("svg").parent().width();
          var height = 500 - margin.top - margin.bottom;
          var color = d3.scale.category20();
 
