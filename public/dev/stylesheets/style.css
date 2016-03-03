@@ -21,6 +21,10 @@ p{clear: both;}
     shape-rendering: crispEdges;
 }
 
+#issueDesc {
+    height: 100px;
+}
+
 #item-list-src {
     padding: 5px;
     border: 1px solid #999;
@@ -46,6 +50,18 @@ p{clear: both;}
     margin: 5px;
     cursor: move;
     word-break: break-all;
+}
+
+#tabset {
+    width: 80%;
+    position: relative;
+    margin: auto;
+}
+
+#sortable {
+    float:left;
+    min-height: 40px;
+    width: 30%;
 }
 
 .sort, .sortSrc, .sortTgt {

@@ -35,7 +35,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         // Just a test until changes submitted on backend, see commented out for
         // what this will actually be doing.
         self.checkAdmin = function() {
-            return $cookies.get('currentUser') === "mark@democracylab.org";
+            return $cookies.get('currentUser') === "rta";
             /**
              * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
               *     if(data["is_admin"]) {

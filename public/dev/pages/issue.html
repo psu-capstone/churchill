@@ -18,13 +18,11 @@
             <div ng-controller = "sankey-controller as sankey">
                 <div ng-controller = "explore-controller as exp">
                     <div class="issue">
-                        <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block" style="font-family: Helvetica; font-weight: bold;">{{row.name}}</button>
-                    </div>
-                    <div style="padding: 10px 0 0 0;">
-                        <hm-read hmtext="{{ row.description }}" hmlimit="100" hm-more-text="...More" hm-less-text="Less..." style="font-weight: bold";></hm-read>
+                        <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block" style="font-family: Helvetica; font-weight: bold; margin-bottom: 20px;">{{row.name}}</button>
                     </div>
                     <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
-                        <uib-tab style="font-weight: bold; font-family: Helvetica;"heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
+                        <hm-read id="readMore" hmtext="{{ row.description }}" hmlimit="100" hm-more-text="...More" hm-less-text="Less..." style="font-weight: bold; word-break: break-all;"></hm-read>
+                        <uib-tab style="font-weight: bold; padding-top: 20px; font-family: Helvetica;"heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
                             <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
                                  style="float:left; min-height: 40px; width: 30%;">
                                 <div id="item-list-src" ng-repeat="item in list" uib-tooltip="Drag me to rank!">{{item.name}}</div>
@@ -40,8 +38,14 @@
                                 </div>
                             </div>
                             </uib-tab>
-                            <div id="chart-{{rowIdx}}" ng-show="!row.showRank"></div>
-                            <div style="width: inherit" id="sankey-chart-{{rowIdx}}" ng-show="!issue.showRank"></div>
+                            <div ng-show="!row.showRank">
+                                <h5 style="text-align: center; position: relative; text-decoration: underline;">{{row.name}} Bar Chart</h5>
+                                <div id="chart-{{rowIdx}}"></div>
+                            </div>
+                            <div ng-show="!row.showRank">
+                                <h5 style="text-align: center; position: relative; text-decoration: underline;">{{row.name}} Sankey Diagram</h5>
+                                <div style="width: inherit" id="sankey-chart-{{rowIdx}}"></div>
+                            </div>
                             <button ng-show="row.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent, sankey.showContent); row.showRank = false;" type='button' class='btn btn-success' style="width: 100%;font-weight: bold; font-family: Helvetica;"  disabled>{{ rank.buttonTitle }}</button>
                     </uib-tabset>
                 </div>
