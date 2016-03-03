@@ -20,8 +20,8 @@
                     <div class="issue">
                         <button ng-click="issue.checkForRank(row, rank.showContent, exp.showContent, sankey.showContent); row.voting = !row.voting; rank.index = rowIdx" type="button" class="btn btn-primary btn-block" style="font-family: Helvetica; font-weight: bold; margin-bottom: 20px;">{{row.name}}</button>
                     </div>
-                    <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
-                        <hm-read id="readMore" hmtext="{{ row.description }}" hmlimit="100" hm-more-text="...More" hm-less-text="Less..." style="font-weight: bold; word-break: break-all;"></hm-read>
+                    <uib-tabset id="tabset" justified="true" ng-show="row.voting">
+                        <hm-read id="readMore" hmtext="Description: {{ row.description }}" hmlimit="100" hm-more-text="...More" hm-less-text="Less..." style="font-weight: bold; word-break: break-all;"></hm-read>
                         <uib-tab style="font-weight: bold; padding-top: 20px; font-family: Helvetica;"heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
                             <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
                                  style="float:left; min-height: 40px; width: 30%;">
@@ -31,19 +31,19 @@
                                 <!--The list is being reversed by the true argument to orderBy to sort the buckets with strongly agree at the top-->
                                 <div ng-repeat="(key, list) in rank.tgtData | orderBy:'key':true">
                                     <!--This is being multiplied by -1 to list the titles on the right order-->
-                                    <h5 style="font-family: inherit; text-align: center; color: steelblue;font-weight: bold; font-family: Helvetica;">{{rank.lik[(key-2)*-1]}}</h5>
+                                    <h5 id="likert">{{rank.lik[(key-2)*-1]}}</h5>
                                     <div ui-sortable="rank.sortableOptions" ng-model="list" class="well sort">
-                                        <div id="item-list-tgt" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue;">{{item.name}}</div>
+                                        <div id="item-list-tgt" ng-repeat="item in list">{{item.name}}</div>
                                     </div>
                                 </div>
                             </div>
                             </uib-tab>
                             <div ng-show="!row.showRank">
-                                <h5 style="text-align: center; position: relative; text-decoration: underline;">{{row.name}} Bar Chart</h5>
+                                <h5 id="chartTitle">{{row.name}} Bar Chart</h5>
                                 <div id="chart-{{rowIdx}}"></div>
                             </div>
                             <div ng-show="!row.showRank">
-                                <h5 style="text-align: center; position: relative; text-decoration: underline;">{{row.name}} Sankey Diagram</h5>
+                                <h5 id="chartTitle">{{row.name}} Sankey Diagram</h5>
                                 <div style="width: inherit" id="sankey-chart-{{rowIdx}}"></div>
                             </div>
                             <button ng-show="row.showRank" id="submitButton-{{rowIdx}}" ng-click="rank.submit(row.node_id, exp.showContent, sankey.showContent); row.showRank = false;" type='button' class='btn btn-success' style="width: 100%;font-weight: bold; font-family: Helvetica;"  disabled>{{ rank.buttonTitle }}</button>
