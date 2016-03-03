@@ -24,11 +24,19 @@ p{clear: both;}
 #item-list-src {
     padding: 5px;
     border: 1px solid #999;
-    background: #eee;
     margin: 5px;
     cursor: move;
     word-break: break-all;
     hyphens: auto;
+    text-align: center;
+    color: whitesmoke;
+    font-weight: bold;
+    border-radius: inherit;
+    background-color: steelblue;
+}
+
+#item-list-src:hover {
+    box-shadow: 15px 8px 5px lightgreen;
 }
 
 #item-list-tgt {

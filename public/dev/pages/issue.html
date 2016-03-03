@@ -18,9 +18,9 @@
                     </div>
                     <uib-tabset justified="true" ng-show="row.voting" style="width: 80%; position: relative; margin: auto">
                         <uib-tab heading="{{content}}" ng-mouseup="rank.currentSet = exp.currentSet = $index; row.showRank == true ? rank.showContent(row.node_id) : exp.showContent(row.node_id);" ng-repeat="content in rank.title">
-                            <div ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
+                            <div id="srcWell" ui-sortable="rank.sortableOptions" ng-show="row.showRank" ng-repeat="list in rank.getData($index)" ng-model="list" class="well sort"
                                  style="float:left; min-height: 40px; width: 30%;">
-                                <div id="item-list-src" ng-repeat="item in list" style="text-align: center; color: whitesmoke; font-weight: bold; border-radius: inherit; background-color: steelblue">{{item.name}}</div>
+                                <div id="item-list-src" ng-repeat="item in list" uib-tooltip="Drag me to rank!">{{item.name}}</div>
                             </div>
                             <div ng-show="row.showRank" style="overflow: hidden">
                                 <!--The list is being reversed by the true argument to orderBy to sort the buckets with strongly agree at the top-->
