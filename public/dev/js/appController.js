@@ -35,7 +35,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
         // Just a test until changes submitted on backend, see commented out for
         // what this will actually be doing.
         self.checkAdmin = function() {
-            return $cookies.get('currentUser') === "mark@democracylab.org";
+            return $cookies.get('currentUser') === "rta";
             /**
              * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
               *     if(data["is_admin"]) {
@@ -235,13 +235,14 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
 
     var self = this,
     rowIndex,
-    data;
+    data,
+    charts = {};
 
     self.constructSankey = function(idx) {
 
          //need to get rid of this since we're supporting mobile
          var margin = {top: 1, right: 1, bottom: 6, left: 1};
-         var width = 900 - margin.left - margin.right;
+         var width = $("svg").parent().width();
          var height = 500 - margin.top - margin.bottom;
          var color = d3.scale.category20();
 
@@ -343,6 +344,8 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
             .text(function (d) {
                 return d.name;
             });
+
+        return svg;
     };
 
     $scope.$watch('rowIdx', function(value) {
@@ -350,19 +353,22 @@ app.controller("sankey-controller", ['dataFac','endpointFac','$scope',
     });
 
     self.showContent = function(issueId) {
-        dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function(fetchdata){
+        if(undefined === charts[self.rowIndex]) {
+            dataFac.fetch(endpointFac.url_get_sankey(issueId)).then(function (fetchdata) {
                 data = fetchdata;
-                data.links.forEach(function(link){
-                    if(link.value < 0){
+                data.links.forEach(function (link) {
+                    if (link.value < 0) {
                         link.isNeg = 1;
                         link.value = Math.abs(link.value);
                     }
-                    else
+                    else {
                         link.isNeg = 0;
+                    }
                 });
-                self.constructSankey(self.rowIndex);
-    })};
-
+                charts[self.rowIndex] = self.constructSankey(self.rowIndex);
+            });
+        }
+    };
 }]);
 
 /**

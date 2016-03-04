@@ -66,7 +66,7 @@
       </div>
       <div class="form-group">
         <label for="issueDesc">Description</label>
-        <input id="issueDesc" ng-model="ctrl.new_desc" type="text" class="form-control" required>
+        <textarea id="issueDesc" ng-model="ctrl.new_desc" type="text" class="form-control" required></textarea>
       </div>
       <label>No more than 7 items per category. Each item must be thirty characters or less.</label>
       <div class="form-group">
@@ -83,8 +83,8 @@
       </div>
       <button ng-disabled="createIssueForm.$invalid" id="submitIssueButton" type="submit" class="btn btn-success" data-dismiss="modal">Add New Issue</button>
     </form>
-    <!-- Inline script is not good practice for this, but there was an issue posting new issues to the db using
-         angular http.post so this is what we got for now -->
+    <!-- There was an issue posting new issues to the db using angular http.post so this is inlined script,
+         We suspect it was posting the array of obj/pol/vals -->
     <script>
       var base_url = "http://capprod.meyersj.com:9000";
       var endpoint = base_url + "/api/issue";
@@ -151,7 +151,7 @@
       });
     </script>
   </modal>
-  <div id="main" class="container">
+  <div id="main" class="container" style="width: 90%;">
     <!-- inject content here using angular routing -->
     <div ng-view></div>
   </div>
