@@ -165,9 +165,17 @@
         });
     </script>
 </modal>
-<div id="main" class="container" style="width: 90%;">
-    <!-- inject content here using angular routing -->
-    <div ng-view></div>
+<div>
+    <div id="main" class="container" style="width: 80%;">
+        <!-- inject content here using angular routing -->
+        <div ng-view></div>
+    </div>
+    <div class="col-xs-4 sidebar" style="width: 20%">
+        <section style="padding-left: 20px;">
+            <a class="twitter-timeline" href="https://twitter.com/fuzzy_logic_psu" data-widget-id="704066325438603264">Tweets by @fuzzy_logic_psu</a>
+            <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+        </section>
+    </div>
 </div>
 </body>
 </html>
