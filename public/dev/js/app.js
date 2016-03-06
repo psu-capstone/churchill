@@ -21,6 +21,7 @@ app.config(function($routeProvider) {
                     if($cookies.get('currentUser') != null) {
                         $cookies.remove('currentUser');
                     }
+                    $cookies.remove('userIsAdmin');
                 }
             }
         })
