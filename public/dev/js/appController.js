@@ -9,6 +9,7 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 if(response["success"] == true) {
                     accessFac.getPermission();
                     $cookies.put('currentUser',self.username);
+                    $cookies.put('userIsAdmin', response["is_admin"]);
                     $location.path('/issue');
                 } else {
                     accessFac.rejectPermission();
@@ -32,21 +33,6 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
             self.showCreateForm = !self.showCreateForm;
         };
 
-        // Just a test until changes submitted on backend, see commented out for
-        // what this will actually be doing.
-        self.checkAdmin = function() {
-            return $cookies.get('currentUser') === "rta";
-            /**
-             * dataFac.fetch(endpointFac.url_get_node('user, $cookies.get('currentUser')).then(function(data) {
-              *     if(data["is_admin"]) {
-              *        return true;
-              *     } else {
-              *        return false;
-              *     }
-              * });
-             */
-        };
-
         // Gain access if user+pass is valid
         self.getAccess = function(){
             var user_arg = JSON.stringify({
@@ -64,7 +50,11 @@ app.controller("main-controller", [ '$http', '$location', '$cookies', 'accessFac
                 name:     self.name,
                 city:     self.city
             });
-            dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data)});
+            dataFac.put(endpointFac.url_post_user(), user_arg).then(function(data){utilsFac.echo(data);});
+        };
+
+        self.checkAdmin = function() {
+            return $cookies.get('userIsAdmin') == "true";
         };
 
         // Handle the top nav bar name
