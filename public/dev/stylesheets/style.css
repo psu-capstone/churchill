@@ -40,7 +40,8 @@ p{clear: both;}
 }
 
 #item-list-src:hover {
-    box-shadow: 15px 8px 5px lightgreen;
+    background: #1aff1a;
+    color: black;
 }
 
 #item-list-tgt {
@@ -53,7 +54,12 @@ p{clear: both;}
     color: whitesmoke;
     font-weight: bold;
     border-radius: inherit;
-    background-color: steelblue;
+    background-color: lightslategrey;
+}
+
+#item-list-tgt:hover {
+    background: #1aff1a;
+    color: black;
 }
 
 #tabset {
