@@ -536,3 +536,7 @@ app.controller("explore-controller", ['endpointFac', 'utilsFac', 'dataFac', '$sc
         }
     };
 }]);
+
+app.controller("help_controller" [function(){
+    self.title = "Get Help";
+}]);

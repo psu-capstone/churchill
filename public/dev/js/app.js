@@ -42,5 +42,19 @@ app.config(function($routeProvider) {
                     }
                 }
             }
-        });
+        })
+        .when('/help', {
+            templateUrl : './pages/help.html',
+            controller  : 'help-controller',
+            resolve:{
+                "check":function(accessFac, $location, $cookies){
+                    if($cookies.get('currentUser') != null){
+                        $location.path('/help');
+                    } else {
+                        //redirect user to home
+                        $location.path('/home');
+                    }
+                }
+            }
+        })
 });
