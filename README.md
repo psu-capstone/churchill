@@ -13,9 +13,10 @@ ___
 Unzip c3.zip. <br/>
 This is a modified c3 library that will show popups in Chrome.  This can be removed once the 
 [pull request](https://github.com/masayuki0812/c3/pull/1564) is completed to fix
-this issue in Chrome. <br/> 
+this issue in Chrome. <br/>
+*Update: This pull request has been merged to the c3 repo, watch for c3 version 0.4.11 release to fix this issue* <br/>
 If it is needed: after running `npm install` you will have to run `npm link lib/c3` which may require admin rights 
-to complete the link.  When that is finished, `var c3 = require('c3')` in `appController.js` will now look to `lib/` 
+to complete the link.  When that is finished, `var c3 = require('c3')` in `index.js` will now look to `lib/` 
 instead of `node_modules/c3`
 
 **public/build:** <br/> 
@@ -40,7 +41,7 @@ Script to start production web server
 
 **deploy/build_dev.sh** <br/>
 Development build script that tackles all the necessary gulp tasks and leaves you with a localhost:3000 server where you can
-directly view the application.  Run with `sh deploy/build_dev.sh`.
+directly view the application.
 
 ___
 
@@ -56,3 +57,13 @@ this basically replaced the old server.js file that is no longer in the repo.
 
 **travis.yml** <br/>
 Continuous integration. [Travis Churchill Page](https://travis-ci.org/psu-capstone/churchill)
+
+___
+
+**Creating an Admin Account:**
+
+___
+
+An admin is stored in the database with the tag `is_admin: true` value.  To add an admin, you will have to hard
+code this into the `issue_args` in `self.adduser...`.  By default, creating a user from the application will give a user
+`is_admin: false`.
