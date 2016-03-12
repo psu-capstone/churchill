@@ -3,14 +3,11 @@
 
 ## **Version 1.0**
 
-___
-
 **Folder Structure:**
 
-___
+**lib:**
 
-**lib:** <br/>
-Unzip c3.zip. <br/>
+Unzip c3.zip.
 This is a modified c3 library that will show popups in Chrome.  This can be removed once the 
 [pull request](https://github.com/masayuki0812/c3/pull/1564) is completed to fix
 this issue in Chrome. <br/>

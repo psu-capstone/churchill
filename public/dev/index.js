@@ -1,4 +1,4 @@
-// Depenedencies from package.json
+// Dependencies from package.json
 require('angular');
 require('angular-cookies');
 require('angular-route');

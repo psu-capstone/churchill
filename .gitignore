@@ -1,8 +1,8 @@
 # Ignore IntelliJ directory
 .idea/
 
+#Node Modules & libraries
 node_modules
-
 lib/c3
 
 # More ignoring for IDE stuff
@@ -13,4 +13,3 @@ public/build
 
 # Ignore Mac File System files
 .DS_Store
-
