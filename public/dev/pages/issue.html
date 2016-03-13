@@ -7,7 +7,7 @@
       </div>
     </div>
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
-    <div class="issue row" ng-repeat="(rowIdx, row) in issue.issuerows" style="float: left; width: 80%;">
+    <div class="issue row" ng-repeat="(rowIdx, row) in issue.issuerows">
         <div ng-controller = "rank-controller as rank">
             <div ng-controller = "sankey-controller as sankey">
                 <div ng-controller = "explore-controller as exp">
