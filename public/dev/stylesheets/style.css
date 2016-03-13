@@ -30,8 +30,6 @@ p{clear: both;}
     border: 1px solid #999;
     margin: 5px;
     cursor: move;
-    word-break: break-all;
-    hyphens: auto;
     text-align: center;
     color: whitesmoke;
     font-weight: bold;
@@ -49,7 +47,6 @@ p{clear: both;}
     border: 1px solid #999;
     margin: 5px;
     cursor: move;
-    word-break: break-all;
     text-align: center;
     color: whitesmoke;
     font-weight: bold;
