@@ -1,10 +1,6 @@
 <div ng-controller = "issue-controller as issue" ng-init="issue.getIssues()">
     <div class="row">
-      <div class=col-sm-12>
-          <h2>{{ issue.title }}</h2>
-          <p></p>
-          <br>
-      </div>
+          <h2 style="text-align: center;">{{ issue.title }}</h2>
     </div>
     <!-- Added an array to the issue-controller for dynamically pulling from database-->
     <div class="issue row" ng-repeat="(rowIdx, row) in issue.issuerows">
